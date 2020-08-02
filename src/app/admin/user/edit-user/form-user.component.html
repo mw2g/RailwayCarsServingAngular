@@ -1,0 +1,101 @@
+<app-alert></app-alert>
+
+<div *ngIf="form; else loading">
+  <form [formGroup]="form" (ngSubmit)="submit()">
+
+    <div class="form-row">
+      <div class="form-group row col-md-6">
+        <label for="userId" class="col-sm-2 col-form-label">Номер</label>
+        <div class="col-sm-4">
+          <input type="email" class="form-control-plaintext" id="userId" formControlName="userId" readonly>
+        </div>
+      </div>
+      <div class="form-group row col-md-6">
+        <label for="created" class="col-sm-3 col-form-label">Дата создания</label>
+        <div class="col-sm-4">
+          <span class="form-control-plaintext" id="created">{{ form.value.created | date: 'dd.MM.yyy'}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-4"
+           [ngClass]="{invalid: form.get('username').touched && form.get('username').invalid}"
+      >
+
+
+        <label for="username">Имя пользователя</label>
+        <input type="text" class="form-control" id="username" formControlName="username">
+
+        <div
+          *ngIf="form.get('username').touched && form.get('username').invalid"
+          class="validation"
+        >
+          <small *ngIf="form.get('username').errors.required">
+            Введите имя пользователя
+          </small>
+        </div>
+
+
+      </div>
+
+      <div class="form-group col-md-4">
+        <label for="email">Почта</label>
+        <input type="email" class="form-control" id="email" formControlName="email">
+      </div>
+
+      <div class="form-group col-md-4"
+           [ngClass]="{invalid: form.get('password').touched && form.get('password').invalid}"
+      >
+
+        <label for="password">Пароль</label>
+        <input type="password" class="form-control" id="password" formControlName="password">
+
+        <div
+          *ngIf="form.get('password').touched && form.get('password').invalid"
+          class="validation"
+        >
+          <small *ngIf="form.get('password').errors.required">
+            Введите пароль
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label for="lastName">Фамилия</label>
+        <input type="text" class="form-control" id="lastName" formControlName="lastName">
+      </div>
+      <div class="form-group col-md-4">
+        <label for="firstName">Имя</label>
+        <input type="text" class="form-control" id="firstName" formControlName="firstName">
+      </div>
+      <div class="form-group col-md-4">
+        <label for="middleName">Отчество</label>
+        <input type="text" class="form-control" id="middleName" formControlName="middleName">
+      </div>
+    </div>
+    <div class="custom-control custom-switch form-group md-12">
+      <input type="checkbox" class="custom-control-input" id="enabled" formControlName="enabled">
+      <label class="custom-control-label" for="enabled">Активен</label>
+    </div>
+    <div class="row justify-content-md-center">
+      <button
+        type="submit"
+        class="btn btn-outline-primary"
+        [disabled]="form.invalid || form.get('username').touched"
+      >Сохранить
+      </button>
+      <button
+        class="btn btn-outline-info ml-2"
+        [routerLink]="['/admin', 'user']"
+      >Закрыть
+      </button>
+    </div>
+  </form>
+</div>
+
+<ng-template #loading>
+  <p class="text-center">Идёт загрузка...</p>
+</ng-template>

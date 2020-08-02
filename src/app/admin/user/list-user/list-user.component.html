@@ -1,0 +1,39 @@
+<div
+  *ngIf="users; else loading"
+  class="posts"
+>
+  <table class="table">
+    <thead class="thead-light">
+    <tr>
+      <th scope="col">Номер</th>
+      <th scope="col">Имя пользователя</th>
+      <th scope="col">ФИО</th>
+      <th scope="col">Почта</th>
+      <th scope="col">Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <tr *ngFor="let user of users">
+      <td>{{ user.userId }}</td>
+      <td>{{ user.username }}</td>
+      <td>{{ user.lastName }}</td>
+      <td>{{ user.email }}</td>
+      <td>
+        <button
+          [routerLink]="['/post', user.userId]"
+          class="btn btn-dark"
+        >
+          Открыть
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+
+</div>
+
+<ng-template #loading>
+  <p class="text-center">Загрузка...</p>
+</ng-template>
