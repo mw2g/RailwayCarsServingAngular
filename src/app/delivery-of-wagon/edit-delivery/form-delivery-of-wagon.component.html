@@ -1,0 +1,139 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <div *ngIf="!router.isActive('/delivery/create', true)">
+          <button
+            (click)="update()"
+            class="btn btn-outline-primary mr-2 btn-sm"
+          >Сохранить
+          </button>
+        </div>
+        <div *ngIf="router.isActive('/delivery/create', true)">
+          <a
+            (click)="create()"
+            class="btn btn-outline-primary mr-2 btn-sm"
+          >Создать
+          </a>
+        </div>
+      </li>
+      <li>
+        <a
+          class="btn btn-outline-info btn-sm"
+          [routerLink]="['/delivery']"
+        >Закрыть
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+<div *ngIf="form; else loading">
+  <form [formGroup]="form" (ngSubmit)="update()">
+
+    <div *ngIf="form.get('deliveryId');" class="form-row">
+      <div class="form-group col-md-4">
+        <label for="userId">Номер</label>
+        <input type="text" class="form-control-plaintext font-weight-bold" disabled id="userId" value="{{ form.value.deliveryId }}">
+      </div>
+      <div class="form-group col-md-4">
+        <label for="created">Дата создания</label>
+        <input type="text" class="form-control-plaintext font-weight-bold" disabled
+               id="created" value="{{ form.value.created * 1000 | date: 'HH:mm dd.MM.yyy'}}">
+      </div>
+      <div class="form-group col-md-4">
+        <label for="author">Автор</label>
+        <input type="text" class="form-control-plaintext font-weight-bold" disabled id="author" value="{{ form.value.author }}">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-4"
+           [ngClass]="{invalid: form.get('wagon').touched && form.get('wagon').invalid}"
+      >
+        <label for="wagon">Номер вагона</label>
+        <input type="text" class="form-control" id="wagon" formControlName="wagon">
+
+        <div
+          *ngIf="form.get('wagon').touched && form.get('wagon').invalid"
+          class="validation"
+        >
+          <small *ngIf="form.get('wagon').errors.required">
+            Введите номер вагона
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group col-md-4"
+           [ngClass]="{invalid: form.get('customer').touched && form.get('customer').invalid}"
+      >
+        <label for="customer">Контрагент</label>
+        <input type="text" class="form-control" id="customer" formControlName="customer" list=customerList>
+        <datalist id=customerList>
+          <option *ngFor="let customer of customers">{{ customer.customerName }}</option>
+        </datalist>
+        <div
+          *ngIf="form.get('customer').touched && form.get('customer').invalid"
+          class="validation"
+        >
+          <small *ngIf="form.get('customer').errors.required">
+            Выберете контрагента
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group col-md-4">
+        <label for="cargoOperation">Грузовая операция</label>
+        <div class="input-group mb-3">
+          <select class="custom-select" id="cargoOperation" formControlName="cargoOperation">
+            <option value="1">ВЫГРУЗКА</option>
+            <option value="2">ПОГРУЗКА</option>
+            <option value="3">БЕЗ ОПЕРАЦИИ</option>
+            <option value="4">ВЕСОПОВЕРОЧНЫЙ</option>
+          </select>
+        </div>
+        <!--        <input type="text" class="form-control" id="cargoOperation" formControlName="cargoOperation">-->
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label for="startDate">Дата начала</label>
+        <input type="datetime-local" class="form-control" id="startDate" formControlName="startDate">
+      </div>
+      <div class="form-group col-md-4">
+        <label for="endDate">Дата окончания</label>
+        <input type="datetime-local" class="form-control" id="endDate" formControlName="endDate">
+      </div>
+      <div class="form-group col-md-4">
+        <label for="shuntingWorks">Маневровые работы</label>
+        <input type="number" class="form-control" id="shuntingWorks" formControlName="shuntingWork">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label for="memoOfDelivery">Памятка подачи</label>
+        <input type="text" class="form-control" id="memoOfDelivery" formControlName="memoOfDelivery">
+      </div>
+      <div class="form-group col-md-4">
+        <label for="cargoWeight">Вес груза</label>
+        <div class="input-group mb-3" id="cargoWeight">
+          <input type="text" class="form-control" formControlName="cargoWeight">
+          <div class="input-group-append">
+          <span class="input-group-text">
+            <input class="mr-2" type="checkbox" formControlName="loadUnloadWork">
+            ПРР
+          </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<ng-template #loading>
+  <p class="text-center">Идёт загрузка...</p>
+</ng-template>

@@ -2,7 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../shared/services/auth.service';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {User} from '../../shared/interfaces';
+import {LoginRequestPayload} from './login-request.payload';
+import {AlertService} from '../../shared/service/alert.service';
 
 @Component({
   selector: 'app-login-page',
@@ -16,9 +17,10 @@ export class LoginPageComponent implements OnInit {
   message: string;
 
   constructor(
-    public auth: AuthService,
+    public authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private alert: AlertService
   ) {
   }
 
@@ -32,34 +34,36 @@ export class LoginPageComponent implements OnInit {
     });
 
     this.form = new FormGroup({
-      email: new FormControl(null, [
-        Validators.required, Validators.email
+      username: new FormControl(null, [
+        Validators.required
       ]),
       password: new FormControl(null, [
-        Validators.required, Validators.minLength(6)
+        Validators.required, Validators.minLength(4)
       ])
     });
   }
 
-  submit(): void {
-    console.log(this.form);
+  login(): void {
     if (this.form.invalid) {
       return;
     }
 
     this.submitted = true;
 
-    const user: User = {
-      email: this.form.value.email,
+    const loginRequestPayload: LoginRequestPayload = {
+      username: this.form.value.username,
       password: this.form.value.password
     };
 
-    this.auth.login(user).subscribe(() => {
+    this.authService.login(loginRequestPayload).subscribe(() => {
       this.form.reset();
-      this.router.navigate(['/admin', 'dashboard']);
-      this.submitted = false;
+      this.router.navigate(['/']);
+      // this.submitted = false;
     }, () => {
       this.submitted = false;
+    }, () => {
+      this.alert.success('Авторизация');
     });
+
   }
 }

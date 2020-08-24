@@ -3,26 +3,21 @@ import {CommonModule} from '@angular/common';
 import {RouterModule} from '@angular/router';
 import {AdminLayoutComponent} from './shared/components/admin-layout/admin-layout.component';
 import {LoginPageComponent} from './login-page/login-page.component';
-import {DashboardPageComponent} from './dashboard-page/dashboard-page.component';
-import {CreatePageComponent} from './create-page/create-page.component';
-import {EditPageComponent} from './edit-page/edit-page.component';
+import {ListUserComponent} from './user/list-user/list-user.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SharedModule} from '../shared/shared.module';
 import {AuthGuard} from './shared/services/auth.guard';
-import {SearchPipe} from './shared/search.pipe';
-import { AlertComponent } from './shared/components/alert/alert.component';
-import {AlertService} from './shared/services/alert.service';
+// import {AlertComponent} from './shared/components/alert/alert.component';
+import { FormUserComponent } from './user/edit-user/form-user.component';
+import {MainLayoutComponent} from '../shared/components/main-layout/main-layout.component';
 
-// @ts-ignore
 @NgModule({
   declarations: [
     AdminLayoutComponent,
     LoginPageComponent,
-    DashboardPageComponent,
-    CreatePageComponent,
-    EditPageComponent,
-    SearchPipe,
-    AlertComponent
+    ListUserComponent,
+    // AlertComponent,
+    FormUserComponent
   ],
   imports: [
     CommonModule,
@@ -31,18 +26,17 @@ import {AlertService} from './shared/services/alert.service';
     SharedModule,
     RouterModule.forChild([
       {
-        path: '', component: AdminLayoutComponent, children: [
-          {path: '', redirectTo: '/admin/login', pathMatch: 'full'},
+        path: '', component: MainLayoutComponent, children: [
+          {path: '', redirectTo: '/admin/user', pathMatch: 'full' },
           {path: 'login', component: LoginPageComponent},
-          {path: 'dashboard', component: DashboardPageComponent, canActivate: [AuthGuard]},
-          {path: 'create', component: CreatePageComponent, canActivate: [AuthGuard]},
-          {path: 'post/:id/edit', component: EditPageComponent, canActivate: [AuthGuard]},
+          {path: 'user', component: ListUserComponent, canActivate: [AuthGuard]},
+          {path: 'user/edit/:userId', component: FormUserComponent, canActivate: [AuthGuard]},
+          {path: 'user/create', component: FormUserComponent, canActivate: [AuthGuard]}
         ]
       }
     ])
   ],
-  exports: [RouterModule],
-  providers: [AuthGuard, AlertService]
+  exports: [RouterModule]
 })
 export class AdminModule {
 

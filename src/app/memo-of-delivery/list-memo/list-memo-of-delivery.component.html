@@ -1,0 +1,74 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <span class="navbar-brand">Памятки подачи</span>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active" *ngIf="!router.isActive('/memo/delivery/create', true)">
+        <a class="nav-link" href="#" [routerLink]="['/memo', 'delivery', 'create']">Создать<span
+          class="sr-only">(current)</span></a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div
+  *ngIf="memos.length; else loading"
+  class="posts"
+>
+  <table class="table">
+    <thead class="thead-light">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Номер</th>
+      <th scope="col">Дата начала операции</th>
+      <th scope="col">Контрагент</th>
+      <th scope="col">Грузовая операция</th>
+      <th scope="col">Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <tr *ngFor="let memo of memos; let idx = index">
+      <td>{{ idx + 1 }}</td>
+      <td><a [routerLink]="['/memo', 'delivery', 'edit', memo.memoId]">{{ memo.memoId }}</a></td>
+      <td>{{ memo.startDate | date : 'dd.MM.yyyy HH:mm' }}</td>
+      <td>{{ memo.customer.customerName }}</td>
+      <td>{{ memo.cargoOperation.operation }}</td>
+      <td>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-outline-danger btn-sm ml-2" data-toggle="modal" data-target="#deleteModal"
+                (click)="setDelete(memo.memoId)">
+          Удалить
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<!--Template loading-->
+<ng-template #loading>
+  <p class="text-center">Загрузка...</p>
+</ng-template>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Удаление</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Удалить пользователя {{ getById(memoIdToDelete) }} #{{ memoIdToDelete }} ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="unsetDelete()">Отменить</button>
+        <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="delete()">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>
+

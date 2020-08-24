@@ -1,9 +1,38 @@
-<app-alert></app-alert>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <div *ngIf="!router.isActive('/admin/user/create', true)">
+          <button
+            (click)="update()"
+            class="btn btn-outline-primary btn-sm mr-2"
+          >Сохранить
+          </button>
+        </div>
+        <div *ngIf="router.isActive('/admin/user/create', true)">
+          <a
+            (click)="create()"
+            class="btn btn-outline-primary btn-sm mr-2"
+          >Создать
+          </a>
+        </div>
+      </li>
+      <li>
+        <a
+          class="btn btn-outline-info btn-sm"
+          [routerLink]="['/admin', 'user']"
+        >Закрыть
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
 
 <div *ngIf="form; else loading">
-  <form [formGroup]="form" (ngSubmit)="submit()">
+  <form [formGroup]="form" (ngSubmit)="update()">
 
-    <div class="form-row">
+    <div *ngIf="form.get('userId');" class="form-row">
       <div class="form-group row col-md-6">
         <label for="userId" class="col-sm-2 col-form-label">Номер</label>
         <div class="col-sm-4">
@@ -39,15 +68,9 @@
 
       </div>
 
-      <div class="form-group col-md-4">
-        <label for="email">Почта</label>
-        <input type="email" class="form-control" id="email" formControlName="email">
-      </div>
-
       <div class="form-group col-md-4"
            [ngClass]="{invalid: form.get('password').touched && form.get('password').invalid}"
       >
-
         <label for="password">Пароль</label>
         <input type="password" class="form-control" id="password" formControlName="password">
 
@@ -59,6 +82,11 @@
             Введите пароль
           </small>
         </div>
+      </div>
+
+      <div class="form-group col-md-4">
+        <label for="email">Почта</label>
+        <input type="email" class="form-control" id="email" formControlName="email">
       </div>
     </div>
 
@@ -79,19 +107,6 @@
     <div class="custom-control custom-switch form-group md-12">
       <input type="checkbox" class="custom-control-input" id="enabled" formControlName="enabled">
       <label class="custom-control-label" for="enabled">Активен</label>
-    </div>
-    <div class="row justify-content-md-center">
-      <button
-        type="submit"
-        class="btn btn-outline-primary"
-        [disabled]="form.invalid || form.get('username').touched"
-      >Сохранить
-      </button>
-      <button
-        class="btn btn-outline-info ml-2"
-        [routerLink]="['/admin', 'user']"
-      >Закрыть
-      </button>
     </div>
   </form>
 </div>

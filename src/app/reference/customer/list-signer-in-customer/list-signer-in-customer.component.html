@@ -1,0 +1,90 @@
+<nav class="navbar navbar-expand-md navbar-light bg-light">
+  <div class="navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li>
+        <input type="button" value="Создать" class="btn btn-outline-info btn-sm mr-2" (click)="addSigner()"/>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="col">
+  <table class="table">
+    <thead class="thead-light">
+    <tr class="row">
+      <th class="col-md-1 col-sm-1 col-1">#</th>
+      <th class="col-md-3 col-sm-3 col-3">Фамилия</th>
+      <th class="col-md-3 col-sm-3 col-3">Имя</th>
+      <th class="col-md-3 col-sm-3 col-3">Отчество</th>
+      <th class="col-md-2 col-sm-2 col-2">Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <tr class="row" *ngFor="let signer of signers; let idx = index">
+      <ng-template [ngTemplateOutlet]="loadTemplate(signer)"
+                   [ngTemplateOutletContext]="{ $implicit: signer, idx: idx}">
+      </ng-template>
+
+
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<!--шаблон для чтения-->
+<ng-template #readTemplate let-signer let-idx="idx">
+  <td class="col-md-1 col-sm-1 col-1">{{ idx + 1}}</td>
+  <!--  <a [routerLink]="['/delivery', 'edit', delivery.deliveryId]">-->
+  <td class="col-md-3 col-sm-3 col-3">{{ signer.lastName }}</td>
+  <td class="col-md-3 col-sm-3 col-3">{{ signer.firstName }}</td>
+  <td class="col-md-3 col-sm-3 col-3">{{ signer.middleName }}</td>
+  <td class="col-md-2 col-sm-2 col-2">
+    <input type="button" value="Изменить" class="btn btn-outline-info btn-sm mr-1 mt-1" (click)="editDelivery(signer)">
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-outline-danger btn-sm mt-1" data-toggle="modal" data-target="#deleteModal"
+            (click)="setDelete(signer.deliveryId)">
+      Удалить
+    </button>
+  </td>
+</ng-template>
+
+<!--шаблон для редактирования-->
+<ng-template #editTemplate let-idx="idx">
+  <td class="col-md-1 col-sm-1 col-1">{{ idx + 1 }}</td>
+  <td class="col-md-3 col-sm-3 col-3">
+    <input type="text" [(ngModel)]="editedSigner.lastName" class="form-control">
+  </td>
+  <td class="col-md-3 col-sm-3 col-3">
+    <input type="text" [(ngModel)]="editedSigner.firstName" class="form-control">
+  </td>
+  <td class="col-md-3 col-sm-3 col-3">
+    <input type="text" [(ngModel)]="editedSigner.middleName" class="form-control">
+  <td class="col-md-2 col-sm-2 col-2">
+    <input type="button" value="Сохранить" (click)="saveSigner()" class="btn btn-outline-success btn-sm mr-1">
+    <input type="button" value="Отмена" (click)="cancel()" class="btn btn-outline-warning btn-sm">
+  </td>
+</ng-template>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Удаление</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Удалить пользователя {{ getById(signerIdToDelete) }} #{{ signerIdToDelete }} ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="unsetDelete()">Отменить</button>
+        <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="delete()">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>
+

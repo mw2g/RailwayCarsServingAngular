@@ -1,30 +1,54 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <span class="navbar-brand">Пользователи</span>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active" *ngIf="!router.isActive('/admin/user/create', true)">
+        <a class="nav-link" href="#" [routerLink]="['/admin', 'user', 'create']">Создать <span
+          class="sr-only">(current)</span></a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
 <div
-  *ngIf="users; else loading"
+  *ngIf="users.length; else loading"
   class="posts"
 >
   <table class="table">
     <thead class="thead-light">
     <tr>
+      <th scope="col">#</th>
       <th scope="col">Номер</th>
       <th scope="col">Имя пользователя</th>
       <th scope="col">ФИО</th>
-      <th scope="col">Почта</th>
+      <th scope="col">Доступ</th>
+      <th scope="col">Сеансы</th>
       <th scope="col">Действия</th>
     </tr>
     </thead>
     <tbody>
 
-    <tr *ngFor="let user of users">
+    <tr *ngFor="let user of users; let idx = index">
+      <td>{{ idx + 1 }}</td>
       <td>{{ user.userId }}</td>
-      <td>{{ user.username }}</td>
-      <td>{{ user.lastName }}</td>
-      <td>{{ user.email }}</td>
+      <td><a [routerLink]="['/admin', 'user', 'edit', user.userId]">{{ user.username }}</a></td>
+      <td><p *ngIf="user.lastName">{{ user.lastName + ' ' + user.firstName + ' ' + user.middleName }}</p></td>
+      <td>{{ user.roles }}</td>
       <td>
-        <button
-          [routerLink]="['/post', user.userId]"
-          class="btn btn-dark"
-        >
-          Открыть
+        <span *ngIf="user.auths.length">
+          <p *ngFor="let auth of user.auths">
+            {{ auth.refreshTokenId }}
+            {{ auth.createdDate * 1000 | date : 'dd.MM.yyy' }}
+            <button type="button" class="close" (click)="setTokenToKickOut(auth.refreshTokenId)" data-toggle="modal" data-target="#deleteRefreshTokenModal">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </p>
+        </span>
+      </td>
+      <td>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-outline-danger btn-sm ml-2" data-toggle="modal" data-target="#deleteModal" (click)="setDelete(user.userId)">
+          Удалить
         </button>
       </td>
     </tr>
@@ -37,3 +61,58 @@
 <ng-template #loading>
   <p class="text-center">Загрузка...</p>
 </ng-template>
+
+<!--<script>-->
+<!--  $('#deleteRefreshTokenModal').on('show.bs.modal', function(event) {-->
+<!--    var button = $(event.relatedTarget);-->
+<!--    var token = button.data('whatever');-->
+<!--    var modal = $(this);-->
+<!--    modal-->
+<!--      .find('.modal-body')-->
+<!--      .text(-->
+<!--        'Удалить токен: ' + token-->
+<!--      );-->
+<!--  });-->
+<!--</script>-->
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Удаление</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Удалить пользователя {{ getById(userIdToDelete) }} #{{ userIdToDelete }} ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="unsetDelete()">Отменить</button>
+        <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="delete()">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteRefreshTokenModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteRefreshTokenModalLabel">Удаление</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Удалить сеанс #{{ refreshTokenIdToKickOut }} ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="unSetTokenToKickOut()">Отменить</button>
+        <button id="btn-ok" type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="kickOut()">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>

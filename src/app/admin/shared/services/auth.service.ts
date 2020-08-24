@@ -1,70 +1,116 @@
-import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {EventEmitter, Injectable, Output} from '@angular/core';
 import {Observable, Subject, throwError} from 'rxjs';
-import {environment} from '../../../../environments/environment';
-import {catchError, tap} from 'rxjs/operators';
-import {FbAuthResponse, User} from '../../../shared/interfaces';
+import {catchError, map, tap} from 'rxjs/operators';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {LoginResponsePayload} from '../../login-page/login-response.payload';
+import {LoginRequestPayload} from '../../login-page/login-request.payload';
+import {LocalStorageService} from 'ngx-webstorage';
+import {Router} from '@angular/router';
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
+  @Output() loggedIn: EventEmitter<boolean> = new EventEmitter();
+  @Output() username: EventEmitter<string> = new EventEmitter();
 
   public error$: Subject<string> = new Subject<string>();
 
-  constructor(private http: HttpClient) {
+  constructor(private httpClient: HttpClient,
+              private router: Router,
+              private localStorage: LocalStorageService) {
   }
 
-  get token(): string {
-    const expDate = new Date(localStorage.getItem('fb-token-exp'));
-    if (new Date() > expDate) {
-      this.logout();
-      return null;
-    }
-    return localStorage.getItem('fb-token');
+  // signup(signupRequestPayload: SignupRequestPayload): Observable<any> {
+  //   return this.httpClient.post('http://localhost:8080/api/auth/signup', signupRequestPayload, { responseType: 'text' });
+  // }
+
+  login(loginRequestPayload: LoginRequestPayload): Observable<boolean> {
+    return this.httpClient.post<LoginResponsePayload>('http://localhost:8080/api/auth/login',
+      loginRequestPayload).pipe(map(data => {
+      this.localStorage.store('authenticationToken', data.authenticationToken);
+      this.localStorage.store('username', data.username);
+      this.localStorage.store('refreshToken', data.refreshToken);
+      this.localStorage.store('expiresAt', data.expiresAt);
+      this.loggedIn.emit(true);
+      this.username.emit(data.username);
+      return true;
+    }), catchError(this.handleError.bind(this)));
   }
 
-  login(user: User): Observable<any> {
-    user.returnSecureToken = true;
-    return this.http.post(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.apiKey}`, user)
-      .pipe(
-        tap(this.setToken),
-        catchError(this.handleError.bind(this))
-      );
+  getJwtToken(): string {
+    return this.localStorage.retrieve('authenticationToken');
+  }
+
+  clearJwtToken(): void {
+    this.localStorage.clear('authenticationToken');
+  }
+
+  refreshToken(): Observable<LoginResponsePayload> {
+    return this.httpClient.post<LoginResponsePayload>('http://localhost:8080/api/auth/refresh/token',
+      {refreshToken: this.getRefreshToken(), username: this.getUsername()})
+      .pipe(tap(response => {
+        if (response.refreshToken !== 'kickedOut') {
+          this.localStorage.clear('authenticationToken');
+          this.localStorage.clear('expiresAt');
+          this.localStorage.store('authenticationToken',
+            response.authenticationToken);
+          this.localStorage.store('expiresAt', response.expiresAt);
+        }
+      }));
   }
 
   logout(): void {
-    this.setToken(null);
+    this.httpClient.post('http://localhost:8080/api/auth/logout',
+      {refreshToken: this.getRefreshToken(), username: this.getUsername()},
+      {responseType: 'text'})
+      .subscribe(data => {
+        console.log(data);
+      }, error => {
+        throwError(error);
+      });
+    this.localStorage.clear('authenticationToken');
+    this.localStorage.clear('username');
+    this.localStorage.clear('refreshToken');
+    this.localStorage.clear('expiresAt');
+
+    this.router.navigate(['/admin', 'login']);
   }
 
-  isAuthenticated(): boolean {
-    return !!this.token;
+  getUsername(): any {
+    return this.localStorage.retrieve('username');
   }
 
-  private handleError(error: HttpErrorResponse) {
-    const {message} = error.error.error;
+  getRefreshToken(): any {
+    return this.localStorage.retrieve('refreshToken');
+  }
+
+  getJwtTokenExpiresAt(): any {
+    return this.localStorage.retrieve('expiresat');
+  }
+
+  isLoggedIn(): boolean {
+    return this.getJwtToken() != null;
+  }
+
+
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    const message = error.error.error.toString();
 
     switch (message) {
-      case 'INVALID_EMAIL':
-        this.error$.next('Неверный email');
+      case 'Forbidden':
+        this.error$.next('Неверные данные');
+        break;
+      case 'INVALID_TOKEN':
+        this.error$.next('Войдите заново+');
+        break;
+      case 'INVALID_USERNAME':
+        this.error$.next('Неверное имя пользователя');
         break;
       case 'INVALID_PASSWORD':
         this.error$.next('Неверный пароль');
-        break;
-      case 'EMAIL_NOT_FOUND':
-        this.error$.next('Email не найден');
         break;
 
     }
 
     return throwError(error);
-  }
-
-  private setToken(response: FbAuthResponse | null): void {
-    if (response) {
-      const expDate = new Date(new Date().getTime() + +response.expiresIn * 1000);
-      localStorage.setItem('fb-token', response.idToken);
-      localStorage.setItem('fb-token-exp', expDate.toString());
-    } else {
-      localStorage.clear();
-    }
   }
 }

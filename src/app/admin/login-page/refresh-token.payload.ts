@@ -1,6 +1,5 @@
-export interface LoginRequestPayload {
+export interface RefreshTokenPayload {
+  refreshToken: string;
   username: string;
-  password: string;
-  returnSecureToken?: boolean;
 }
 
