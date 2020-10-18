@@ -1,20 +1,15 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-sm navbar-light bg-light">
   <div class="navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <div *ngIf="!router.isActive('/admin/user/create', true)">
-          <button
-            (click)="update()"
-            class="btn btn-outline-primary btn-sm mr-2"
-          >Сохранить
+      <li class="nav-item active" *ngIf="form && !form.pristine">
+        <div *ngIf="user && user.userId">
+          <button (click)="update()" class="btn btn-outline-danger btn-sm mr-2">
+            Сохранить изменения
           </button>
+          <button (click)="loadForm()" class="btn btn-outline-danger btn-sm mr-2">Отменить</button>
         </div>
-        <div *ngIf="router.isActive('/admin/user/create', true)">
-          <a
-            (click)="create()"
-            class="btn btn-outline-primary btn-sm mr-2"
-          >Создать
-          </a>
+        <div *ngIf="!user || !user.userId">
+          <a (click)="create()" class="btn btn-outline-primary btn-sm mr-2">Создать</a>
         </div>
       </li>
       <li>
@@ -25,88 +20,85 @@
         </a>
       </li>
     </ul>
+    <span *ngIf="user && user.userId">
+        Пользователь {{ user.userId }} от {{ form.value.created * 1000 | date: 'dd.MM.yyyy'}}
+      </span>
   </div>
 </nav>
-
 
 <div *ngIf="form; else loading">
   <form [formGroup]="form" (ngSubmit)="update()">
 
-    <div *ngIf="form.get('userId');" class="form-row">
-      <div class="form-group row col-md-6">
-        <label for="userId" class="col-sm-2 col-form-label">Номер</label>
-        <div class="col-sm-4">
-          <input type="email" class="form-control-plaintext" id="userId" formControlName="userId" readonly>
-        </div>
-      </div>
-      <div class="form-group row col-md-6">
-        <label for="created" class="col-sm-3 col-form-label">Дата создания</label>
-        <div class="col-sm-4">
-          <span class="form-control-plaintext" id="created">{{ form.value.created | date: 'dd.MM.yyy'}}</span>
-        </div>
-      </div>
-    </div>
-
     <div class="form-row">
       <div class="form-group col-md-4"
-           [ngClass]="{invalid: form.get('username').touched && form.get('username').invalid}"
-      >
-
-
-        <label for="username">Имя пользователя</label>
-        <input type="text" class="form-control" id="username" formControlName="username">
-
-        <div
-          *ngIf="form.get('username').touched && form.get('username').invalid"
-          class="validation"
-        >
-          <small *ngIf="form.get('username').errors.required">
-            Введите имя пользователя
-          </small>
+           [ngClass]="{invalid: form.get('username').touched && form.get('username').invalid}">
+        <label class="small" for="username">Имя пользователя</label>
+        <input type="text" class="form-control form-control-sm form-control form-control-sm-sm" id="username" formControlName="username" autocomplete="off"
+               [required]="form.get('username').hasError('required')">
+        <div class="invalid-feedback">
+          Введите имя пользователя
         </div>
-
-
       </div>
-
       <div class="form-group col-md-4"
-           [ngClass]="{invalid: form.get('password').touched && form.get('password').invalid}"
-      >
-        <label for="password">Пароль</label>
-        <input type="password" class="form-control" id="password" formControlName="password">
-
-        <div
-          *ngIf="form.get('password').touched && form.get('password').invalid"
-          class="validation"
-        >
-          <small *ngIf="form.get('password').errors.required">
-            Введите пароль
-          </small>
+           [ngClass]="{invalid: form.get('password').touched && form.get('password').invalid}">
+        <label class="small" for="password">Пароль</label>
+        <input type="password" class="form-control form-control-sm" id="password"
+               formControlName="password" autocomplete="new-password"
+               [required]="form.get('password').hasError('required')">
+        <div class="invalid-feedback">
+          Введите пароль
         </div>
       </div>
 
       <div class="form-group col-md-4">
-        <label for="email">Почта</label>
-        <input type="email" class="form-control" id="email" formControlName="email">
+        <label class="small" for="email">Почта</label>
+        <input type="email" class="form-control form-control-sm" id="email" formControlName="email" autocomplete="off">
       </div>
     </div>
 
     <div class="form-row">
       <div class="form-group col-md-4">
-        <label for="lastName">Фамилия</label>
-        <input type="text" class="form-control" id="lastName" formControlName="lastName">
+        <label class="small" for="lastName">Фамилия</label>
+        <input type="text" class="form-control form-control-sm" id="lastName" formControlName="lastName" autocomplete="off"
+               [required]="form.get('lastName').hasError('required')">
+        <div class="invalid-feedback">
+          Введите фамилию
+        </div>
       </div>
       <div class="form-group col-md-4">
-        <label for="firstName">Имя</label>
-        <input type="text" class="form-control" id="firstName" formControlName="firstName">
+        <label class="small" for="firstName">Имя</label>
+        <input type="text" class="form-control form-control-sm" id="firstName" formControlName="firstName" autocomplete="off"
+               [required]="form.get('firstName').hasError('required')">
+        <div class="invalid-feedback">
+          Введите имя
+        </div>
       </div>
       <div class="form-group col-md-4">
-        <label for="middleName">Отчество</label>
-        <input type="text" class="form-control" id="middleName" formControlName="middleName">
+        <label class="small" for="middleName">Отчество</label>
+        <input type="text" class="form-control form-control-sm" id="middleName" formControlName="middleName" autocomplete="off"
+               [required]="form.get('middleName').hasError('required')">
+        <div class="invalid-feedback">
+          Введите отчество
+        </div>
       </div>
     </div>
-    <div class="custom-control custom-switch form-group md-12">
-      <input type="checkbox" class="custom-control-input" id="enabled" formControlName="enabled">
-      <label class="custom-control-label" for="enabled">Активен</label>
+    <div class="form-row" align="center">
+      <div class="custom-control custom-switch form-group col-md-3">
+        <input type="checkbox" class="custom-control-input" id="admin" formControlName="adminRole">
+        <label class="custom-control-label" for="admin">Администратор</label>
+      </div>
+      <div class="custom-control custom-switch form-group col-md-3">
+        <input type="checkbox" value="USER" class="custom-control-input" id="user" formControlName="userRole">
+        <label class="custom-control-label" for="user">Пользователь</label>
+      </div>
+      <div class="custom-control custom-switch form-group col-md-3">
+        <input type="checkbox" class="custom-control-input" id="watch" formControlName="watchRole">
+        <label class="custom-control-label" for="watch">Просмотр</label>
+      </div>
+      <div class="custom-control custom-switch form-group col-md-3">
+        <input type="checkbox" class="custom-control-input" id="enabled" formControlName="enabled">
+        <label class="custom-control-label" for="enabled">Активен</label>
+      </div>
     </div>
   </form>
 </div>

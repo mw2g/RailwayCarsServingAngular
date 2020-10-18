@@ -1,14 +1,15 @@
 import {Component, Input, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {Customer, DeliveryOfWagon, MemoOfDelivery} from '../../shared/interfaces';
+import {Customer, DeliveryOfWagon, MemoOfDelivery, Owner} from '../../shared/interfaces';
 import {Subscription, throwError} from 'rxjs';
 import {Router} from '@angular/router';
 import {AlertService} from '../../shared/service/alert.service';
-import {CustomerService} from '../../reference/customer.service';
+import {CustomerService} from '../../reference/service/customer.service';
 import {MemoOfDeliveryService} from '../memo-of-delivery.service';
 import {DeliveryOfWagonService} from '../../delivery-of-wagon/delivery-of-wagon.service';
+import {toNumber} from 'ngx-bootstrap/timepicker/timepicker.utils';
 
 @Component({
-  selector: 'app-delivery-in-memo-of-delivery',
+  selector: 'app-list-delivery-in-memo-of-delivery',
   templateUrl: './list-delivery-in-memo-of-delivery.component.html',
   styleUrls: ['./list-delivery-in-memo-of-delivery.component.scss']
 })
@@ -17,24 +18,26 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
   @ViewChild('readOnlyTemplate', {static: false}) readOnlyTemplate: TemplateRef<any>;
   @ViewChild('editTemplate', {static: false}) editTemplate: TemplateRef<any>;
 
-  @Input() memoId: string;
+  @Input() memoOfDeliveryId: number;
+  @Input() deliveryList: DeliveryOfWagon[] = [];
+  @Input() memoOfDelivery: MemoOfDelivery;
+  @Input() enableForm;
 
-  deliveries: DeliveryOfWagon[] = [];
   suitableDeliveries: DeliveryOfWagon[] = [];
   deliveryIdToDelete: number;
   deliveryIdToAdd: number;
-  memoSub: Subscription;
-  delSub: Subscription;
-
-  memoOfDelivery: MemoOfDelivery;
-
-  editedDelivery: DeliveryOfWagon;
-  isNewRecord: boolean;
-  statusMessage: string;
+  public editedDelivery: DeliveryOfWagon;
+  private isNewRecord: boolean;
 
   private uSub: Subscription;
-  private customersSub: Subscription;
-  private customers: Array<Customer>;
+  private cSub: Subscription;
+  private memoSub: Subscription;
+  private delSub: Subscription;
+  private sDeliverySub: Subscription;
+  private addMemoToListSub: Subscription;
+  private addMemoSub: Subscription;
+  private ownerSub: Subscription;
+  private ownersList: Owner[] = [];
 
   constructor(private deliveryService: DeliveryOfWagonService,
               private customerService: CustomerService,
@@ -44,43 +47,21 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
   }
 
   ngOnInit(): void {
-    this.customersSub = this.customerService.getAllCustomers().subscribe(customers => {
-      this.customers = customers;
+    this.ownerSub = this.deliveryService.getAllOwners().subscribe(owners => {
+      this.ownersList = owners;
     }, error => {
       throwError(error);
     });
-    if (this.memoId !== undefined) {
-      this.memoSub = this.memoOfDeliveryService.getById(this.memoId).subscribe(memo => {
-        this.deliveries = memo.deliveryOfWagonList;
-        this.memoOfDelivery = memo;
-        this.loadSuitableDeliveries(memo.memoId);
-      }, error => {
-        throwError(error);
-      });
 
-      // this.deliveriesSub = this.deliveryService.getDeliveryByMemoId(this.memoId).subscribe(deliveries => {
-      //   this.deliveries = deliveries;
-      // }, error => {
-      //   throwError(error);
-      // });
-    }
+    this.loadSuitableDeliveries(this.memoOfDeliveryId);
   }
 
-  loadSuitableDeliveries(memoId: number): void {
-    this.deliveryService.getSuitableDeliveries(memoId).subscribe(deliveries => {
+  public loadSuitableDeliveries(memoId: number): void {
+    this.sDeliverySub = this.deliveryService.getSuitableDeliveriesForMemoOfDelivery(memoId).subscribe(deliveries => {
       this.suitableDeliveries = deliveries;
     }, error => {
       throwError(error);
     });
-  }
-
-  ngOnDestroy(): void {
-    if (this.memoSub) {
-      this.memoSub.unsubscribe();
-    }
-    if (this.delSub) {
-      this.delSub.unsubscribe();
-    }
   }
 
   // загружаем один из двух шаблонов
@@ -92,36 +73,44 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
     }
   }
 
-  // добавление пользователя
+  // добавление
   addDelivery(): void {
     this.editedDelivery = {
       deliveryId: 0,
       wagon: {wagonNumber: ''},
-      memoOfDelivery: {memoId: this.memoOfDelivery.memoId},
+      wagonType: {typeId: 0},
+      owner: {owner: ''},
+      memoOfDelivery: {memoOfDeliveryId: this.memoOfDelivery.memoOfDeliveryId},
       startDate: this.memoOfDelivery.startDate,
       customer: {customerName: this.memoOfDelivery.customer.customerName},
-      cargoOperation: {operationId: this.memoOfDelivery.cargoOperation.operationId}
+      cargoOperation: {operationId: this.memoOfDelivery.cargoOperation.operationId},
+      loadUnloadWork: this.memoOfDelivery.cargoOperation.operationId === 1 ? true : false
     };
-    this.deliveries.push(this.editedDelivery);
+    this.deliveryList.push(this.editedDelivery);
     this.isNewRecord = true;
+    this.enableForm = false;
   }
 
-  // редактирование пользователя
+  // редактирование
   editDelivery(delivery: DeliveryOfWagon): void {
     this.isNewRecord = false;
     this.editedDelivery = {
       author: delivery.author,
       cargoOperation: delivery.cargoOperation,
       cargoWeight: delivery.cargoWeight,
+      cargoType: delivery.cargoType,
       created: delivery.created,
       customer: delivery.customer,
       deliveryId: delivery.deliveryId,
       endDate: delivery.endDate,
       loadUnloadWork: delivery.loadUnloadWork,
       memoOfDelivery: delivery.memoOfDelivery,
+      memoOfDispatch: delivery.memoOfDispatch,
       shuntingWork: delivery.shuntingWork,
       startDate: delivery.startDate,
-      wagon: delivery.wagon
+      wagon: {wagonNumber: delivery.wagon.wagonNumber},
+      wagonType: {typeId: delivery.wagon.wagonType.typeId},
+      owner: {ownerId: delivery.owner.ownerId}
     };
   }
 
@@ -129,35 +118,49 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
   cancel(): void {
     // если отмена при добавлении, удаляем последнюю запись
     if (this.isNewRecord) {
-      this.deliveries.pop();
+      this.deliveryList.pop();
       this.isNewRecord = false;
     }
     this.editedDelivery = null;
+    this.enableForm = true;
   }
 
-  // сохраняем пользователя
+  // сохраняем
   saveDelivery(): void {
     this.editedDelivery.endDate = this.prepareDate(this.editedDelivery.endDate);
     if (this.isNewRecord) {
-      // добавляем пользователя
-      this.uSub = this.deliveryService.create(this.editedDelivery).subscribe((data) => {
-        this.alert.success(data.message);
-        // this.submitted = true;
+      // добавляем
+      this.cSub = this.deliveryService.create(this.editedDelivery).subscribe((data) => {
+        this.editedDelivery.deliveryId = data.deliveryId;
       }, () => {
-        this.alert.danger('Ошибка');
+        this.deliveryList.pop();
+        this.alert.danger('Ошибка при создании общей подачи, возможно данная подача была создана ранее');
+      }, () => {
+        this.alert.success('Общая подача создана');
+        this.editedDelivery = null;
       });
-
       this.isNewRecord = false;
-      this.editedDelivery = null;
+      this.enableForm = true;
     } else {
-      // изменяем пользователя
+      // изменяем
       this.uSub = this.deliveryService.update(this.editedDelivery).subscribe((data) => {
-        this.alert.success(data.message);
-        // this.submitted = true;
+        this.deliveryList.map(delivery => {
+          if (delivery.deliveryId === this.editedDelivery.deliveryId) {
+            delivery.wagon = data.wagon;
+            delivery.wagonType = data.wagonType;
+            delivery.owner = data.owner;
+            delivery.endDate = data.endDate;
+            delivery.cargoWeight = data.cargoWeight;
+            delivery.loadUnloadWork = data.loadUnloadWork;
+          }
+        });
       }, () => {
         this.alert.danger('Ошибка');
+      }, () => {
+        this.alert.success('Общая подача сохранена');
+        this.editedDelivery = null;
+        this.enableForm = true;
       });
-      this.editedDelivery = null;
     }
   }
 
@@ -167,13 +170,13 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
 
   delete(): void {
     this.delSub = this.deliveryService.delete(this.deliveryIdToDelete).subscribe((data) => {
-      this.alert.success(data.message);
-      this.deliveries = this.deliveries.filter(delivery => delivery.deliveryId !== this.deliveryIdToDelete);
+      // this.alert.success(data.message);
+      this.deliveryList = this.deliveryList.filter(delivery => delivery.deliveryId !== this.deliveryIdToDelete);
       this.unsetDelete();
     }, () => {
-      this.alert.danger('Ошибка');
+      this.alert.danger('Ошибка при удалении общей подачи');
     }, () => {
-      this.alert.success('Пользователь удален');
+      this.alert.success('Общая подача удалена');
     });
   }
 
@@ -187,38 +190,41 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
 
   getById(deliveryId: number): number {
     if (deliveryId) {
-      return this.deliveries.find(value => value.deliveryId === deliveryId).deliveryId;
+      return this.deliveryList.find(value => value.deliveryId === deliveryId).deliveryId;
     }
     return 0;
   }
 
   addDeliveryById(): void {
     if (!this.suitableDeliveries.find(delivery => delivery.deliveryId === this.deliveryIdToAdd)) {
+      this.alert.warning('Нет подходящей подачи с таким номером');
+      this.clearDeliveryIdToAdd();
       return;
     }
-    this.deliveryService.addMemo(this.deliveryIdToAdd.toString(), this.memoId).subscribe((data) => {
-      this.clearDeliveryIdToAdd();
-      this.alert.success(data.message);
-      // this.submitted = true;
-    }, () => {
-      this.alert.danger('Ошибка');
-    });
+    this.addMemoSub = this.deliveryService.addMemoOfDelivery(this.deliveryIdToAdd.toString(), String(this.memoOfDeliveryId))
+      .subscribe((data) => {
+        this.deliveryList.find(delivery => delivery.deliveryId === this.deliveryIdToAdd).memoOfDelivery = data.memoOfDelivery;
+        this.clearDeliveryIdToAdd();
+      }, () => {
+        this.alert.danger('Ошибка при добавлении общей подачи по номеру');
+      }, () => {
+        this.alert.success('В общую подачу добавлена памятка подачи');
+      });
 
     const deliveryOfWagon: DeliveryOfWagon = this.suitableDeliveries.find(delivery => delivery.deliveryId === this.deliveryIdToAdd);
-    this.deliveries.push(deliveryOfWagon);
+    this.deliveryList.push(deliveryOfWagon);
     this.suitableDeliveries = this.suitableDeliveries.filter(delivery => delivery.deliveryId !== this.deliveryIdToAdd);
   }
 
   removeMemoFromDelivery(deliveryId): void {
-    this.delSub = this.deliveryService.removeMemo(deliveryId).subscribe((data) => {
-      this.alert.success(data.message);
-      this.suitableDeliveries.push(this.deliveries.find(delivery => delivery.deliveryId === deliveryId));
-      this.deliveries = this.deliveries.filter(delivery => delivery.deliveryId !== deliveryId);
-      // this.unsetDelete();
+    this.delSub = this.deliveryService.removeMemoOfDelivery(deliveryId).subscribe((data) => {
+      // this.alert.success(data.message);
+      this.suitableDeliveries.push(this.deliveryList.find(delivery => delivery.deliveryId === deliveryId));
+      this.deliveryList = this.deliveryList.filter(delivery => delivery.deliveryId !== deliveryId);
     }, () => {
-      this.alert.danger('Ошибка');
+      this.alert.danger('Ошибка при откреплении общей подачи от памятки');
     }, () => {
-      this.alert.success('Пользователь удален');
+      this.alert.success('Общая подача убрана из памятки');
     });
   }
 
@@ -227,15 +233,60 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
   }
 
   addAllSuitableDeliveries(): void {
-    this.deliveryService.addMemoToDeliveryList(this.suitableDeliveries.map(delivery => delivery.deliveryId), this.memoId)
+    this.clearDeliveryIdToAdd();
+    this.addMemoToListSub = this.deliveryService
+      .addMemoOfDeliveryToDeliveryList(this.suitableDeliveries.map(delivery => delivery.deliveryId), this.memoOfDeliveryId)
       .subscribe((data) => {
-      this.alert.success(data.message);
-      // this.submitted = true;
-    }, () => {
-      this.alert.danger('Ошибка');
-    });
+        for (const delivery of data) {
+          this.deliveryList.find(el => el.deliveryId === delivery.deliveryId).memoOfDelivery = delivery.memoOfDelivery;
+        }
+      }, () => {
+        this.alert.danger('Ошибка при добавлении всех подходящих памяток');
+      }, () => {
+        this.alert.success('Все подходящие подачи добавлены');
+      });
 
-    this.deliveries = this.deliveries.concat(this.suitableDeliveries);
-    this.suitableDeliveries = null;
+    this.deliveryList = this.deliveryList.concat(this.suitableDeliveries);
+    this.suitableDeliveries = [];
+  }
+
+  ngOnDestroy(): void {
+    if (this.cSub) {
+      this.cSub.unsubscribe();
+    }
+    if (this.uSub) {
+      this.uSub.unsubscribe();
+    }
+    if (this.memoSub) {
+      this.memoSub.unsubscribe();
+    }
+    if (this.delSub) {
+      this.delSub.unsubscribe();
+    }
+    if (this.sDeliverySub) {
+      this.sDeliverySub.unsubscribe();
+    }
+    if (this.ownerSub) {
+      this.ownerSub.unsubscribe();
+    }
+  }
+
+  removeAllDeliveryOfWagonFromMemo(): void {
+    const deliveryIds = this.deliveryList.map(delivery => delivery.deliveryId);
+    this.delSub = this.deliveryService.removeMemoOfDeliveryFromAllDelivery(deliveryIds).subscribe((data) => {
+      // this.alert.success(data.message);
+      this.loadSuitableDeliveries(this.memoOfDeliveryId);
+      this.deliveryList = [];
+    }, () => {
+      this.alert.danger('Ошибка при откреплении вагонов от памятки');
+    }, () => {
+      this.alert.success('Все вагоны убраны из памятки');
+    });
+  }
+
+  checkWeight(): void {
+    if (this.editedDelivery.cargoWeight > 999) {
+      this.editedDelivery.cargoWeight = null;
+    }
   }
 }

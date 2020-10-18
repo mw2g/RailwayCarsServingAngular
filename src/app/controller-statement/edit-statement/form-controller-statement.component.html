@@ -1,0 +1,117 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white">
+  <div class="navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active" *ngIf="form && !form.pristine">
+        <div *ngIf="statementId">
+          <button (click)="update()" class="btn btn-outline-danger btn-sm mr-2">Сохранить изменения</button>
+          <button (click)="loadForm()" class="btn btn-outline-danger btn-sm mr-2">Отменить</button>
+        </div>
+        <div *ngIf="!statementId">
+          <a (click)="create()" class="btn btn-outline-primary btn-sm mr-2">Создать</a>
+        </div>
+      </li>
+      <li>
+        <a class="btn btn-outline-info btn-sm mr-2" [routerLink]="['/controller-statement']">Закрыть</a>
+      </li>
+      <li *ngIf="statementId">
+        <a class="btn btn-outline-info btn-sm" [routerLink]="['/controller-statement', 'print-form', statementId]">
+          Печать
+        </a>
+      </li>
+    </ul>
+    <span *ngIf="controllerStatement && controllerStatement.statementId" class="ml-5">
+        Памятка подачи {{ controllerStatement.statementId }} от {{ form.value.created * 1000 | date: 'dd.MM.yyyy'}}
+      Автор: {{ controllerStatement.author }}
+    </span>
+  </div>
+</nav>
+
+<div *ngIf="form; else loading">
+  <form [formGroup]="form" (ngSubmit)="update()">
+<!--    <div *ngIf="form.get('statementId');" class="form-row">-->
+<!--      <div class="form-group col-md-4">-->
+<!--        <label for="userId">Номер</label>-->
+<!--        <input type="text" class="form-control-plaintext font-weight-bold" disabled-->
+<!--               id="userId" value="{{ form.value.statementId }}">-->
+<!--      </div>-->
+<!--      <div class="form-group col-md-4">-->
+<!--        <label for="created">Дата создания</label>-->
+<!--        <input type="text" class="form-control-plaintext font-weight-bold" disabled-->
+<!--               id="created" value="{{ form.value.created * 1000 | date: 'HH:mm dd.MM.yyy'}}">-->
+<!--      </div>-->
+<!--      <div class="form-group col-md-4">-->
+<!--        <label for="author">Автор</label>-->
+<!--        <input type="text" class="form-control-plaintext font-weight-bold" disabled-->
+<!--               id="author" value="{{ form.value.author }}">-->
+<!--      </div>-->
+<!--    </div>-->
+
+    <div class="form-row">
+
+      <div class="form-group col-md-3">
+        <label for="cargoOperation">Грузовая операция</label>
+        <div class="input-group mb-3">
+          <select class="custom-select custom-select-sm" id="cargoOperation" formControlName="cargoOperation">
+            <option *ngFor="let operation of cargoOperations" value="{{ operation.operationId }}">{{ operation.operation }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group col-md-3"
+           [ngClass]="{invalid: form.get('customer').touched && form.get('customer').invalid}">
+        <label for="customer">Контрагент</label>
+        <div class="input-group">
+          <input type="text" class="form-control form-control-sm" id="customer" formControlName="customer"
+                 list=customerList autocomplete="off" [required]="form.get('customer').hasError('required')">
+          <div class="input-group-append">
+            <button class="fas fa-times btn btn-outline-secondary btn-sm" type="button"
+                    (click)="form.get('customer').reset(); form.markAsDirty()">
+              <!--                    onclick="document.getElementById('customer').value = ''"-->
+            </button>
+          </div>
+        </div>
+        <datalist id=customerList>
+          <option *ngFor="let customer of customers">{{ customer.customerName }}</option>
+        </datalist>
+      </div>
+
+      <div *ngIf="statementId" class="form-group col-md-3">
+        <label for="signer">Подписант</label>
+        <div class="input-group">
+          <input type="text" class="form-control form-control-sm" id="signer" formControlName="signer" list=signerList
+                 autocomplete="off">
+          <div class="input-group-append">
+            <button class="fas fa-times btn btn-outline-secondary btn-sm" type="button"
+                    (click)="form.get('signer').reset(); form.markAsDirty()">
+            </button>
+          </div>
+        </div>
+        <datalist id=signerList>
+          <option *ngFor="let signer of controllerStatement.customer.signerList">{{ signer.initials }}</option>
+        </datalist>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <!--      <label for="comment" class="col-sm-3.5 col-form-label col-form-label-sm">Коментарий</label>-->
+      <div class="input-group input-group-sm col">
+        <input id="comment" type="text" formControlName="comment" class="form-control">
+        <div class="input-group-append">
+          <button class="fas fa-times btn btn-outline-secondary"
+                  (click)="form.get('comment').reset(); form.markAsDirty()">
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<app-memo-in-controller-statement class="container" *ngIf="statementId" [controllerStatement]="controllerStatement"
+                                  [enableForm]="form && form.pristine" [statementId]="statementId"
+                                  [memoList]="memoList">
+</app-memo-in-controller-statement>
+
+<ng-template #loading>
+  <p class="text-center">Идёт загрузка...</p>
+</ng-template>

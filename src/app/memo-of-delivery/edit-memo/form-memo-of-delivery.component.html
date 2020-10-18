@@ -1,141 +1,101 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-white">
   <div class="navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <div *ngIf="memoId">
-          <button
-            (click)="update()"
-            class="btn btn-outline-primary btn-sm mr-2"
-          >Сохранить
+      <li class="nav-item active" *ngIf="form && !form.pristine">
+        <div *ngIf="memoOfDeliveryId">
+          <button (click)="update()" class="btn btn-outline-danger btn-sm mr-2"
+                  [disabled]="listDeliveryInMemoOfDeliveryComponent.editedDelivery">Сохранить изменения
           </button>
+          <button (click)="loadForm()" class="btn btn-outline-danger btn-sm mr-2">Отменить</button>
         </div>
-        <div *ngIf="!memoId">
-          <a
-            (click)="create()"
-            class="btn btn-outline-primary btn-sm mr-2"
-          >Создать
-          </a>
+        <div *ngIf="!memoOfDeliveryId">
+          <a (click)="create()" class="btn btn-outline-primary btn-sm mr-2">Создать</a>
         </div>
       </li>
       <li>
-        <a
-          class="btn btn-outline-info btn-sm mr-2"
-          [routerLink]="['/memo', 'delivery']"
-        >Закрыть
-        </a>
+        <a class="btn btn-outline-info btn-sm mr-2" [routerLink]="['/memo', 'delivery']">Закрыть</a>
       </li>
-      <li>
-        <a
-          class="btn btn-outline-info btn-sm"
-          [routerLink]="['/memo', 'delivery', 'print-form', memoId]"
-        >Печать
+      <li *ngIf="memoOfDeliveryId">
+        <a class="btn btn-outline-info btn-sm" [routerLink]="['/memo', 'delivery', 'print-form', memoOfDeliveryId]">
+          Печать
         </a>
       </li>
     </ul>
+      <span *ngIf="memoOfDelivery && memoOfDeliveryId" class="ml-5">
+        Памятка подачи {{ memoOfDelivery.memoOfDeliveryId }} от {{ form.value.created * 1000 | date: 'dd.MM.yyyy'}}
+        Автор: {{ memoOfDelivery.author }}
+      </span>
   </div>
 </nav>
 
 <div *ngIf="form; else loading">
   <form [formGroup]="form" (ngSubmit)="update()">
-    <div *ngIf="form.get('memoId');" class="form-row">
-      <div class="form-group col-md-4">
-        <label for="userId">Номер</label>
-        <input type="text" class="form-control-plaintext font-weight-bold" disabled
-               id="userId" value="{{ form.value.memoId }}">
-      </div>
-      <div class="form-group col-md-4">
-        <label for="created">Дата создания</label>
-        <input type="text" class="form-control-plaintext font-weight-bold" disabled
-               id="created" value="{{ form.value.created * 1000 | date: 'HH:mm dd.MM.yyy'}}">
-      </div>
-      <div class="form-group col-md-4">
-        <label for="author">Автор</label>
-        <input type="text" class="form-control-plaintext font-weight-bold" disabled
-               id="author" value="{{ form.value.author }}">
-      </div>
-    </div>
-
     <div class="form-row">
-      <div class="form-group col-md-4"
-           [ngClass]="{invalid: form.get('startDate').touched && form.get('startDate').invalid}"
-      >
-        <label for="startDate">Дата начала операции</label>
-        <input type="datetime-local" class="form-control" id="startDate" formControlName="startDate">
-
-        <div
-          *ngIf="form.get('startDate').touched && form.get('startDate').invalid"
-          class="validation"
-        >
-          <small *ngIf="form.get('startDate').errors.required">
-            Введите дату начала операции
-          </small>
-        </div>
+      <div class="form-group col-md-3"
+           [ngClass]="{invalid: form.get('startDate').touched && form.get('startDate').invalid}">
+        <label for="startDate" class="small">Начало</label>
+        <input type="datetime-local" class="form-control form-control-sm" id="startDate" formControlName="startDate"
+               [required]="form.get('startDate').hasError('required')">
       </div>
-
-      <div class="form-group col-md-4"
-           [ngClass]="{invalid: form.get('customer').touched && form.get('customer').invalid}"
-      >
-        <label for="customer">Контрагент</label>
-        <input type="text" class="form-control" id="customer" formControlName="customer" list=customerList>
-        <datalist id=customerList>
-          <option *ngFor="let customer of customers">{{ customer.customerName }}</option>
-        </datalist>
-        <div
-          *ngIf="form.get('customer').touched && form.get('customer').invalid"
-          class="validation"
-        >
-          <small *ngIf="form.get('customer').errors.required">
-            Выберете контрагента
-          </small>
-        </div>
-      </div>
-
-<!--      <div class="form-group col-md-4">-->
-<!--        <label for="cargoOperation">Грузовая операция</label>-->
-<!--        <input type="text" class="form-control" id="cargoOperation" formControlName="cargoOperation">-->
-<!--      </div>-->
-      <div class="form-group col-md-4">
-        <label for="cargoOperation">Грузовая операция</label>
+      <div class="form-group col-md-3">
+        <label for="cargoOperation" class="small">Операция</label>
         <div class="input-group mb-3">
-          <select class="custom-select" id="cargoOperation" formControlName="cargoOperation">
-            <option value="1">ВЫГРУЗКА</option>
-            <option value="2">ПОГРУЗКА</option>
-            <option value="3">БЕЗ ОПЕРАЦИИ</option>
-            <option value="4">ВЕСОПОВЕРОЧНЫЙ</option>
+          <select class="custom-select custom-select-sm" id="cargoOperation" formControlName="cargoOperation">
+            <option *ngFor="let operation of cargoOperations" value="{{ operation.operation }}">{{ operation.operation }}</option>
           </select>
         </div>
       </div>
-    </div>
-
-    <div class="form-row">
-
-      <div class="form-group col-md-8">
-        <label for="comment">Примечание</label>
-        <input id="comment" type="text" formControlName="comment" class="form-control">
+      <div class="form-group col-md-3"
+           [ngClass]="{invalid: form.get('customer').touched && form.get('customer').invalid}">
+        <label for="customer" class="small">Контрагент</label>
+        <div class="input-group">
+          <input type="text" class="form-control form-control-sm" id="customer" formControlName="customer"
+                 list=customerList autocomplete="off" [required]="form.get('customer').hasError('required')">
+          <div class="input-group-append">
+            <button class="fas fa-times btn btn-outline-secondary btn-sm" type="button"
+                    (click)="form.get('customer').reset(); form.markAsDirty()">
+            </button>
+          </div>
+        </div>
+        <datalist id=customerList>
+          <option *ngFor="let customer of customers">{{ customer.customerName }}</option>
+        </datalist>
       </div>
-
-      <div *ngIf="memoId" class="form-group col-md-4"
-           [ngClass]="{invalid: form.get('customer').touched && form.get('customer').invalid}"
-      >
-        <label for="signer">Подписант</label>
-        <input type="text" class="form-control" id="signer" formControlName="signer" list=signerList>
+      <div *ngIf="memoOfDeliveryId" class="form-group col-md-3">
+        <label for="signer" class="small">Подписант</label>
+        <div class="input-group">
+          <input type="text" class="form-control form-control-sm" id="signer" formControlName="signer" list=signerList
+                 autocomplete="off">
+          <div class="input-group-append">
+            <button class="fas fa-times btn btn-outline-secondary btn-sm" type="button"
+                    (click)="form.get('signer').reset(); form.markAsDirty()">
+            </button>
+          </div>
+        </div>
         <datalist id=signerList>
           <option *ngFor="let signer of memoOfDelivery.customer.signerList">{{ signer.initials }}</option>
         </datalist>
-        <div
-          *ngIf="form.get('signer').touched && form.get('signer').invalid"
-          class="validation"
-        >
-          <small *ngIf="form.get('signer').errors.required">
-            Выберете подписанта
-          </small>
+      </div>
+    </div>
+
+    <div class="form-row">
+<!--      <label for="comment" class="col-sm-3.5 col-form-label col-form-label-sm">Коментарий</label>-->
+      <div class="input-group input-group-sm col">
+        <input id="comment" type="text" formControlName="comment" class="form-control">
+        <div class="input-group-append">
+          <button class="fas fa-times btn btn-outline-secondary"
+                  (click)="form.get('comment').reset(); form.markAsDirty()">
+          </button>
         </div>
       </div>
     </div>
   </form>
 </div>
 
-<app-delivery-in-memo-of-delivery class="container" *ngIf="memoId" [memoId]="memoId"></app-delivery-in-memo-of-delivery>
+<app-list-delivery-in-memo-of-delivery class="container" *ngIf="memoOfDeliveryId" [memoOfDelivery]="memoOfDelivery"
+                                  [enableForm]="form && form.pristine" [memoOfDeliveryId]="memoOfDeliveryId"
+                                  [deliveryList]="deliveryList">
+</app-list-delivery-in-memo-of-delivery>
 
 <ng-template #loading>
   <p class="text-center">Идёт загрузка...</p>

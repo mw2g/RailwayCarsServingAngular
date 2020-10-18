@@ -17,8 +17,8 @@ export class MemoOfDeliveryService {
     return this.httpClient.get<MemoOfDelivery>(`${environment.dbUrl}/api/memo/delivery/${memoId}.json`);
   }
 
-  update(memo: MemoOfDelivery): Observable<{ message: string }> {
-    return this.httpClient.put<{ message: string }>(`${environment.dbUrl}/api/memo/delivery.json`, memo);
+  update(memo: MemoOfDelivery): Observable<MemoOfDelivery> {
+    return this.httpClient.put<MemoOfDelivery>(`${environment.dbUrl}/api/memo/delivery.json`, memo);
   }
 
   create(memo: MemoOfDelivery): Observable<MemoOfDelivery> {

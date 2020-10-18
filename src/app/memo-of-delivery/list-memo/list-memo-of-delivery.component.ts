@@ -6,7 +6,7 @@ import {AlertService} from '../../shared/service/alert.service';
 import {MemoOfDeliveryService} from '../memo-of-delivery.service';
 
 @Component({
-  selector: 'app-list-memo',
+  selector: 'app-list-controller-statement',
   templateUrl: './list-memo-of-delivery.component.html',
   styleUrls: ['./list-memo-of-delivery.component.scss']
 })
@@ -42,7 +42,7 @@ export class ListMemoOfDeliveryComponent implements OnInit, OnDestroy{
   delete(): void {
     this.delSub = this.memoService.delete(this.memoIdToDelete).subscribe((data) => {
       this.alert.success(data.message);
-      this.memos = this.memos.filter(memo => memo.memoId !== this.memoIdToDelete);
+      this.memos = this.memos.filter(memo => memo.memoOfDeliveryId !== this.memoIdToDelete);
       // this.router.navigate(['/admin', 'memo']);
       this.unsetDelete();
     }, () => {
@@ -62,7 +62,7 @@ export class ListMemoOfDeliveryComponent implements OnInit, OnDestroy{
 
   getById(memoId: number): number {
     if (memoId) {
-      return this.memos.find(value => value.memoId === memoId).memoId;
+      return this.memos.find(value => value.memoOfDeliveryId === memoId).memoOfDeliveryId;
     }
     return 0;
   }

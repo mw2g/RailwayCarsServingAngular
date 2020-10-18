@@ -12,7 +12,7 @@ import {switchMap} from 'rxjs/operators';
 })
 export class PrintFormMemoComponent implements OnInit {
 
-  memoId: number;
+  memoOfDeliveryId: number;
   memoOfDelivery: MemoOfDelivery;
   private memoSub: Subscription;
 
@@ -25,9 +25,9 @@ export class PrintFormMemoComponent implements OnInit {
   ngOnInit(): void {
     this.memoSub = this.route.params.pipe(
       switchMap((params: Params) => {
-        if (params['memoId']) {
-          this.memoId = params['memoId'];
-          return this.memoOfDeliveryService.getById(params['memoId']);
+        if (params['memoOfDeliveryId']) {
+          this.memoOfDeliveryId = params['memoOfDeliveryId'];
+          return this.memoOfDeliveryService.getById(params['memoOfDeliveryId']);
         }
       }))
       .subscribe(memo => {

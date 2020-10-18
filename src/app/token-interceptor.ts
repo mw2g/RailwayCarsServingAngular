@@ -17,15 +17,15 @@ export class TokenInterceptor implements HttpInterceptor {
   }
 
   private jwtTokenExpired(): boolean {
-    const expiresAt = this.authService.getJwtTokenExpiresAt().toString().replace('.', '');
-    if (Number(expiresAt) < Date.now() && this.authService.getJwtTokenExpiresAt()) {
+    const expiresAt = Number(this.authService.getJwtTokenExpiresAt().toString().replace('.', ''));
+    const now = Date.now();
+    if ((expiresAt - now) < 1000) {
       return true;
     }
     return false;
   }
 
-  intercept(req: HttpRequest<any>, next: HttpHandler):
-    Observable<HttpEvent<any>> {
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
     // if (!this.authService.isLoggedIn()) {          // проверка годности токена на стороне клиента
     //   return next.handle(req);
@@ -47,11 +47,15 @@ export class TokenInterceptor implements HttpInterceptor {
       }));
     }
 
-    if (req.url.indexOf('login') !== -1) {
+    if (req.url.indexOf('login') !== -1 || req.url.indexOf('logout') !== -1) {
       return next.handle(req);
     }
-    const jwtToken = this.authService.getJwtToken();
 
+    if (this.jwtTokenExpired()) {
+      return this.handleAuthErrors(req, next);
+    }
+
+    const jwtToken = this.authService.getJwtToken();
     if (jwtToken) {
       return next.handle(this.addToken(req, jwtToken)).pipe(catchError(error => {
         if (error instanceof HttpErrorResponse
@@ -66,8 +70,7 @@ export class TokenInterceptor implements HttpInterceptor {
 
   }
 
-  private handleAuthErrors(req: HttpRequest<any>, next: HttpHandler)
-    : Observable<HttpEvent<any>> {
+  private handleAuthErrors(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (!this.isTokenRefreshing) {
       this.isTokenRefreshing = true;
       this.refreshTokenSubject.next(null);

@@ -10,6 +10,7 @@ import {registerLocaleData} from '@angular/common';
 import ruLocale from '@angular/common/locales/ru';
 import {BsDropdownModule} from 'ngx-bootstrap/dropdown';
 import {NgxPopper} from 'angular-popper';
+import {AccessDeniedComponent} from './shared/components/access-denied/access-denied.component';
 
 registerLocaleData(ruLocale, 'ru');
 
@@ -17,7 +18,8 @@ registerLocaleData(ruLocale, 'ru');
   declarations: [
     AppComponent,
     MainLayoutComponent,
-    HomePageComponent
+    HomePageComponent,
+    AccessDeniedComponent
   ],
   imports: [
     BrowserModule,

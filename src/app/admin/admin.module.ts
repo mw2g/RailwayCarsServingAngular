@@ -7,8 +7,7 @@ import {ListUserComponent} from './user/list-user/list-user.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SharedModule} from '../shared/shared.module';
 import {AuthGuard} from './shared/services/auth.guard';
-// import {AlertComponent} from './shared/components/alert/alert.component';
-import { FormUserComponent } from './user/edit-user/form-user.component';
+import {FormUserComponent} from './user/edit-user/form-user.component';
 import {MainLayoutComponent} from '../shared/components/main-layout/main-layout.component';
 
 @NgModule({
@@ -16,7 +15,6 @@ import {MainLayoutComponent} from '../shared/components/main-layout/main-layout.
     AdminLayoutComponent,
     LoginPageComponent,
     ListUserComponent,
-    // AlertComponent,
     FormUserComponent
   ],
   imports: [
@@ -29,6 +27,7 @@ import {MainLayoutComponent} from '../shared/components/main-layout/main-layout.
         path: '', component: MainLayoutComponent, children: [
           {path: '', redirectTo: '/admin/user', pathMatch: 'full' },
           {path: 'login', component: LoginPageComponent},
+          {path: 'logout', component: LoginPageComponent},
           {path: 'user', component: ListUserComponent, canActivate: [AuthGuard]},
           {path: 'user/edit/:userId', component: FormUserComponent, canActivate: [AuthGuard]},
           {path: 'user/create', component: FormUserComponent, canActivate: [AuthGuard]}

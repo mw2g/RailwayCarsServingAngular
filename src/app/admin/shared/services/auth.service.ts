@@ -63,14 +63,14 @@ export class AuthService {
       {refreshToken: this.getRefreshToken(), username: this.getUsername()},
       {responseType: 'text'})
       .subscribe(data => {
+        this.localStorage.clear('authenticationToken');
+        this.localStorage.clear('username');
+        this.localStorage.clear('refreshToken');
+        this.localStorage.clear('expiresAt');
         console.log(data);
       }, error => {
         throwError(error);
       });
-    this.localStorage.clear('authenticationToken');
-    this.localStorage.clear('username');
-    this.localStorage.clear('refreshToken');
-    this.localStorage.clear('expiresAt');
 
     this.router.navigate(['/admin', 'login']);
   }

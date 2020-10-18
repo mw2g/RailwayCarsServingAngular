@@ -11,7 +11,7 @@ import {LocalStorageService} from 'ngx-webstorage';
 export class MainLayoutComponent implements OnInit {
 
   constructor(
-    private router: Router,
+    public router: Router,
     public authService: AuthService,
     private localStorage: LocalStorageService
   ) { }

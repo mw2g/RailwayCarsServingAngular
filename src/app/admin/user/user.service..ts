@@ -21,8 +21,8 @@ export class UserService {
     return this.httpClient.put<{ message: string }>(`${environment.dbUrl}/api/admin/user.json`, user);
   }
 
-  create(user: User): Observable<{ message: string }> {
-    return this.httpClient.post<{ message: string }>(`${environment.dbUrl}/api/admin/user.json`, user);
+  create(user: User): Observable<User> {
+    return this.httpClient.post<User>(`${environment.dbUrl}/api/admin/user.json`, user);
   }
 
   delete(userId: number): Observable<{ message: string }> {

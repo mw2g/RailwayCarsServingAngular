@@ -29,9 +29,9 @@ import { PrintFormMemoComponent } from './print-form-memo/print-form-memo.compon
         path: '', component: MainLayoutComponent, children: [
           // {path: '', redirectTo: '/memo/delivery', pathMatch: 'full' },
           {path: '', component: ListMemoOfDeliveryComponent, canActivate: [AuthGuard]},
-          {path: 'edit/:memoId', component: FormMemoOfDeliveryComponent, canActivate: [AuthGuard]},
+          {path: 'edit/:memoOfDeliveryId', component: FormMemoOfDeliveryComponent, canActivate: [AuthGuard]},
           {path: 'create', component: FormMemoOfDeliveryComponent, canActivate: [AuthGuard]},
-          {path: 'print-form/:memoId', component: PrintFormMemoComponent, canActivate: [AuthGuard]},
+          {path: 'print-form/:memoOfDeliveryId', component: PrintFormMemoComponent, canActivate: [AuthGuard]},
         ]
       }
     ])

@@ -1,6 +1,8 @@
 .alert-wrap {
-  position: fixed;
-  top: 50px;
+  z-index: 999;
+  position: absolute;
+  //top: 60px;
   right: 40px;
-  max-width: 200px;
+  max-width: 500px;
+  max-height: 40px;
 }

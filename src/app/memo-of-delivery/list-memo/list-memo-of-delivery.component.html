@@ -1,20 +1,17 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <span class="navbar-brand">Памятки подачи</span>
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+<nav class="navbar navbar-expand-lg navbar-light bg-white">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active" *ngIf="!router.isActive('/memo/delivery/create', true)">
-        <a class="nav-link" href="#" [routerLink]="['/memo', 'delivery', 'create']">Создать<span
+        <a class="fas fa-plus nav-link" href="#" [routerLink]="['/memo', 'delivery', 'create']"><span
           class="sr-only">(current)</span></a>
       </li>
     </ul>
-  </div>
 </nav>
 
 <div
   *ngIf="memos.length; else loading"
   class="posts"
 >
-  <table class="table">
+  <table class="table table-sm table-bordered border-0" style="text-align: center">
     <thead class="thead-light">
     <tr>
       <th scope="col">#</th>
@@ -22,6 +19,7 @@
       <th scope="col">Дата начала операции</th>
       <th scope="col">Контрагент</th>
       <th scope="col">Грузовая операция</th>
+      <th scope="col">Вагонов</th>
       <th scope="col">Действия</th>
     </tr>
     </thead>
@@ -29,15 +27,15 @@
 
     <tr *ngFor="let memo of memos; let idx = index">
       <td>{{ idx + 1 }}</td>
-      <td><a [routerLink]="['/memo', 'delivery', 'edit', memo.memoId]">{{ memo.memoId }}</a></td>
+      <td><a [routerLink]="['/memo', 'delivery', 'edit', memo.memoOfDeliveryId]">{{ memo.memoOfDeliveryId }}</a></td>
       <td>{{ memo.startDate | date : 'dd.MM.yyyy HH:mm' }}</td>
       <td>{{ memo.customer.customerName }}</td>
       <td>{{ memo.cargoOperation.operation }}</td>
+      <td>{{ memo.deliveryOfWagonList.length }}</td>
       <td>
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-outline-danger btn-sm ml-2" data-toggle="modal" data-target="#deleteModal"
-                (click)="setDelete(memo.memoId)">
-          Удалить
+        <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm ml-2" data-toggle="modal" data-target="#deleteModal"
+                (click)="setDelete(memo.memoOfDeliveryId)">
         </button>
       </td>
     </tr>

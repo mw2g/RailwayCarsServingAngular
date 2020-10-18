@@ -8,27 +8,77 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
-        <a class="nav-link" href="#" [routerLink]="['/delivery']">Общая подача<span
+        <a class="nav-link" href="#" [routerLink]="['/delivery']"
+           [class.font-weight-bold]="router.isActive('/delivery', false)">Общая подача<span
           class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="#" [routerLink]="['/memo', 'delivery']">Памятки подачи<span
+        <a class="nav-link" href="#" [routerLink]="['/memo', 'delivery']"
+           [class.font-weight-bold]="router.isActive('/memo/delivery', false)">Памятки подачи<span
           class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="#" [routerLink]="['/admin', 'user']">Пользователи <span
+        <a class="nav-link" href="#" [routerLink]="['/memo', 'dispatch']"
+           [class.font-weight-bold]="router.isActive('/memo/dispatch', false)">Памятки уборки<span
           class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="#" [routerLink]="['/controller-statement']"
+           [class.font-weight-bold]="router.isActive('/controller-statement', false)">
+          Ведомость <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle active" id="navbarDropdown" role="button" data-toggle="dropdown"
-           aria-haspopup="true" aria-expanded="false">
+           aria-haspopup="true" aria-expanded="false"
+           [class.font-weight-bold]="router.isActive('/reference/customer', false) ||
+                        router.isActive('/reference/cargo-type', false)">
           Справочники
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'customer']">Контрагенты</a>
-          <a class="dropdown-item" href="#">Another action</a>
+          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'customer']"
+             [class.font-weight-bold]="router.isActive('/reference/customer', false)">
+            Контрагенты
+          </a>
+          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'cargo-type']"
+             [class.font-weight-bold]="router.isActive('/reference/cargo-type', false)">
+            Вид груза
+          </a>
+<!--          <a class="dropdown-item" href="#">Another action</a>-->
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle active" id="configDropdown" role="button" data-toggle="dropdown"
+           aria-haspopup="true" aria-expanded="false"
+           [class.font-weight-bold]="router.isActive(
+           '/reference/config', false) || router.isActive('/admin/user', false)">
+          Конфигурация
+        </a>
+        <div class="dropdown-menu" aria-labelledby="configDropdown">
+          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'wagon-type']"
+             [class.font-weight-bold]="router.isActive('/reference/config/wagon-type', false)">
+            Тип вагона
+          </a>
+          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'wagon-group']"
+             [class.font-weight-bold]="router.isActive('/reference/config/wagon-group', false)">
+            Группа вагона
+          </a>
+          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'base-rate']"
+             [class.font-weight-bold]="router.isActive('/reference/config/base-rate', false)">
+            Базовая ставка
+          </a>
+          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'index-to-base-rate']"
+             [class.font-weight-bold]="router.isActive('/reference/config/index-to-base-rate', false)">
+            Индекс к базовой ставке
+          </a>
+          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'cargo-operation']"
+             [class.font-weight-bold]="router.isActive('/reference/config/cargo-operation', false)">
+            Грузовая операция
+          </a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#" [routerLink]="['/admin', 'user']"
+             [class.font-weight-bold]="router.isActive('/admin/user', false)">Пользователи
+          </a>
         </div>
       </li>
     </ul>
@@ -42,6 +92,6 @@
 
 <app-alert></app-alert>
 
-<div class="container">
+<div class="container mt-2">
   <router-outlet></router-outlet>
 </div>

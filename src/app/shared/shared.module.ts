@@ -7,13 +7,17 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {AlertService} from './service/alert.service';
 import {AlertComponent} from './components/alert/alert.component';
 import {CommonModule} from '@angular/common';
+import {AutofocusDirective} from './directive/autofocus.directive';
+import {WeightPipe} from './pipe/weight.pipe';
 
 // import {QuillModule} from 'ngx-quill';
 
 @NgModule({
-  declarations: [
-    AlertComponent
-  ],
+    declarations: [
+        AlertComponent,
+        AutofocusDirective,
+        WeightPipe
+    ],
   imports: [
     HttpClientModule,
     NgxWebstorageModule.forRoot(),
@@ -21,13 +25,15 @@ import {CommonModule} from '@angular/common';
     CommonModule,
     // QuillModule.forRoot()
   ],
-  exports: [
-    HttpClientModule,
-    NgxWebstorageModule,
-    NgbModule,
-    AlertComponent,
-    // QuillModule
-  ],
+    exports: [
+        HttpClientModule,
+        NgxWebstorageModule,
+        NgbModule,
+        AlertComponent,
+        AutofocusDirective,
+        WeightPipe
+        // QuillModule
+    ],
   providers: [
     AuthGuard,
     AlertService,

@@ -1,28 +1,26 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <span class="navbar-brand">Общая подача</span>
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active" *ngIf="!router.isActive('/  delivery/create', true)">
-        <a class="nav-link" href="#" [routerLink]="['/delivery', 'create']">Создать<span
-          class="sr-only">(current)</span></a>
-      </li>
-    </ul>
-  </div>
-</nav>
+<!--<nav class="navbar navbar-expand-lg navbar-light bg-light">-->
+<!--    <ul class="navbar-nav mr-auto">-->
+<!--      <li class="nav-item active">-->
+<!--        <button class="fas fa-plus nav-link" href="#" [routerLink]="['/delivery', 'create']"></button>-->
+<!--      </li>-->
+<!--    </ul>-->
+<!--</nav>-->
 <div
   *ngIf="deliveries.length; else loading"
   class="posts"
 >
-  <table class="table">
+  <table class="table table-sm table-bordered border-0" style="text-align: center">
     <thead class="thead-light">
     <tr>
-      <th scope="col">#</th>
-      <th scope="col">Номер вагона</th>
-      <th scope="col">Дата начала операции</th>
-      <th scope="col">Дата окончания операции</th>
+      <th scope="col">
+        <button class="fas fa-plus btn btn-sm btn-outline-info" [routerLink]="['/delivery', 'create']"></button>
+      </th>
+      <th scope="col">Вагон</th>
+      <th scope="col">Начало</th>
+      <th scope="col">Окончание</th>
       <th scope="col">Контрагент</th>
-      <th scope="col">Грузовая операция</th>
-      <th scope="col">Вес груза</th>
+      <th scope="col">Операция</th>
+      <th scope="col">Вес</th>
       <th scope="col">ПРР</th>
       <th scope="col">Действия</th>
     </tr>
@@ -30,19 +28,20 @@
     <tbody>
 
     <tr *ngFor="let delivery of deliveries; let idx = index">
-      <td>{{ idx + 1 }}</td>
+      <td>{{ delivery.deliveryId }}</td>
       <td><a [routerLink]="['/delivery', 'edit', delivery.deliveryId]">{{ delivery.wagon.wagonNumber }}</a></td>
       <td>{{ delivery.startDate | date : 'dd.MM.yyyy HH:mm' }}</td>
       <td>{{ delivery.endDate | date : 'dd.MM.yyyy HH:mm' }}</td>
       <td>{{ delivery.customer.customerName }}</td>
       <td>{{ delivery.cargoOperation.operation }}</td>
       <td>{{ delivery.cargoWeight }}</td>
-      <td><input class="form-check" type="checkbox" [checked]="delivery.loadUnloadWork"></td>
+      <td width="50" style="padding-left: 18px; padding-top: 12px; padding-bottom: 0px">
+        <input class="form-check" disabled type="checkbox" [checked]="delivery.loadUnloadWork">
+      </td>
       <td>
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-outline-danger btn-sm ml-2" data-toggle="modal" data-target="#deleteModal"
+        <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm ml-2" data-toggle="modal" data-target="#deleteModal"
                 (click)="setDelete(delivery.deliveryId)">
-          Удалить
         </button>
       </td>
     </tr>
@@ -67,7 +66,7 @@
         </button>
       </div>
       <div class="modal-body">
-        Удалить пользователя {{ getById(deliveryIdToDelete) }} #{{ deliveryIdToDelete }} ?
+        Удалить общую подачу {{ deliveryIdToDelete }} с номером вагона {{ getById(deliveryIdToDelete) }} ?
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="unsetDelete()">Отменить</button>

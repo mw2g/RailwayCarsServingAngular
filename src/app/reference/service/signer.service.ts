@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {environment} from '../../environments/environment';
-import {Signer} from '../shared/interfaces';
+import {environment} from '../../../environments/environment';
+import {Signer} from '../../shared/interfaces';
 
 @Injectable({providedIn: 'root'})
 export class SignerService {
@@ -17,12 +17,12 @@ export class SignerService {
   //   return this.httpClient.get<Signer>(`${environment.dbUrl}/api/customer/signer/${signerId}.json`);
   // }
 
-  create(signer: Signer): Observable<{ message: string }> {
-    return this.httpClient.post<{ message: string }>(`${environment.dbUrl}/api/customer/signer.json`, signer);
+  create(signer: Signer): Observable<Signer> {
+    return this.httpClient.post<Signer>(`${environment.dbUrl}/api/customer/signer.json`, signer);
   }
 
-  update(signer: Signer): Observable<{ message: string }> {
-    return this.httpClient.put<{ message: string }>(`${environment.dbUrl}/api/customer/signer.json`, signer);
+  update(signer: Signer): Observable<Signer> {
+    return this.httpClient.put<Signer>(`${environment.dbUrl}/api/customer/signer.json`, signer);
   }
 
   delete(signerId: number): Observable<{ message: string }> {

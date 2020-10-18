@@ -1,13 +1,13 @@
 <div *ngIf="memoOfDelivery">
   <p style="text-align: center;"><strong>АО "ППЖТ Юбилейное"</strong></p>
-  <p style="text-align: center;">Памятка приемосдатчика на подачу вагонов № {{ memoOfDelivery.memoId }}</p>
+  <p style="text-align: center;">Памятка приемосдатчика на подачу вагонов № {{ memoOfDelivery.memoOfDeliveryId }}</p>
   <p style="text-align: center;">Наименование грузополучателя (грузоотправителя) ОАО "ИСКИТИМИЗВЕСТЬ"</p>
   <table style="height: 75px; width: 706px;" border="1" align="center">
     <tbody>
     <tr>
       <td style="width: 35px; text-align: center;">П/Н</td>
       <td style="width: 170px; text-align: center;">Номер вагона</td>
-      <td style="width: 150px; text-align: center;">Принадлежность</td>
+      <td style="width: 150px; text-align: center;">Тип вагона</td>
       <td style="width: 110px; text-align: center;">Вес груза</td>
       <td style="width: 90px; text-align: center;">ПРР</td>
       <td style="width: 140px; text-align: center;">Дата окончания</td>
@@ -15,7 +15,7 @@
     <tr *ngFor="let delivery of memoOfDelivery.deliveryOfWagonList; let idx = index">
       <td style="width: 35px; text-align: center;">{{ idx + 1}}</td>
       <td style="width: 170px; text-align: center;">{{ delivery.wagon.wagonNumber }}</td>
-      <td style="width: 150px; text-align: center;">{{ delivery.wagon.wagonNumber }}</td>
+      <td style="width: 150px; text-align: center;">{{ delivery.wagon.wagonType.typeName }}</td>
       <td style="width: 110px; text-align: center;">{{ delivery.cargoWeight }}</td>
       <td style="width: 90px; text-align: center;">{{ delivery.loadUnloadWork }}</td>
       <td style="width: 140px; text-align: center;">{{ delivery.endDate | date : 'dd.MM.yyyy HH:mm' }}</td>

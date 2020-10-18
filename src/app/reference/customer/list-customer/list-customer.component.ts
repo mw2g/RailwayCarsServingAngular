@@ -3,10 +3,10 @@ import {Customer} from '../../../shared/interfaces';
 import {Subscription, throwError} from 'rxjs';
 import {Router} from '@angular/router';
 import {AlertService} from '../../../shared/service/alert.service';
-import {CustomerService} from '../../customer.service';
+import {CustomerService} from '../../service/customer.service';
 
 @Component({
-  selector: 'app-customer-of-wagon',
+  selector: 'app-customer',
   templateUrl: './list-customer.component.html',
   styleUrls: ['./list-customer.component.scss']
 })
@@ -23,7 +23,7 @@ export class ListCustomerComponent implements OnInit, OnDestroy{
   }
 
   ngOnInit(): void {
-    this.customersSub = this.customerService.getAllCustomers().subscribe(customers => {
+    this.customersSub = this.customerService.getAll().subscribe(customers => {
       this.customers = customers;
     }, error => {
       throwError(error);

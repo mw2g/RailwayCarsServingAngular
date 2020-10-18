@@ -2,17 +2,21 @@
   <div class="navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li>
-        <input type="button" value="Создать" class="btn btn-outline-info btn-sm mr-2" (click)="addDelivery()"/>
+        <input type="button" value="Создать" class="btn btn-outline-info btn-sm mr-2" (click)="addDelivery()"
+        [disabled]="!enableForm">
       </li>
       <li>
         <div class="input-group input-group-sm">
           <div class="input-group-prepend">
-            <button class="btn btn-outline-info btn-sm" type="button" (click)="addDeliveryById()">Добавить по номеру
+            <button class="btn btn-outline-info btn-sm" type="button" (click)="addDeliveryById()"
+            [disabled]="!deliveryIdToAdd || !enableForm">Добавить по номеру
             </button>
           </div>
-          <input type="number" list=deliveryList class="input-text text" [(ngModel)]="deliveryIdToAdd">
+          <input type="number" list=deliveryList class="input-text text" [(ngModel)]="deliveryIdToAdd"
+          style="width: 100px">
           <div class="input-group-append">
-            <button class="btn btn-outline-dark btn-sm mr-2" type="button" (click)="clearDeliveryIdToAdd()">X</button>
+            <button class="btn btn-outline-info btn-sm mr-2" type="button" (click)="clearDeliveryIdToAdd()">&times;
+            </button>
           </div>
           <datalist id=deliveryList *ngIf="suitableDeliveries">
             <option *ngFor="let delivery of suitableDeliveries" value="{{delivery.deliveryId}}"
@@ -25,7 +29,11 @@
       </li>
       <li>
         <input type="button" value="Добавить все подходящие" class="btn btn-outline-info btn-sm mr-2"
-               (click)="addAllSuitableDeliveries()"/>
+               [disabled]="!enableForm" (click)="addAllSuitableDeliveries()">
+      </li>
+      <li>
+        <input type="button" value="Убрать все вагоны" class="btn btn-outline-info btn-sm mr-2"
+               [disabled]="!enableForm" data-toggle="modal" data-target="#removeAllDeliveriesModal">
       </li>
     </ul>
   </div>
@@ -35,20 +43,23 @@
   class="posts col"
 >
   <!--  *ngIf="deliveries.length; else loading"-->
-  <table class="table">
+  <table class="table table-sm table-bordered border-0"  style="text-align: center">
     <thead class="thead-light">
     <tr class="row">
-      <th class="col-md-1 col-sm-1 col-1">#</th>
-      <th class="col-md-2 col-sm-2 col-2">Номер вагона</th>
-      <th class="col-md-3 col-sm-3 col-3">Дата окончания</th>
-      <th class="col-md-2 col-sm-2 col-2">Вес груза</th>
-      <th class="col-md-1 col-sm-1 col-1">ПРР</th>
+      <th width="50">#</th>
+<!--      <th width="100">И</th>-->
+      <th width="120">№ вагона</th>
+      <th width="170">Тип вагона</th>
+      <th width="170">Собственник</th>
+      <th width="80">Вес</th>
+      <th width="50" *ngIf="memoOfDelivery && memoOfDelivery.cargoOperation.operationId==1">ПРР</th>
+<!--      <th width="150">Дата окончания</th>-->
       <th class="col-md col-sm col">Действия</th>
     </tr>
     </thead>
     <tbody>
 
-    <tr class="row" *ngFor="let delivery of deliveries; let idx = index">
+    <tr class="row my-0 p-0" *ngFor="let delivery of deliveryList; let idx = index">
       <ng-template [ngTemplateOutlet]="loadTemplate(delivery)"
                    [ngTemplateOutletContext]="{ $implicit: delivery, idx: idx}">
       </ng-template>
@@ -61,57 +72,86 @@
 
 <!--шаблон для чтения-->
 <ng-template #readOnlyTemplate let-delivery let-idx="idx">
-  <td class="col-md-1 col-sm-1 col-1">{{ idx + 1}}</td>
+  <td width="50">{{ idx + 1 }}</td>
+<!--  <td width="100">-->
+<!--    <a [routerLink]="['/delivery', 'edit', delivery.deliveryId]">{{ delivery.deliveryId }}</a>-->
+<!--  </td>-->
   <!--  <a [routerLink]="['/delivery', 'edit', delivery.deliveryId]">-->
-  <td class="col-md-2 col-sm-2 col-2">{{ delivery.wagon.wagonNumber }}</td>
-  <td class="col-md-3 col-sm-3 col-3">{{ delivery.endDate | date : 'dd.MM.yyyy HH:mm' }}</td>
-  <td class="col-md-2 col-sm-2 col-2">{{ delivery.cargoWeight }}</td>
-  <td class="col-md-1 col-sm-1 col-1"><input class="form-check" disabled type="checkbox" [checked]="delivery.loadUnloadWork"></td>
+  <td width="120"><a [routerLink]="['/delivery', 'edit', delivery.deliveryId]">{{ delivery.wagon.wagonNumber }}</a></td>
+  <td width="170">{{ delivery.wagonType.wagonType }}</td>
+  <td width="170">{{ delivery.owner.owner }}</td>
+  <td width="80">{{ delivery.cargoWeight }}</td>
+  <td width="50" style="padding-left: 18px; padding-top: 12px; padding-bottom: 0px"
+      *ngIf="memoOfDelivery && memoOfDelivery.cargoOperation.operationId==1">
+    <input class="form-check" disabled type="checkbox" [checked]="delivery.loadUnloadWork">
+  </td>
+<!--  <td width="150">-->
+<!--    <a *ngIf="delivery.memoOfDispatch && delivery.memoOfDispatch.memoOfDispatchId; else justDate"-->
+<!--      [routerLink]="['/memo', 'dispatch', 'edit', delivery.memoOfDispatch.memoOfDispatchId]">-->
+<!--      {{ delivery.endDate | date : 'dd.MM.yyyy HH:mm' }}-->
+<!--    </a>-->
+<!--    <ng-template #justDate>-->
+<!--      {{ delivery.endDate | date : 'dd.MM.yyyy HH:mm' }}-->
+<!--    </ng-template>-->
+<!--  </td>-->
   <td class="col-md col-sm col">
-    <input type="button" value="Изменить" class="btn btn-outline-info btn-sm mr-1 mt-1" (click)="editDelivery(delivery)">
-    <input type="button" value="Убрать" class="btn btn-outline-warning btn-sm mr-1 mt-1"
-           (click)="removeMemoFromDelivery(delivery.deliveryId)">
+    <button type="button" class="far fa-edit btn btn-outline-info btn-sm mr-1 mt-1"
+            [disabled]="!enableForm" (click)="editDelivery(delivery)"></button>
+    <button type="button" class="fas fa-unlink btn btn-outline-warning btn-sm mr-1 mt-1"
+           [disabled]="!enableForm" (click)="removeMemoFromDelivery(delivery.deliveryId)"></button>
     <!-- Button trigger modal -->
-    <button type="button" class="btn btn-outline-danger btn-sm mt-1" data-toggle="modal" data-target="#deleteModal"
-            (click)="setDelete(delivery.deliveryId)">
-      Удалить
-    </button>
+    <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm mt-1" data-toggle="modal" data-target="#deleteModal"
+            [disabled]="!enableForm" (click)="setDelete(delivery.deliveryId)"></button>
   </td>
 </ng-template>
 
 <!--шаблон для редактирования-->
-<ng-template #editTemplate let-idx="idx">
-  <td class="col-md-1 col-sm-1 col-1">{{ idx + 1 }}</td>
-  <td class="col-md-2 col-sm-2 col-2">
-    <input type="text" [(ngModel)]="editedDelivery.wagon.wagonNumber" class="form-control">
+<ng-template #editTemplate let-delivery let-idx="idx">
+  <td width="50">{{ idx + 1 }}</td>
+<!--  <td width="100">{{ delivery.deliveryId }}</td>-->
+  <td width="120">
+    <input type="text" [(ngModel)]="editedDelivery.wagon.wagonNumber"
+           class="form-control form-control-sm ms-valid_input" appMyAutofocus
+           #wagonNumber="ngModel" required>
+<!--    <div class="invalid-feedback">-->
+<!--      Номер-->
+<!--    </div>-->
   </td>
-  <td class="col-md-3 col-sm-3 col-3">
-    <input type="datetime-local" [ngModel]="editedDelivery.endDate | date: 'yyyy-MM-ddTHH:mm'"
-           (ngModelChange)="editedDelivery.endDate = $event" class="form-control">
+  <td width="170">
+    <select class="custom-select-sm form-control ms-valid_input" [(ngModel)]="editedDelivery.wagonType.typeId"
+            #wagonType="ngModel" required>
+      <option value="1">крытый</option>
+      <option value="2">хоппер</option>
+    </select>
   </td>
-  <!--  <td>-->
-  <!--    <input type="text" [(ngModel)]="editedDelivery.customer.customerName" class="form-control" list=customerList>-->
-  <!--    <datalist id=customerList>-->
-  <!--      <option *ngFor="let customer of customers">{{ customer.customerName }}</option>-->
-  <!--    </datalist>-->
-  <!--  </td>-->
-  <!--  <td>-->
-  <!--    <select class="custom-select" id="cargoOperation"-->
-  <!--            [(ngModel)]="editedDelivery.cargoOperation.operationId" class="form-control">-->
-  <!--      <option value="1">ВЫГРУЗКА</option>-->
-  <!--      <option value="2">ПОГРУЗКА</option>-->
-  <!--      <option value="3">БЕЗ ОПЕРАЦИИ</option>-->
-  <!--      <option value="4">ВЕСОПОВЕРОЧНЫЙ</option>-->
-  <!--    </select>-->
-  <!--  </td>-->
-  <td class="col-md-2 col-sm-2 col-2">
-    <input type="number" [(ngModel)]="editedDelivery.cargoWeight" class="form-control">
+  <td width="170">
+    <select class="custom-select-sm form-control ms-valid_input" [(ngModel)]="editedDelivery.owner.ownerId"
+            #owner="ngModel" required>
+      <option value="{{idx+1}}" *ngFor="let owner of ownersList; let idx = index">{{ owner.owner }}</option>
+    </select>
   </td>
-  <td class="col-md-1 col-sm-1 col-1">
-    <input type="checkbox" [(ngModel)]="editedDelivery.loadUnloadWork">
+  <td width="80">
+    <input type="number" [(ngModel)]="editedDelivery.cargoWeight" class="form-control form-control-sm" #cargoWeight="ngModel"
+           [ngClass]="{'is-invalid': cargoWeight.touched && cargoWeight.invalid}"
+    (keyup)="checkWeight()">
   </td>
+  <td width="50" style="padding-left: 10px; padding-top: 10px; padding-bottom: 0px"
+      *ngIf="memoOfDelivery && memoOfDelivery.cargoOperation.operationId==1">
+    <input type="checkbox" [(ngModel)]="editedDelivery.loadUnloadWork" #loadUnloadWork="ngModel">
+  </td>
+<!--  <td width="150">{{ delivery.endDate | date : 'dd.MM.yyyy HH:mm' }}</td>-->
+<!--  <td width="180">-->
+<!--    <input type="datetime-local" [ngModel]="editedDelivery.endDate | date: 'yyyy-MM-ddTHH:mm'"-->
+<!--           (ngModelChange)="editedDelivery.endDate = $event" class="form-control"-->
+<!--           #endDate="ngModel" required [ngClass]="{'is-invalid': endDate.touched && endDate.invalid,-->
+<!--                                                    'is-valid': endDate.touched && endDate.valid}">-->
+<!--    <div class="invalid-feedback">-->
+<!--      Введите правильную дату-->
+<!--    </div>-->
+<!--  </td>-->
   <td class="col-md col-sm col">
-    <input type="button" value="Сохранить" (click)="saveDelivery()" class="btn btn-outline-success btn-sm mr-1">
+    <input type="button" value="Сохранить" (click)="saveDelivery()" class="btn btn-outline-success btn-sm mr-1"
+           [disabled]="wagonNumber.invalid || wagonType.invalid">
     <input type="button" value="Отмена" (click)="cancel()" class="btn btn-outline-warning btn-sm">
   </td>
 </ng-template>
@@ -134,11 +174,35 @@
         </button>
       </div>
       <div class="modal-body">
-        Удалить пользователя {{ getById(deliveryIdToDelete) }} #{{ deliveryIdToDelete }} ?
+        Удалить общую подачу номер {{ deliveryIdToDelete }} ?
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="unsetDelete()">Отменить</button>
         <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="delete()">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal remove all deliveries -->
+<div class="modal fade" id="removeAllDeliveriesModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="removeAllDeliveriesModalLabel">Отсоединение</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Убрать все вагоны из памятки?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+        <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal"
+                (click)="removeAllDeliveryOfWagonFromMemo()">Убрать
+        </button>
       </div>
     </div>
   </div>

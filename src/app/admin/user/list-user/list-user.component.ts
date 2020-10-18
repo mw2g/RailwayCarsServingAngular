@@ -4,6 +4,7 @@ import {Subscription, throwError} from 'rxjs';
 import {Router} from '@angular/router';
 import {User} from '../../../shared/interfaces';
 import {AlertService} from '../../../shared/service/alert.service';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'app-users-page',
@@ -12,7 +13,6 @@ import {AlertService} from '../../../shared/service/alert.service';
 })
 export class ListUserComponent implements OnInit, OnDestroy {
 
-  // user$: Observable<UserPayload>;
   users: User[] = [];
   userIdToDelete: number;
   refreshTokenIdToKickOut: number;
@@ -29,30 +29,28 @@ export class ListUserComponent implements OnInit, OnDestroy {
     this.usersSub = this.userService.getAllUsers().subscribe(users => {
       this.users = users;
     }, error => {
+      if (error instanceof HttpErrorResponse
+        && error.status === 404) {
+        console.log("Access denied");
+        this.router.navigate(['/access-denied']);
+        }
       throwError(error);
     });
   }
 
-  ngOnDestroy(): void {
-    if (this.usersSub) {
-      this.usersSub.unsubscribe();
+  getById(userId: number): string {
+    if (userId) {
+      return this.users.find(value => value.userId === userId).username;
     }
-    if (this.delSub) {
-      this.delSub.unsubscribe();
-    }
-    if (this.kickSub) {
-      this.kickSub.unsubscribe();
-    }
+    return '';
   }
 
   delete(): void {
-    this.delSub = this.userService.delete(this.userIdToDelete).subscribe((data) => {
-      this.alert.success(data.message);
+    this.delSub = this.userService.delete(this.userIdToDelete).subscribe(() => {
       this.users = this.users.filter(user => user.userId !== this.userIdToDelete);
-      // this.router.navigate(['/admin', 'user']);
       this.unsetDelete();
     }, () => {
-      this.alert.danger('Ошибка');
+      this.alert.danger('Ошибка при удалении пользователя');
     }, () => {
       this.alert.success('Пользователь удален');
     });
@@ -66,22 +64,16 @@ export class ListUserComponent implements OnInit, OnDestroy {
     this.userIdToDelete = null;
   }
 
-  getById(userId: number): string {
-    if (userId) {
-      return this.users.find(value => value.userId === userId).username;
-    }
-    return '';
-  }
-
   kickOut(): void {
-    this.kickSub = this.userService.kickOut(this.refreshTokenIdToKickOut).subscribe((data) => {
-      this.alert.warning(data.message);
+    this.kickSub = this.userService.kickOut(this.refreshTokenIdToKickOut).subscribe(() => {
       this.users.map(user => {
         user.auths = user.auths.filter(auth => auth.refreshTokenId !== this.refreshTokenIdToKickOut);
       });
       this.unSetTokenToKickOut();
     }, () => {
-      this.alert.danger('Ошибка при отправке запроса');
+      this.alert.danger('Ошибка при удалении сеанса');
+    }, () => {
+      this.alert.success('Сеанс удален');
     });
   }
 
@@ -91,5 +83,17 @@ export class ListUserComponent implements OnInit, OnDestroy {
 
   unSetTokenToKickOut(): void {
     this.refreshTokenIdToKickOut = null;
+  }
+
+  ngOnDestroy(): void {
+    if (this.usersSub) {
+      this.usersSub.unsubscribe();
+    }
+    if (this.delSub) {
+      this.delSub.unsubscribe();
+    }
+    if (this.kickSub) {
+      this.kickSub.unsubscribe();
+    }
   }
 }

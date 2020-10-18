@@ -1,93 +1,78 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-white row">
   <div class="navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
+      <li class="nav-item active" *ngIf="form && !form.pristine">
         <div *ngIf="customerId">
-          <button
-            (click)="update()"
-            class="btn btn-outline-primary btn-sm mr-2"
-          >Сохранить
+          <button (click)="update()" class="btn btn-outline-danger btn-sm mr-2"
+                  [disabled]="listSignerInCustomerComponent && listSignerInCustomerComponent.editedSigner">
+            Сохранить изменения
           </button>
+          <button (click)="loadForm()" class="btn btn-outline-danger btn-sm mr-2">Отменить</button>
         </div>
         <div *ngIf="!customerId">
-          <a
-            (click)="create()"
-            class="btn btn-outline-primary btn-sm mr-2"
-          >Создать
-          </a>
+          <a (click)="create()" class="btn btn-outline-primary btn-sm mr-2">Создать</a>
         </div>
       </li>
+<!--      <li class="nav-item active">-->
+<!--        <div *ngIf="customerId">-->
+<!--          <button (click)="update()" class="btn btn-outline-primary btn-sm mr-2">Сохранить</button>-->
+<!--        </div>-->
+<!--        <div *ngIf="!customerId">-->
+<!--          <a (click)="create()" class="btn btn-outline-primary btn-sm mr-2">Создать</a>-->
+<!--        </div>-->
+<!--      </li>-->
       <li>
-        <a
-          class="btn btn-outline-info btn-sm"
-          [routerLink]="['/reference/customer']"
-        >Закрыть
-        </a>
+        <a class="btn btn-outline-info btn-sm" [routerLink]="['/reference/customer']">Закрыть</a>
       </li>
     </ul>
+      <span *ngIf="customer && customerId">
+        Контрагент {{ customer.customerId }} от {{ form.value.created * 1000 | date: 'dd.MM.yyyy'}}
+        Автор: {{ customer.author }}
+      </span>
   </div>
 </nav>
 
-
 <div *ngIf="form; else loading">
   <form [formGroup]="form" (ngSubmit)="update()">
+<!--    <div *ngIf="form.get('customerId');" class="form-row">-->
+<!--      <div class="form-group col-md-4">-->
+<!--        <label for="customerId">Номер</label>-->
+<!--        <input type="text" class="form-control-plaintext font-weight-bold" disabled-->
+<!--               id="customerId" value="{{ form.value.customerId }}">-->
+<!--      </div>-->
+<!--      <div class="form-group col-md-4">-->
+<!--        <label for="created">Дата создания</label>-->
+<!--        <input type="text" class="form-control-plaintext font-weight-bold" disabled-->
+<!--               id="created" value="{{ form.value.created * 1000 | date: 'HH:mm dd.MM.yyy'}}">-->
+<!--      </div>-->
+<!--      <div class="form-group col-md-4">-->
+<!--        <label for="author">Автор</label>-->
+<!--        <input type="text" class="form-control-plaintext font-weight-bold" disabled-->
+<!--               id="author" value="{{ form.value.author }}">-->
+<!--      </div>-->
+<!--    </div>-->
 
-    <div *ngIf="form.get('customerId');" class="form-row">
-      <div class="form-group col-md-4">
-        <label for="customerId">Номер</label>
-        <input type="text" class="form-control-plaintext font-weight-bold" disabled
-               id="customerId" value="{{ form.value.customerId }}">
-      </div>
-      <div class="form-group col-md-4">
-        <label for="created">Дата создания</label>
-        <input type="text" class="form-control-plaintext font-weight-bold" disabled
-               id="created" value="{{ form.value.created * 1000 | date: 'HH:mm dd.MM.yyy'}}">
-      </div>
-      <div class="form-group col-md-4">
-        <label for="author">Автор</label>
-        <input type="text" class="form-control-plaintext font-weight-bold" disabled
-               id="author" value="{{ form.value.author }}">
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group col-md-4"
-           [ngClass]="{invalid: form.get('customerName').touched && form.get('customerName').invalid}"
-      >
-        <label for="name">Краткое наименование</label>
-        <input type="text" class="form-control" id="name" formControlName="customerName">
-
-        <div
-          *ngIf="form.get('customerName').touched && form.get('customerName').invalid"
-          class="validation"
-        >
-          <small *ngIf="form.get('customerName').errors.required">
-            Введите наименование контрагента
-          </small>
-        </div>
+    <div class="row p-0">
+      <div class="form-group col pl-0"
+           [ngClass]="{invalid: form.get('customerName').touched && form.get('customerName').invalid}">
+        <label class="small" for="name">Краткое наименование</label>
+        <input type="text" class="form-control form-control-sm" id="name" formControlName="customerName"
+               autocomplete="off" [required]="form.get('customerName').hasError('required')">
       </div>
 
-      <div class="form-group col-md-4"
-           [ngClass]="{invalid: form.get('customerFullName').touched && form.get('customerFullName').invalid}"
-      >
-        <label for="fullName">Полное наименование</label>
-        <input type="text" class="form-control" id="fullName" formControlName="customerFullName">
-
-        <div
-          *ngIf="form.get('customerFullName').touched && form.get('customerFullName').invalid"
-          class="validation"
-        >
-          <small *ngIf="form.get('customerFullName').errors.required">
-            Введите наименование контрагента
-          </small>
-        </div>
+      <div class="form-group col pr-0"
+           [ngClass]="{invalid: form.get('customerFullName').touched && form.get('customerFullName').invalid}">
+        <label class="small" for="fullName">Полное наименование</label>
+        <input type="text" class="form-control form-control-sm" id="fullName" formControlName="customerFullName"
+               autocomplete="off" [required]="form.get('customerFullName').hasError('required')">
       </div>
     </div>
-
   </form>
 </div>
 
-<app-signer-in-customer class="container" [signers]="signers" [customerId]="customerId" *ngIf="customerId"></app-signer-in-customer>
+<app-signer-in-customer class="container p-0"
+                        [signers]="signers" [customerId]="customerId" *ngIf="customerId"></app-signer-in-customer>
+
 <ng-template #loading>
   <p class="text-center">Идёт загрузка...</p>
 </ng-template>

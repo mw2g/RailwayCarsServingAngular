@@ -47,7 +47,7 @@ export class ListDeliveryOfWagonComponent implements OnInit, OnDestroy{
     }, () => {
       this.alert.danger('Ошибка');
     }, () => {
-      this.alert.success('Пользователь удален');
+      this.alert.success('Общая подача удалена');
     });
   }
 
@@ -59,10 +59,10 @@ export class ListDeliveryOfWagonComponent implements OnInit, OnDestroy{
     this.deliveryIdToDelete = null;
   }
 
-  getById(deliveryId: number): number {
+  getById(deliveryId: number): string {
     if (deliveryId) {
-      return this.deliveries.find(value => value.deliveryId === deliveryId).deliveryId;
+      return this.deliveries.find(value => value.deliveryId === deliveryId).wagon.wagonNumber;
     }
-    return 0;
+    return '';
   }
 }

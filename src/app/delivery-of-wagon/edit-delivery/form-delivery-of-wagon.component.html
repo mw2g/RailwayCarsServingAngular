@@ -1,22 +1,25 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-white">
   <div class="navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <div *ngIf="!router.isActive('/delivery/create', true)">
-          <button
-            (click)="update()"
-            class="btn btn-outline-primary mr-2 btn-sm"
-          >Сохранить
-          </button>
+<!--      <li class="nav-item active">-->
+<!--        <div *ngIf="!router.isActive('/delivery/create', true)">-->
+<!--          <button (click)="update()" class="btn btn-outline-primary mr-2 btn-sm">Сохранить</button>-->
+<!--        </div>-->
+<!--        <div *ngIf="router.isActive('/delivery/create', true)">-->
+<!--          <a (click)="create()" class="btn btn-outline-primary mr-2 btn-sm">Создать</a>-->
+<!--        </div>-->
+<!--      </li>-->
+
+      <li class="nav-item active" *ngIf="form && !form.pristine">
+        <div *ngIf="delivery && delivery.deliveryId">
+          <button (click)="update()" class="btn btn-outline-danger btn-sm mr-2">Сохранить изменения</button>
+          <button (click)="loadForm()" class="btn btn-outline-danger btn-sm mr-2">Отменить</button>
         </div>
-        <div *ngIf="router.isActive('/delivery/create', true)">
-          <a
-            (click)="create()"
-            class="btn btn-outline-primary mr-2 btn-sm"
-          >Создать
-          </a>
+        <div *ngIf="!delivery">
+          <a (click)="create()" class="btn btn-outline-primary btn-sm mr-2">Создать</a>
         </div>
       </li>
+
       <li>
         <a
           class="btn btn-outline-info btn-sm"
@@ -25,6 +28,10 @@
         </a>
       </li>
     </ul>
+    <span *ngIf="delivery && delivery.deliveryId">
+        Общая подача {{ delivery.deliveryId }} от {{ delivery.created * 1000 | date: 'dd.MM.yyyy'}}
+      Автор: {{ delivery.author }}
+      </span>
   </div>
 </nav>
 
@@ -32,102 +39,155 @@
 <div *ngIf="form; else loading">
   <form [formGroup]="form" (ngSubmit)="update()">
 
-    <div *ngIf="form.get('deliveryId');" class="form-row">
-      <div class="form-group col-md-4">
-        <label for="userId">Номер</label>
-        <input type="text" class="form-control-plaintext font-weight-bold" disabled id="userId" value="{{ form.value.deliveryId }}">
+<!--    <div *ngIf="form.get('deliveryId');" class="form-row">-->
+<!--      <div class="form-group col-md-4">-->
+<!--        <label class="small" for="userId">Номер</label>-->
+<!--        <input type="text" class="form-control form-control-sm-plaintext font-weight-bold" disabled id="userId"-->
+<!--               value="{{ form.value.deliveryId }}">-->
+<!--      </div>-->
+<!--      <div class="form-group col-md-4">-->
+<!--        <label class="small" for="created">Дата создания</label>-->
+<!--        <input type="text" class="form-control form-control-sm-plaintext font-weight-bold" disabled-->
+<!--               id="created" value="{{ form.value.created * 1000 | date: 'HH:mm dd.MM.yyy'}}">-->
+<!--      </div>-->
+<!--      <div class="form-group col-md-4">-->
+<!--        <label class="small" for="author">Автор</label>-->
+<!--        <input type="text" class="form-control form-control-sm-plaintext font-weight-bold" disabled id="author"-->
+<!--               value="{{ form.value.author }}">-->
+<!--      </div>-->
+<!--    </div>-->
+
+    <div class="form-row">
+      <div class="form-group col-md-3"
+           [ngClass]="{invalid: form.get('wagonNumber').touched && form.get('wagonNumber').invalid}">
+        <label class="small" for="wagonNumber">Номер вагона</label>
+        <input type="text" class="form-control form-control-sm ms-no_arrows" id="wagonNumber" formControlName="wagonNumber"
+               autocomplete="off" [required]="form.get('wagonNumber').hasError('required')"
+                (keyup)="autocomplete()">
       </div>
-      <div class="form-group col-md-4">
-        <label for="created">Дата создания</label>
-        <input type="text" class="form-control-plaintext font-weight-bold" disabled
-               id="created" value="{{ form.value.created * 1000 | date: 'HH:mm dd.MM.yyy'}}">
+      <div class="form-group col-md-3">
+        <label class="small" for="wagonType">Тип вагона</label>
+        <div class="input-group mb-3">
+          <select class="custom-select custom-select-sm" id="wagonType" formControlName="wagonType">
+            <option *ngFor="let wagonType of wagonTypeList" value="{{ wagonType.typeName }}">{{ wagonType.typeName }}</option>
+          </select>
+        </div>
       </div>
-      <div class="form-group col-md-4">
-        <label for="author">Автор</label>
-        <input type="text" class="form-control-plaintext font-weight-bold" disabled id="author" value="{{ form.value.author }}">
+      <div class="form-group col-md-3"
+           [ngClass]="{invalid: form.get('cargoType').touched && form.get('cargoType').invalid}">
+        <label class="small" for="cargoType">Вид груза</label>
+        <div class="input-group">
+          <input type="text" class="form-control form-control-sm" id="cargoType" formControlName="cargoType"
+                 list=cargoTypeList autocomplete="off" [required]="form.get('cargoType').hasError('required')">
+          <div class="input-group-append">
+            <button class="fas fa-times btn btn-outline-secondary btn-sm" type="button"
+                    (click)="form.get('cargoType').reset(); form.markAsDirty()">
+            </button>
+          </div>
+        </div>
+        <datalist id=cargoTypeList>
+          <option *ngFor="let cargoType of cargoTypeList">{{ cargoType.typeName }}</option>
+        </datalist>
+      </div>
+      <div class="form-group col-md-3">
+        <label class="small" for="cargoOperation">Операция</label>
+        <div class="input-group mb-3">
+          <select class="custom-select custom-select-sm" id="cargoOperation" formControlName="cargoOperation">
+            <option *ngFor="let operation of cargoOperations" value="{{ operation.operationId }}">{{ operation.operation }}</option>
+          </select>
+        </div>
+        <!--        <input type="text" class="form-control form-control-sm" id="cargoOperation" formControlName="cargoOperation">-->
       </div>
     </div>
 
     <div class="form-row">
-      <div class="form-group col-md-4"
-           [ngClass]="{invalid: form.get('wagon').touched && form.get('wagon').invalid}"
-      >
-        <label for="wagon">Номер вагона</label>
-        <input type="text" class="form-control" id="wagon" formControlName="wagon">
-
-        <div
-          *ngIf="form.get('wagon').touched && form.get('wagon').invalid"
-          class="validation"
-        >
-          <small *ngIf="form.get('wagon').errors.required">
-            Введите номер вагона
-          </small>
-        </div>
+      <div class="form-group col-md-3">
+        <label class="small" for="startDate">Начало</label>
+        <input type="datetime-local" class="form-control form-control-sm" id="startDate" formControlName="startDate">
       </div>
-
-      <div class="form-group col-md-4"
-           [ngClass]="{invalid: form.get('customer').touched && form.get('customer').invalid}"
-      >
-        <label for="customer">Контрагент</label>
-        <input type="text" class="form-control" id="customer" formControlName="customer" list=customerList>
+      <div class="form-group col-md-3">
+        <label class="small" for="endDate">Окончание</label>
+        <input type="datetime-local" class="form-control form-control-sm" id="endDate" formControlName="endDate">
+      </div>
+      <div class="form-group col-md-3"
+           [ngClass]="{invalid: form.get('customer').touched && form.get('customer').invalid}">
+        <label class="small" for="customer">Контрагент</label>
+        <div class="input-group">
+          <input type="text" class="form-control form-control-sm" id="customer" formControlName="customer"
+                 list=customerList autocomplete="off" [required]="form.get('customer').hasError('required')">
+          <div class="input-group-append">
+            <button class="fas fa-times btn btn-outline-secondary btn-sm" type="button"
+                    (click)="form.get('customer').reset(); form.markAsDirty()">
+            </button>
+          </div>
+        </div>
         <datalist id=customerList>
           <option *ngFor="let customer of customers">{{ customer.customerName }}</option>
         </datalist>
-        <div
-          *ngIf="form.get('customer').touched && form.get('customer').invalid"
-          class="validation"
-        >
-          <small *ngIf="form.get('customer').errors.required">
-            Выберете контрагента
-          </small>
-        </div>
       </div>
 
-      <div class="form-group col-md-4">
-        <label for="cargoOperation">Грузовая операция</label>
+      <div class="form-group col-md-3">
+        <label class="small" for="owner">Собственник</label>
         <div class="input-group mb-3">
-          <select class="custom-select" id="cargoOperation" formControlName="cargoOperation">
-            <option value="1">ВЫГРУЗКА</option>
-            <option value="2">ПОГРУЗКА</option>
-            <option value="3">БЕЗ ОПЕРАЦИИ</option>
-            <option value="4">ВЕСОПОВЕРОЧНЫЙ</option>
+          <select class="custom-select custom-select-sm" id="owner" formControlName="owner">
+            <option value="{{ owner.owner }}" *ngFor="let owner of ownersList">{{ owner.owner }}</option>
           </select>
         </div>
-        <!--        <input type="text" class="form-control" id="cargoOperation" formControlName="cargoOperation">-->
+        <!--        <input type="text" class="form-control form-control-sm" id="cargoOperation" formControlName="cargoOperation">-->
       </div>
     </div>
 
     <div class="form-row">
-      <div class="form-group col-md-4">
-        <label for="startDate">Дата начала</label>
-        <input type="datetime-local" class="form-control" id="startDate" formControlName="startDate">
+      <div class="form-group col-md-3">
+        <label class="small" for="memoOfDelivery">Памятка подачи</label>
+        <div class="input-group">
+          <input type="number" class="form-control form-control-sm ms-no_arrows" id="memoOfDelivery"
+                 formControlName="memoOfDelivery" autocomplete="off">
+          <div class="input-group-append" *ngIf="delivery && delivery.memoOfDelivery.memoOfDeliveryId">
+            <button class="fas fa-link btn btn-outline-secondary btn-sm" type="button"
+                    [routerLink]="['/memo', 'delivery', 'edit', delivery.memoOfDelivery.memoOfDeliveryId]">
+            </button>
+          </div>
+          <div class="input-group-append" *ngIf="delivery && delivery.memoOfDelivery.memoOfDeliveryId">
+            <button class="fas fa-unlink btn btn-outline-secondary btn-sm" type="button"
+                    (click)="form.get('memoOfDelivery').reset(); form.markAsDirty()">
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="form-group col-md-4">
-        <label for="endDate">Дата окончания</label>
-        <input type="datetime-local" class="form-control" id="endDate" formControlName="endDate">
+      <div class="form-group col-md-3">
+        <label class="small" for="memoOfDispatch">Памятка уборки</label>
+        <div class="input-group">
+          <input type="number" class="form-control form-control-sm ms-no_arrows" id="memoOfDispatch"
+                 formControlName="memoOfDispatch" autocomplete="off">
+          <div class="input-group-append" *ngIf="delivery && delivery.memoOfDispatch.memoOfDispatchId">
+            <button class="fas fa-link btn btn-outline-secondary btn-sm" type="button"
+                    [routerLink]="['/memo', 'dispatch', 'edit', delivery.memoOfDispatch.memoOfDispatchId]">
+            </button>
+          </div>
+          <div class="input-group-append" *ngIf="delivery && delivery.memoOfDispatch.memoOfDispatchId">
+            <button class="fas fa-unlink btn btn-outline-secondary btn-sm" type="button"
+                    (click)="form.get('memoOfDispatch').reset(); form.markAsDirty()">
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="form-group col-md-4">
-        <label for="shuntingWorks">Маневровые работы</label>
-        <input type="number" class="form-control" id="shuntingWorks" formControlName="shuntingWork">
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group col-md-4">
-        <label for="memoOfDelivery">Памятка подачи</label>
-        <input type="text" class="form-control" id="memoOfDelivery" formControlName="memoOfDelivery">
-      </div>
-      <div class="form-group col-md-4">
-        <label for="cargoWeight">Вес груза</label>
+      <div class="form-group col-md-3">
+        <label class="small" for="cargoWeight">Вес груза</label>
         <div class="input-group mb-3" id="cargoWeight">
-          <input type="text" class="form-control" formControlName="cargoWeight">
+          <input type="number" class="form-control form-control-sm ms-no_arrows" formControlName="cargoWeight" autocomplete="off">
           <div class="input-group-append">
-          <span class="input-group-text">
+          <span class="input-group-text bg-white border-0">
             <input class="mr-2" type="checkbox" formControlName="loadUnloadWork">
             ПРР
           </span>
           </div>
         </div>
+      </div>
+      <div class="form-group col-md-3">
+        <label class="small" for="shuntingWorks">Маневровые работы</label>
+        <input type="number" class="form-control form-control-sm ms-no_arrows" id="shuntingWorks" formControlName="shuntingWork"
+               autocomplete="off">
       </div>
     </div>
 
