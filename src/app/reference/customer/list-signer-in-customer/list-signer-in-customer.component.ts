@@ -5,13 +5,14 @@ import {Customer, Signer} from '../../../shared/interfaces';
 import {CustomerService} from '../../service/customer.service';
 import {AlertService} from '../../../shared/service/alert.service';
 import {SignerService} from '../../service/signer.service';
+import {UtilsService} from '../../../shared/service/utils.service';
 
 @Component({
   selector: 'app-signer-in-customer',
   templateUrl: './list-signer-in-customer.component.html',
   styleUrls: ['./list-signer-in-customer.component.scss']
 })
-export class ListSignerInCustomerComponent implements OnInit, OnDestroy {
+export class ListSignerInCustomerComponent implements OnDestroy {
 
   @ViewChild('readTemplate', {static: false}) readTemplate: TemplateRef<any>;
   @ViewChild('editTemplate', {static: false}) editTemplate: TemplateRef<any>;
@@ -20,24 +21,20 @@ export class ListSignerInCustomerComponent implements OnInit, OnDestroy {
   @Input() customerId: number;
 
   signerIdToDelete: number;
-  customerSub: Subscription;
-  delSub: Subscription;
-
-  enableForm = true;
   editedSigner: Signer;
+  enableForm = true;
   isNewRecord: boolean;
 
   private createSub: Subscription;
   private updateSub: Subscription;
-  private customersSub: Subscription;
+  private delSub: Subscription;
 
   constructor(private customerService: CustomerService,
               private signerService: SignerService,
               private router: Router,
-              private alert: AlertService) {
-  }
-
-  ngOnInit(): void {
+              private alert: AlertService,
+              private utils: UtilsService
+  ) {
   }
 
   // загружаем один из двух шаблонов
@@ -88,7 +85,7 @@ export class ListSignerInCustomerComponent implements OnInit, OnDestroy {
   }
 
   // сохраняем пользователя
-  saveSigner(): void {
+  save(): void {
     if (this.isNewRecord) {
       // добавляем пользователя
       this.createSub = this.signerService.create(this.editedSigner).subscribe((data) => {
@@ -149,17 +146,10 @@ export class ListSignerInCustomerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.customerSub) {
-      this.customerSub.unsubscribe();
-    }
-    if (this.createSub) {
-      this.createSub.unsubscribe();
-    }
-    if (this.updateSub) {
-      this.updateSub.unsubscribe();
-    }
-    if (this.delSub) {
-      this.delSub.unsubscribe();
-    }
+    this.utils.unsubscribe([
+      this.createSub,
+      this.updateSub,
+      this.delSub
+    ]);
   }
 }

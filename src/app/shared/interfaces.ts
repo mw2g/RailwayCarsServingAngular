@@ -2,19 +2,32 @@ export interface DeliveryOfWagon {
   deliveryId: number;
   created?: Date;
   author?: string;
-  wagon?: Wagon;
-  wagonType?: WagonType;
-  owner?: Owner;
-  customer?: Customer;
-  cargoOperation?: CargoOperation;
-  cargoType?: CargoType;
+  wagon?: string;
+  wagonType?: string;
+  owner?: string;
+  customer?: string;
+  cargoOperation?: string;
+  cargoType?: string;
   cargoWeight?: number;
   loadUnloadWork?: boolean;
-  shuntingWork?: number;
+  shuntingWorks?: number;
   startDate?: Date;
   endDate?: Date;
-  memoOfDelivery?: MemoOfDelivery;
-  memoOfDispatch?: MemoOfDispatch;
+  memoOfDelivery?: number;
+  memoOfDispatch?: number;
+  calculation?: Calculation;
+}
+
+export interface Calculation {
+  totalTime: number;
+  calculationTime?: number;
+  payTime?: number;
+  paySum?: number;
+  penaltyTime?: number;
+  penaltySum?: number;
+  shuntingWorkTime?: number;
+  shuntingWorkSum?: number;
+  totalSum?: number;
 }
 
 export interface Customer {
@@ -37,12 +50,12 @@ export interface Signer {
 
 export interface CargoOperation {
   operationId?: number;
-  operation?: string;
+  operationName?: string;
 }
 
 export interface Owner {
   ownerId?: number;
-  owner?: string;
+  ownerName?: string;
 }
 
 export interface CargoType {
@@ -53,7 +66,7 @@ export interface CargoType {
 export interface Wagon {
   wagonId?: number;
   wagonNumber?: string;
-  wagonType?: WagonType;
+  // wagonType?: WagonType;
 }
 
 export interface WagonType {
@@ -73,6 +86,39 @@ export interface IndexToBaseRate {
   indexToRate: number;
 }
 
+export interface TimeNormType {
+  typeId?: number;
+  typeName?: string;
+  typeCode?: string;
+}
+
+export interface TimeNorm {
+  normId?: number;
+  relevanceDate: Date;
+  norm: number;
+  normType: TimeNormType;
+}
+
+export interface TariffType {
+  typeId?: number;
+  typeName?: string;
+  typeCode?: string;
+}
+
+export interface Tariff {
+  tariffId?: number;
+  relevanceDate: Date;
+  tariff: number;
+  tariffType: TariffType;
+}
+
+export interface Penalty {
+  penaltyId?: number;
+  relevanceDate: Date;
+  penalty: number;
+  wagonType: WagonType;
+}
+
 export interface BaseRate {
   rateId?: number;
   relevanceDate: Date;
@@ -81,13 +127,26 @@ export interface BaseRate {
   wagonGroup: WagonGroup;
 }
 
-export interface ControllerStatement {
+export interface StatementWithRate {
+  statement: Statement;
+  rate: StatementRate;
+}
+
+export interface StatementRate {
+  deliveryDispatchTimeNorm: TimeNorm;
+  turnoverTimeNorm: TimeNorm;
+  deliveryDispatchTariff: Tariff;
+  shuntingTariff: Tariff;
+  indexToBaseRate: IndexToBaseRate;
+}
+
+export interface Statement {
   created?: Date;
   statementId: number;
-  cargoOperation?: CargoOperation;
-  customer?: Customer;
+  cargoOperation?: string;
+  customer?: string;
   author?: string;
-  signer?: Signer;
+  signer?: string;
   comment?: string;
   memoOfDispatchList?: MemoOfDispatch[];
 }
@@ -96,10 +155,10 @@ export interface MemoOfDelivery {
   created?: Date;
   memoOfDeliveryId: number;
   startDate?: Date;
-  cargoOperation?: CargoOperation;
+  cargoOperation?: string;
   customer?: Customer;
   author?: string;
-  signer?: Signer;
+  signer?: string;
   comment?: string;
   deliveryOfWagonList?: DeliveryOfWagon[];
 }
@@ -108,13 +167,13 @@ export interface MemoOfDispatch {
   created?: Date;
   memoOfDispatchId: number;
   endDate?: Date;
-  cargoOperation?: CargoOperation;
+  cargoOperation?: string;
   customer?: Customer;
   author?: string;
-  signer?: Signer;
+  signer?: string;
   comment?: string;
   deliveryOfWagonList?: DeliveryOfWagon[];
-  controllerStatement?: ControllerStatement;
+  statement?: number;
 }
 
 export interface User {

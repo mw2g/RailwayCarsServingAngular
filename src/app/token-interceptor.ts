@@ -19,7 +19,7 @@ export class TokenInterceptor implements HttpInterceptor {
   private jwtTokenExpired(): boolean {
     const expiresAt = Number(this.authService.getJwtTokenExpiresAt().toString().replace('.', ''));
     const now = Date.now();
-    if ((expiresAt - now) < 1000) {
+    if ((expiresAt - now) < 5000) {
       return true;
     }
     return false;

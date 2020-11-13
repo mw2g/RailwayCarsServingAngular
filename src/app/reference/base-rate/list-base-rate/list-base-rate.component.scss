@@ -5,6 +5,12 @@ input::-webkit-inner-spin-button {
   margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
 }
 
+tr.sticky {
+  top: 56px;
+  position: fixed;
+  z-index: 99;
+}
+
 //TABLE {
 //  text-align: center;
 //}

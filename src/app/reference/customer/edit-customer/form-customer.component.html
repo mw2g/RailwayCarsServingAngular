@@ -2,56 +2,27 @@
   <div class="navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active" *ngIf="form && !form.pristine">
-        <div *ngIf="customerId">
-          <button (click)="update()" class="btn btn-outline-danger btn-sm mr-2"
-                  [disabled]="listSignerInCustomerComponent && listSignerInCustomerComponent.editedSigner">
-            Сохранить изменения
-          </button>
-          <button (click)="loadForm()" class="btn btn-outline-danger btn-sm mr-2">Отменить</button>
+        <div *ngIf="customer && customerId">
+          <button (click)="update()" title="Сохранить" class="fas fa-check btn btn-outline-success mr-2"></button>
+          <button (click)="loadForm()" title="Отменить" class="fas fa-undo-alt btn btn-outline-warning mr-2"></button>
         </div>
-        <div *ngIf="!customerId">
-          <a (click)="create()" class="btn btn-outline-primary btn-sm mr-2">Создать</a>
+        <div *ngIf="!customer">
+          <a (click)="create()" title="Сохранить" class="fas fa-check btn btn-outline-success mr-2"></a>
         </div>
       </li>
-<!--      <li class="nav-item active">-->
-<!--        <div *ngIf="customerId">-->
-<!--          <button (click)="update()" class="btn btn-outline-primary btn-sm mr-2">Сохранить</button>-->
-<!--        </div>-->
-<!--        <div *ngIf="!customerId">-->
-<!--          <a (click)="create()" class="btn btn-outline-primary btn-sm mr-2">Создать</a>-->
-<!--        </div>-->
-<!--      </li>-->
       <li>
-        <a class="btn btn-outline-info btn-sm" [routerLink]="['/reference/customer']">Закрыть</a>
+        <a class="fas fa-arrow-left btn btn-outline-info" title="Назад" [routerLink]="['/reference/customer']"></a>
       </li>
     </ul>
-      <span *ngIf="customer && customerId">
-        Контрагент {{ customer.customerId }} от {{ form.value.created * 1000 | date: 'dd.MM.yyyy'}}
-        Автор: {{ customer.author }}
+    <span *ngIf="customer && customerId">
+        Контрагент {{ customer.customerId }} от {{ form.value.created | date: 'dd.MM.yyyy'}}
+      Автор: {{ customer.author }}
       </span>
   </div>
 </nav>
 
 <div *ngIf="form; else loading">
   <form [formGroup]="form" (ngSubmit)="update()">
-<!--    <div *ngIf="form.get('customerId');" class="form-row">-->
-<!--      <div class="form-group col-md-4">-->
-<!--        <label for="customerId">Номер</label>-->
-<!--        <input type="text" class="form-control-plaintext font-weight-bold" disabled-->
-<!--               id="customerId" value="{{ form.value.customerId }}">-->
-<!--      </div>-->
-<!--      <div class="form-group col-md-4">-->
-<!--        <label for="created">Дата создания</label>-->
-<!--        <input type="text" class="form-control-plaintext font-weight-bold" disabled-->
-<!--               id="created" value="{{ form.value.created * 1000 | date: 'HH:mm dd.MM.yyy'}}">-->
-<!--      </div>-->
-<!--      <div class="form-group col-md-4">-->
-<!--        <label for="author">Автор</label>-->
-<!--        <input type="text" class="form-control-plaintext font-weight-bold" disabled-->
-<!--               id="author" value="{{ form.value.author }}">-->
-<!--      </div>-->
-<!--    </div>-->
-
     <div class="row p-0">
       <div class="form-group col pl-0"
            [ngClass]="{invalid: form.get('customerName').touched && form.get('customerName').invalid}">

@@ -1,5 +1,6 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="" [routerLink]="['/']">RCS</a>
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+  <a class="fas fa-project-diagram btn btn-outline-secondary navbar-brand"
+                                                title="Главная" href="" [routerLink]="['/']"></a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
           aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -23,8 +24,8 @@
           class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="#" [routerLink]="['/controller-statement']"
-           [class.font-weight-bold]="router.isActive('/controller-statement', false)">
+        <a class="nav-link" href="#" [routerLink]="['/statement']"
+           [class.font-weight-bold]="router.isActive('/statement', false)">
           Ведомость <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item dropdown">
@@ -75,6 +76,26 @@
              [class.font-weight-bold]="router.isActive('/reference/config/cargo-operation', false)">
             Грузовая операция
           </a>
+          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'time-norm-type']"
+             [class.font-weight-bold]="router.isActive('/reference/config/time-norm-type', false)">
+            Тип нормы времени
+          </a>
+          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'time-norm']"
+             [class.font-weight-bold]="router.isActive('/reference/config/time-norm', false)">
+            Норма времени
+          </a>
+          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'tariff-type']"
+             [class.font-weight-bold]="router.isActive('/reference/config/tariff-type', false)">
+            Тип тарифа
+          </a>
+          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'tariff']"
+             [class.font-weight-bold]="router.isActive('/reference/config/tariff', false)">
+            Тариф
+          </a>
+          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'penalty']"
+             [class.font-weight-bold]="router.isActive('/reference/config/penalty', false)">
+            Штраф
+          </a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="#" [routerLink]="['/admin', 'user']"
              [class.font-weight-bold]="router.isActive('/admin/user', false)">Пользователи
@@ -86,12 +107,13 @@
     <!--      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">-->
     <!--      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>-->
     <!--    </form>-->
-    <a href="logout" (click)="logout($event)" class="btn btn-outline-success btn-sm my-2 my-sm-0">Выйти</a>
+    <a href="logout" (click)="logout($event)"
+       class="fas fa-sign-out-alt btn btn-outline-dark my-2 my-sm-0" title="Выход"></a>
   </div>
 </nav>
 
 <app-alert></app-alert>
 
-<div class="container mt-2">
+<div class="container mt-3 pt-5">
   <router-outlet></router-outlet>
 </div>

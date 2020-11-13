@@ -1,10 +1,11 @@
-import {Component, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {Subscription, throwError} from 'rxjs';
+import {Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {Observable, Subscription, throwError} from 'rxjs';
 import {Router} from '@angular/router';
 import {AlertService} from '../../../shared/service/alert.service';
 import {BaseRate, WagonGroup} from '../../../shared/interfaces';
 import {BaseRateService} from '../../service/base-rate.service';
 import {WagonGroupService} from '../../service/wagon-group.service';
+import {UtilsService} from '../../../shared/service/utils.service';
 
 @Component({
   selector: 'app-list-base-rate',
@@ -19,7 +20,7 @@ export class ListBaseRateComponent implements OnInit, OnDestroy {
   baseRateIdToDelete: number;
   editedBaseRate: BaseRate;
   baseRateList: BaseRate[];
-  wagonGroupList: WagonGroup[];
+  wagonGroupList: Observable<Array<WagonGroup>>;
   enableForm = true;
   private isNewRecord: boolean;
   private listSub: Subscription;
@@ -30,15 +31,31 @@ export class ListBaseRateComponent implements OnInit, OnDestroy {
   constructor(private baseRateService: BaseRateService,
               private wagonGroupService: WagonGroupService,
               private router: Router,
-              private alert: AlertService) {
+              private alert: AlertService,
+              private utils: UtilsService
+  ) {
+  }
+
+  showFixedTableHeader = false;
+
+  @HostListener('window:scroll')
+  onScroll(): void {
+    const pageTopOffset = window.pageYOffset;
+
+    if (pageTopOffset > 30) {
+      this.showFixedTableHeader = true;
+    } else {
+      this.showFixedTableHeader = false;
+    }
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
   }
 
   ngOnInit(): void {
-    this.wagonGroupService.getAll().subscribe(data => {
-      this.wagonGroupList = data;
-    }, error => {
-      throwError(error);
-    });
+    this.wagonGroupList = this.wagonGroupService.getAll();
+
     this.listSub = this.baseRateService.getAll().subscribe(data => {
       this.baseRateList = data;
     }, error => {
@@ -63,7 +80,7 @@ export class ListBaseRateComponent implements OnInit, OnDestroy {
       relevanceDate: new Date(Date.now()),
       hours: 0,
       rate: 0,
-      wagonGroup: { groupName: '' }
+      wagonGroup: {groupName: ''}
     };
     this.baseRateList.push(this.editedBaseRate);
     this.isNewRecord = true;
@@ -79,7 +96,7 @@ export class ListBaseRateComponent implements OnInit, OnDestroy {
       relevanceDate: new Date(baseRate.relevanceDate),
       hours: baseRate.hours,
       rate: baseRate.rate,
-      wagonGroup: baseRate.wagonGroup
+      wagonGroup: {groupName: baseRate.wagonGroup.groupName}
     };
   }
 
@@ -95,7 +112,7 @@ export class ListBaseRateComponent implements OnInit, OnDestroy {
   }
 
   // сохраняем
-  saveWagonGroup(): void {
+  save(): void {
     if (this.isNewRecord) {
       // добавляем
       this.createSub = this.baseRateService.create(this.editedBaseRate).subscribe((data) => {
@@ -158,17 +175,11 @@ export class ListBaseRateComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy(): void {
-    if (this.listSub) {
-      this.listSub.unsubscribe();
-    }
-    if (this.createSub) {
-      this.createSub.unsubscribe();
-    }
-    if (this.updateSub) {
-      this.updateSub.unsubscribe();
-    }
-    if (this.delSub) {
-      this.delSub.unsubscribe();
-    }
+    this.utils.unsubscribe([
+      this.listSub,
+      this.createSub,
+      this.updateSub,
+      this.delSub
+    ]);
   }
 }

@@ -1,0 +1,72 @@
+<!--<nav class="navbar navbar-expand-lg navbar-light bg-white">-->
+<!--    <ul class="navbar-nav mr-auto">-->
+<!--      <li class="nav-item active" *ngIf="!router.isActive('/statement/create', true)">-->
+<!--        <a class="fas fa-plus nav-link" href="#" [routerLink]="['/statement', 'create']"><span-->
+<!--          class="sr-only">(current)</span></a>-->
+<!--      </li>-->
+<!--    </ul>-->
+<!--</nav>-->
+
+<div *ngIf="statements.length; else loading">
+  <table class="table table-sm table-bordered border-0" style="text-align: center">
+    <thead class="thead-light">
+    <tr class="row">
+      <th width="80">
+        <button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"
+                [routerLink]="['/statement', 'create']"></button>
+      </th>
+      <th width="120">Номер</th>
+      <th width="180">Дата</th>
+      <th class="col">Контрагент</th>
+      <th class="col">Грузовая операция</th>
+      <th width="80">Памяток</th>
+      <th class="col">Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <tr class="row" *ngFor="let statement of statements; let idx = index">
+      <td width="80">{{ idx + 1 }}</td>
+      <td width="120"><a [routerLink]="['/statement', 'edit', statement.statementId]">{{ statement.statementId }}</a></td>
+      <td width="180">{{ statement.created | date : 'dd.MM.yyyy HH:mm' }}</td>
+      <td class="col">{{ statement.customer }}</td>
+      <td class="col">{{ statement.cargoOperation }}</td>
+      <td width="80">{{ statement.memoOfDispatchList.length }}</td>
+      <td class="col">
+        <!-- Button trigger modal -->
+        <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm ml-2" data-toggle="modal" data-target="#deleteModal"
+                (click)="setDelete(statement.statementId)">
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<!--Template loading-->
+<ng-template #loading>
+  <p class="text-center">Загрузка...</p>
+</ng-template>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Удаление</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Удалить ведомость № {{ statementIdToDelete }} от {{ getCreatedById(statementIdToDelete) | date : 'dd.MM.yyyy HH:mm' }} ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="unsetDelete()">Отменить</button>
+        <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="delete()">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>
+

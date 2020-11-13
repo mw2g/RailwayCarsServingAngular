@@ -9,6 +9,7 @@ import {AlertComponent} from './components/alert/alert.component';
 import {CommonModule} from '@angular/common';
 import {AutofocusDirective} from './directive/autofocus.directive';
 import {WeightPipe} from './pipe/weight.pipe';
+import {WaitInterceptor} from './wat-interceptor.service';
 
 // import {QuillModule} from 'ngx-quill';
 
@@ -40,6 +41,11 @@ import {WeightPipe} from './pipe/weight.pipe';
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: WaitInterceptor,
       multi: true
     }
   ]

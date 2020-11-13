@@ -4,6 +4,7 @@ import {Subscription, throwError} from 'rxjs';
 import {Router} from '@angular/router';
 import {AlertService} from '../../../shared/service/alert.service';
 import {CustomerService} from '../../service/customer.service';
+import {UtilsService} from '../../../shared/service/utils.service';
 
 @Component({
   selector: 'app-customer',
@@ -19,7 +20,9 @@ export class ListCustomerComponent implements OnInit, OnDestroy{
 
   constructor(private customerService: CustomerService,
               public router: Router,
-              private alert: AlertService) {
+              private alert: AlertService,
+              private utils: UtilsService
+  ) {
   }
 
   ngOnInit(): void {
@@ -28,15 +31,6 @@ export class ListCustomerComponent implements OnInit, OnDestroy{
     }, error => {
       throwError(error);
     });
-  }
-
-  ngOnDestroy(): void {
-    if (this.customersSub) {
-      this.customersSub.unsubscribe();
-    }
-    if (this.delSub) {
-      this.delSub.unsubscribe();
-    }
   }
 
   delete(): void {
@@ -64,5 +58,12 @@ export class ListCustomerComponent implements OnInit, OnDestroy{
       return this.customers.find(value => value.customerId === customerId).customerId;
     }
     return 0;
+  }
+
+  ngOnDestroy(): void {
+    this.utils.unsubscribe([
+      this.customersSub,
+      this.delSub
+    ]);
   }
 }

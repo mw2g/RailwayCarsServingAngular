@@ -4,6 +4,7 @@ import {Router} from '@angular/router';
 import {AlertService} from '../../../shared/service/alert.service';
 import {CargoOperation} from '../../../shared/interfaces';
 import {CargoOperationService} from '../../service/cargo-operation.service';
+import {UtilsService} from '../../../shared/service/utils.service';
 
 @Component({
   selector: 'app-list-cargo-operation',
@@ -21,13 +22,15 @@ export class ListCargoOperationComponent implements OnInit, OnDestroy {
   enableForm = true;
   private isNewRecord: boolean;
   private listSub: Subscription;
-  private delSub: Subscription;
-  private updateSub: Subscription;
   private createSub: Subscription;
+  private updateSub: Subscription;
+  private delSub: Subscription;
 
   constructor(private cargoOperationService: CargoOperationService,
               private router: Router,
-              private alert: AlertService) {
+              private alert: AlertService,
+              private utils: UtilsService
+  ) {
   }
 
   ngOnInit(): void {
@@ -52,7 +55,7 @@ export class ListCargoOperationComponent implements OnInit, OnDestroy {
   addNew(): void {
     this.editedCargoOperation = {
       operationId: 0,
-      operation: ''
+      operationName: ''
     };
     this.cargoOperationList.push(this.editedCargoOperation);
     this.isNewRecord = true;
@@ -65,7 +68,7 @@ export class ListCargoOperationComponent implements OnInit, OnDestroy {
     this.isNewRecord = false;
     this.editedCargoOperation = {
       operationId: cargoOperation.operationId,
-      operation: cargoOperation.operation
+      operationName: cargoOperation.operationName
     };
   }
 
@@ -100,7 +103,7 @@ export class ListCargoOperationComponent implements OnInit, OnDestroy {
       this.updateSub = this.cargoOperationService.update(this.editedCargoOperation).subscribe((data) => {
         this.cargoOperationList.map(cargoOperation => {
           if (cargoOperation.operationId === this.editedCargoOperation.operationId) {
-            cargoOperation.operation = this.editedCargoOperation.operation;
+            cargoOperation.operationName = this.editedCargoOperation.operationName;
           }
         });
       }, () => {
@@ -142,17 +145,11 @@ export class ListCargoOperationComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy(): void {
-    if (this.listSub) {
-      this.listSub.unsubscribe();
-    }
-    if (this.createSub) {
-      this.createSub.unsubscribe();
-    }
-    if (this.updateSub) {
-      this.updateSub.unsubscribe();
-    }
-    if (this.delSub) {
-      this.delSub.unsubscribe();
-    }
+    this.utils.unsubscribe([
+      this.listSub,
+      this.createSub,
+      this.updateSub,
+      this.delSub
+    ]);
   }
 }

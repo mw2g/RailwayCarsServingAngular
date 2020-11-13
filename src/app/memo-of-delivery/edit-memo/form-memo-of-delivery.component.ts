@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {Observable, Subscription, throwError} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {switchMap} from 'rxjs/operators';
 import {MemoOfDeliveryService} from '../memo-of-delivery.service';
@@ -8,12 +8,12 @@ import {CargoOperation, Customer, DeliveryOfWagon, MemoOfDelivery} from '../../s
 import {AlertService} from '../../shared/service/alert.service';
 import {CustomerService} from '../../reference/service/customer.service';
 import {DatePipe} from '@angular/common';
-import {UtilsService} from '../../shared/service/utils.service.';
+import {UtilsService} from '../../shared/service/utils.service';
 import {ListDeliveryInMemoOfDeliveryComponent} from '../list-delivery-in-memo-of-delivery/list-delivery-in-memo-of-delivery.component';
 import {CargoOperationService} from '../../reference/service/cargo-operation.service';
 
 @Component({
-  selector: 'app-edit-controller-statement',
+  selector: 'app-edit-statement',
   templateUrl: './form-memo-of-delivery.component.html',
   styleUrls: ['./form-memo-of-delivery.component.scss'],
   providers: [DatePipe]
@@ -22,16 +22,17 @@ export class FormMemoOfDeliveryComponent implements OnInit, OnDestroy {
 
   @ViewChild(ListDeliveryInMemoOfDeliveryComponent) listDeliveryInMemoOfDeliveryComponent: ListDeliveryInMemoOfDeliveryComponent;
   memoOfDeliveryId: number;
-  deliveryList: DeliveryOfWagon[] = [];
+  deliveryList: Array<DeliveryOfWagon> = [];
   memoOfDelivery: MemoOfDelivery;
+  enableComment = true;
 
   form: FormGroup;
 
-  private customers: Array<Customer>;
-  private cargoOperations: Array<CargoOperation>;
-  private mSub: Subscription;
-  private customersSub: Subscription;
-  private cargoOperationSub: Subscription;
+  private customers: Observable<Array<Customer>>;
+  private cargoOperations: Observable<Array<CargoOperation>>;
+  private loadSub: Subscription;
+  private createSub: Subscription;
+  private updateSub: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -42,23 +43,15 @@ export class FormMemoOfDeliveryComponent implements OnInit, OnDestroy {
     private alert: AlertService,
     private datePipe: DatePipe,
     private utils: UtilsService
+
   ) {
   }
 
   ngOnInit(): void {
-    this.cargoOperationSub = this.cargoOperationService.getAll().subscribe(data => {
-      this.cargoOperations = data;
-    }, error => {
-      throwError(error);
-    });
+    this.cargoOperations = this.cargoOperationService.getAll();
+    this.customers = this.customerService.getAll();
 
-    this.customersSub = this.customerService.getAll().subscribe(customers => {
-      this.customers = customers;
-    }, error => {
-      throwError(error);
-    });
-
-    this.route.params.pipe(
+    this.loadSub = this.route.params.pipe(
       switchMap((params: Params) => {
         if (params.memoOfDeliveryId) {
           this.memoOfDeliveryId = params.memoOfDeliveryId;
@@ -71,6 +64,7 @@ export class FormMemoOfDeliveryComponent implements OnInit, OnDestroy {
     ).subscribe((memoOfDelivery: MemoOfDelivery) => {
       this.memoOfDelivery = memoOfDelivery;
       this.deliveryList = memoOfDelivery.deliveryOfWagonList;
+      this.enableComment = !!memoOfDelivery.comment;
       this.loadForm();
     });
   }
@@ -80,10 +74,10 @@ export class FormMemoOfDeliveryComponent implements OnInit, OnDestroy {
       memoOfDeliveryId: new FormControl(this.memoOfDelivery.memoOfDeliveryId),
       created: new FormControl(this.memoOfDelivery.created, Validators.required),
       startDate: new FormControl(this.datePipe.transform(this.memoOfDelivery.startDate, 'yyyy-MM-ddTHH:mm'), Validators.required),
-      cargoOperation: new FormControl(this.memoOfDelivery.cargoOperation.operation, Validators.required),
+      cargoOperation: new FormControl(this.memoOfDelivery.cargoOperation, Validators.required),
       customer: new FormControl(this.memoOfDelivery.customer.customerName, Validators.required),
       author: new FormControl(this.memoOfDelivery.author),
-      signer: new FormControl(this.memoOfDelivery.signer.initials),
+      signer: new FormControl(this.memoOfDelivery.signer),
       comment: new FormControl(this.memoOfDelivery.comment),
     });
   }
@@ -98,36 +92,17 @@ export class FormMemoOfDeliveryComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
-    if (this.mSub) {
-      this.mSub.unsubscribe();
-    }
-  }
-
-  // checkForm(): boolean {
-  //   if (this.form.invalid) {
-  //     this.alert.warning('Форма невалидна');
-  //     // this.utils.markFormGroupTouched(this.form);
-  //     return true;
-  //   }
-  //   if (!this.customers.find(customer => customer.customerName === this.form.value.customer)) {
-  //     this.alert.warning('Неверный ввод контрагента');
-  //     this.form.get('customer').setValue('');
-  //     return true;
-  //   }
-  //   return false;
-  // }
-
   update(): void {
-    if (this.utils.checkForm(this.alert, this.form, this.customers)) {
+    if (this.form.invalid) {
+      this.alert.warning('Форма невалидна');
       return;
     }
-    this.mSub = this.memoOfDeliveryService.update({
+    this.updateSub = this.memoOfDeliveryService.update({
       ...this.memoOfDelivery,
       startDate: new Date(this.form.value.startDate),
-      cargoOperation: {operation: this.form.value.cargoOperation},
+      cargoOperation: this.form.value.cargoOperation,
       customer: {customerName: this.form.value.customer},
-      signer: {initials: this.form.value.signer},
+      signer: this.form.value.signer,
       comment: this.form.value.comment
     }).subscribe((data) => {
       this.memoOfDelivery = data;
@@ -142,27 +117,39 @@ export class FormMemoOfDeliveryComponent implements OnInit, OnDestroy {
   }
 
   create(): void {
-    if (this.utils.checkForm(this.alert, this.form, this.customers)) {
+    if (this.form.invalid) {
+      this.alert.warning('Форма невалидна');
       return;
     }
-    this.mSub = this.memoOfDeliveryService.create({
+    this.createSub = this.memoOfDeliveryService.create({
       ...this.memoOfDelivery,
       startDate: new Date(this.form.value.startDate),
-      cargoOperation: {operation: this.form.value.cargoOperation},
-      customer: {customerName: this.form.value.customer},
-      comment: this.form.value.comment,
-      // author: this.form.value.author,
+      cargoOperation: this.form.value.cargoOperation,
+      customer: {customerName: this.form.value.customer}
     }).subscribe((data) => {
       this.memoOfDeliveryId = data.memoOfDeliveryId;
       this.memoOfDelivery = data;
-      this.deliveryList.concat(data.deliveryOfWagonList);
-      this.form.addControl('memoId', new FormControl(data.memoOfDeliveryId));
-      this.form.addControl('created', new FormControl(new Date(data.created)));
-      this.form.addControl('author', new FormControl(data.author));
     }, () => {
       this.alert.danger('Ошибка');
     }, () => {
       this.alert.success('Памятка создана');
+      this.form.markAsPristine();
     });
+  }
+
+  clearComment(): void {
+    this.form.get('comment').reset();
+    this.enableComment = false;
+    if (this.memoOfDelivery.comment) {
+      this.form.markAsDirty();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.utils.unsubscribe([
+      this.loadSub,
+      this.createSub,
+      this.updateSub
+    ]);
   }
 }

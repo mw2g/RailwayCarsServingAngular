@@ -21,7 +21,8 @@
     </tr>
     <tr class="row">
       <th width="100">
-        <button class="fas fa-plus btn btn-sm btn-outline-info" [routerLink]="['/reference', 'customer', 'create']"></button>
+        <button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"
+                [routerLink]="['/reference', 'customer', 'create']"></button>
       </th>
 <!--      <th scope="col">Номер</th>-->
       <th class="col">Наименование</th>
@@ -33,10 +34,11 @@
     <tr class="row" *ngFor="let customer of customers; let idx = index">
       <td width="100">{{ idx + 1 }}</td>
 <!--      <td>{{ customer.customerId }}</td>-->
-      <td class="col"><a [routerLink]="['/reference', 'customer', 'edit', customer.customerId]">{{ customer.customerName }}</a></td>
-      <td class="col">
+      <td class="col"><a [routerLink]="['/reference', 'customer', 'edit', customer.customerId]">{{ customer.customerFullName }}</a></td>
+      <td class="col-2">
         <!-- Button trigger modal -->
-        <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm ml-2" data-toggle="modal" data-target="#deleteModal"
+        <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm ml-2" title="Удалить"
+                data-toggle="modal" data-target="#deleteModal"
                 (click)="setDelete(customer.customerId)">
         </button>
       </td>

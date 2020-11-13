@@ -11,6 +11,10 @@
   border: 1px solid red;
 }
 
+.custom-select:required {
+  border: 1px solid red;
+}
+
 //.form-control:valid {
 //  border: 2px solid green;
 //}

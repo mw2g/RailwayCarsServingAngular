@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 import {RouterModule} from '@angular/router';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SharedModule} from '../shared/shared.module';
-import {ReferenceLayoutComponent} from './shared/components/reference-layout/reference-layout.component';
+// import {ReferenceLayoutComponent} from './shared/components/reference-layout/reference-layout.component';
 import {AuthGuard} from '../admin/shared/services/auth.guard';
 import {ListCustomerComponent} from './customer/list-customer/list-customer.component';
 import {FormCustomerComponent} from './customer/edit-customer/form-customer.component';
@@ -16,10 +16,15 @@ import {ListBaseRateComponent} from './base-rate/list-base-rate/list-base-rate.c
 import {ListWagonTypeComponent} from './wagon-type/list-wagon-type/list-wagon-type.component';
 import {ListCargoOperationComponent} from './cargo-operation/list-cargo-operation/list-cargo-operation.component';
 import {ListIndexToBaseRateComponent} from './index-to-base-rate/list-base-rate/list-index-to-base-rate.component';
+import {ListTimeNormTypeComponent} from './time-norm-type/list-wagon-group/list-time-norm-type.component';
+import {ListTimeNormComponent} from './time-norm/list-time-norm/list-time-norm.component';
+import {ListTariffTypeComponent} from './tariff-type/list-tariff-type/list-tariff-type.component';
+import {ListTariffComponent} from './tariff/list-tariff/list-tariff.component';
+import {ListPenaltyComponent} from './penalty/list-penalty/list-penalty.component';
 
 @NgModule({
   declarations: [
-    ReferenceLayoutComponent,
+    // ReferenceLayoutComponent,
     ListCustomerComponent,
     FormCustomerComponent,
     ListSignerInCustomerComponent,
@@ -29,7 +34,12 @@ import {ListIndexToBaseRateComponent} from './index-to-base-rate/list-base-rate/
     ListBaseRateComponent,
     ListWagonTypeComponent,
     ListCargoOperationComponent,
-    ListIndexToBaseRateComponent
+    ListIndexToBaseRateComponent,
+    ListTimeNormTypeComponent,
+    ListTimeNormComponent,
+    ListTariffTypeComponent,
+    ListTariffComponent,
+    ListPenaltyComponent
   ],
   imports: [
     CommonModule,
@@ -71,6 +81,31 @@ import {ListIndexToBaseRateComponent} from './index-to-base-rate/list-base-rate/
       {
         path: 'config/base-rate', component: MainLayoutComponent, children: [
           {path: '', component: ListBaseRateComponent, canActivate: [AuthGuard]}
+        ]
+      },
+      {
+        path: 'config/time-norm-type', component: MainLayoutComponent, children: [
+          {path: '', component: ListTimeNormTypeComponent, canActivate: [AuthGuard]}
+        ]
+      },
+      {
+        path: 'config/time-norm', component: MainLayoutComponent, children: [
+          {path: '', component: ListTimeNormComponent, canActivate: [AuthGuard]}
+        ]
+      },
+      {
+        path: 'config/tariff-type', component: MainLayoutComponent, children: [
+          {path: '', component: ListTariffTypeComponent, canActivate: [AuthGuard]}
+        ]
+      },
+      {
+        path: 'config/tariff', component: MainLayoutComponent, children: [
+          {path: '', component: ListTariffComponent, canActivate: [AuthGuard]}
+        ]
+      },
+      {
+        path: 'config/penalty', component: MainLayoutComponent, children: [
+          {path: '', component: ListPenaltyComponent, canActivate: [AuthGuard]}
         ]
       },
       {

@@ -6,7 +6,7 @@ import {ActivatedRoute, Params, Router} from '@angular/router';
 import {AlertService} from '../../../shared/service/alert.service';
 import {switchMap} from 'rxjs/operators';
 import {CustomerService} from '../../service/customer.service';
-import {UtilsService} from '../../../shared/service/utils.service.';
+import {UtilsService} from '../../../shared/service/utils.service';
 import {ListSignerInCustomerComponent} from '../list-signer-in-customer/list-signer-in-customer.component';
 
 @Component({
@@ -23,9 +23,9 @@ export class FormCustomerComponent implements OnInit, OnDestroy {
   customerId: number;
   signers: Signer[];
 
-  uSub: Subscription;
-  cSub: Subscription;
-  iSub: Subscription;
+  updateSub: Subscription;
+  createSub: Subscription;
+  loadSub: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -37,7 +37,7 @@ export class FormCustomerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.iSub = this.route.params.pipe(
+    this.loadSub = this.route.params.pipe(
       switchMap((params: Params) => {
         if (params.customerId) {
           this.customerId = params.customerId;
@@ -80,10 +80,9 @@ export class FormCustomerComponent implements OnInit, OnDestroy {
   update(): void {
     if (this.form.invalid) {
       this.alert.warning('Форма невалидна');
-      this.utils.markFormGroupTouched(this.form);
       return;
     }
-    this.uSub = this.customerService.update({
+    this.updateSub = this.customerService.update({
       ...this.customer,
       customerName: this.form.value.customerName,
       customerFullName: this.form.value.customerFullName
@@ -101,10 +100,9 @@ export class FormCustomerComponent implements OnInit, OnDestroy {
   create(): void {
     if (this.form.invalid) {
       this.alert.warning('Форма невалидна');
-      this.utils.markFormGroupTouched(this.form);
       return;
     }
-    this.cSub = this.customerService.create({
+    this.createSub = this.customerService.create({
       customerName: this.form.value.customerName,
       customerFullName: this.form.value.customerFullName
     }).subscribe((data) => {
@@ -123,14 +121,10 @@ export class FormCustomerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.iSub) {
-      this.iSub.unsubscribe();
-    }
-    if (this.cSub) {
-      this.cSub.unsubscribe();
-    }
-    if (this.uSub) {
-      this.uSub.unsubscribe();
-    }
+    this.utils.unsubscribe([
+      this.loadSub,
+      this.createSub,
+      this.updateSub
+    ]);
   }
 }

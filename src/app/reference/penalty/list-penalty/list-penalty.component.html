@@ -1,0 +1,108 @@
+<!--<nav class="navbar navbar-expand-md navbar-light bg-light">-->
+<!--  <div class="navbar-collapse" id="navbarSupportedContent">-->
+<!--    <ul class="navbar-nav mr-auto">-->
+<!--      <li>-->
+<!--        <input type="button" value="Создать" class="btn btn-outline-info btn-sm mr-2" (click)="addNew()"-->
+<!--        [disabled]="!enableForm">-->
+<!--      </li>-->
+<!--    </ul>-->
+<!--  </div>-->
+<!--</nav>-->
+
+  <!--  *ngIf="deliveries.length; else loading"-->
+  <table class="table table-sm table-bordered border-0"  style="text-align: center">
+    <thead class="thead-light">
+    <tr class="row">
+      <strong>Штраф</strong>
+    </tr>
+    <tr class="row">
+      <th width="80">
+        <button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"
+                (click)="addNew()" [disabled]="!enableForm"></button>
+      </th>
+      <th width="230">Дата актуальности</th>
+      <th width="100">Штраф</th>
+      <th class="col">Тип вагона</th>
+      <th width="120">Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <tr class="row" *ngFor="let penalty of penaltyList; let idx = index">
+      <ng-template [ngTemplateOutlet]="loadTemplate(penalty)"
+                   [ngTemplateOutletContext]="{ $implicit: penalty, idx: idx}">
+      </ng-template>
+
+
+    </tr>
+    </tbody>
+  </table>
+
+<!--шаблон для чтения-->
+<ng-template #readOnlyTemplate let-penalty let-idx="idx">
+  <td width="80">{{ idx + 1 }}</td>
+  <td width="230">{{ penalty.relevanceDate | date: 'dd.MM.yyyy HH:mm'}}</td>
+  <td width="100">{{ penalty.penalty }}</td>
+  <td class="col">{{ penalty.wagonType.typeName }}</td>
+  <td width="120">
+    <button type="button" class="far fa-edit btn btn-outline-info btn-sm mr-1 mt-1" title="Редактировать"
+            [disabled]="!enableForm" (click)="edit(penalty)"></button>
+    <!-- Button trigger modal -->
+    <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm mt-1" title="Удалить"
+            data-toggle="modal" data-target="#deleteModal"
+            [disabled]="!enableForm" (click)="setDelete(penalty.penaltyId)"></button>
+  </td>
+</ng-template>
+
+<!--шаблон для редактирования-->
+<ng-template #editTemplate let-penalty let-idx="idx">
+  <td width="100">{{ idx + 1 }}</td>
+<!--  <td width="100">{{ baseRate.groupId }}</td>-->
+  <td width="230">
+    <input type="datetime-local" [ngModel]="editedPenalty.relevanceDate | date: 'yyyy-MM-ddTHH:mm'"
+           (ngModelChange)="editedPenalty.relevanceDate = $event" class="form-control form-control-sm ms-valid_input"
+           appMyAutofocus #relevanceDate="ngModel" required>
+  </td>
+  <td width="100">
+    <input type="text" [(ngModel)]="editedPenalty.penalty" class="form-control form-control-sm ms-valid_input"
+           #norm="ngModel" required>
+  </td>
+  <td class="col">
+    <select class="custom-select form-control form-control-sm ms-valid_input"
+            [(ngModel)]="editedPenalty.wagonType.typeName" #normType="ngModel" required>
+      <option *ngFor="let wagonType of wagonTypeList | async" value="{{ wagonType.typeName }}">{{ wagonType.typeName }}</option>
+    </select>
+  </td>
+  <td width="120">
+    <button (click)="save()" class="fas fa-check btn btn-outline-success btn-sm mr-1 mt-1" title="Сохранить"
+            [disabled]="relevanceDate.invalid || norm.invalid || normType.invalid"></button>
+    <button (click)="cancel()" class="fas fa-undo-alt btn btn-outline-warning btn-sm mt-1" title="Отменить"></button>
+  </td>
+</ng-template>
+
+<!--Template loading-->
+<ng-template #loading>
+  <p class="text-center">Загрузка...</p>
+</ng-template>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Удаление</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Удалить штраф номер {{ penaltyIdToDelete }} ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="unsetDelete()">Отменить</button>
+        <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="delete()">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>

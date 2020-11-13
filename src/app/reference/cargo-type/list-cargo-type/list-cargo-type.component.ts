@@ -1,16 +1,17 @@
-import {Component, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {CargoType} from '../../../shared/interfaces';
 import {Subscription, throwError} from 'rxjs';
 import {Router} from '@angular/router';
 import {AlertService} from '../../../shared/service/alert.service';
 import {CargoTypeService} from '../../service/cargo-type.service';
+import {UtilsService} from '../../../shared/service/utils.service';
 
 @Component({
   selector: 'app-cargo-type',
   templateUrl: './list-cargo-type.component.html',
   styleUrls: ['./list-cargo-type.component.scss']
 })
-export class ListCargoTypeComponent implements OnInit, OnDestroy{
+export class ListCargoTypeComponent implements OnInit, OnDestroy {
 
   @ViewChild('readOnlyTemplate', {static: false}) readOnlyTemplate: TemplateRef<any>;
   @ViewChild('editTemplate', {static: false}) editTemplate: TemplateRef<any>;
@@ -19,24 +20,59 @@ export class ListCargoTypeComponent implements OnInit, OnDestroy{
   editedCargoType: CargoType;
   cargoTypeList: CargoType[];
   enableForm = true;
+  private sort = true;
   private isNewRecord: boolean;
   private listSub: Subscription;
-  private delSub: Subscription;
-  private updateSub: Subscription;
   private createSub: Subscription;
+  private updateSub: Subscription;
+  private delSub: Subscription;
 
   constructor(private cargoTypeService: CargoTypeService,
               private router: Router,
-              private alert: AlertService) {
+              private alert: AlertService,
+              private utils: UtilsService
+  ) {
   }
+
+
+  showFixedTableHeader = false;
+
+  @HostListener('window:scroll')
+  onScroll(): void {
+    const pageTopOffset = window.pageYOffset;
+
+    if (pageTopOffset > 30) {
+      this.showFixedTableHeader = true;
+    } else {
+      this.showFixedTableHeader = false;
+    }
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    //Do nothing.
+    //It will automatically trigger to update the bound properties in template.
+  }
+
 
   ngOnInit(): void {
     this.listSub = this.cargoTypeService.getAll().subscribe(types => {
       this.cargoTypeList = types;
+      this.sortList();
     }, error => {
       throwError(error);
     });
 
+  }
+
+  sortList(): void {
+    if (this.sort) {
+      this.cargoTypeList.sort((a, b) => a.typeName > b.typeName ? 1 : -1);
+      this.sort = false;
+    } else {
+      this.cargoTypeList.sort((a, b) => a.typeName < b.typeName ? 1 : -1);
+      this.sort = true;
+    }
   }
 
   // загружаем один из двух шаблонов
@@ -141,17 +177,11 @@ export class ListCargoTypeComponent implements OnInit, OnDestroy{
 
 
   ngOnDestroy(): void {
-    if (this.listSub) {
-      this.listSub.unsubscribe();
-    }
-    if (this.createSub) {
-      this.createSub.unsubscribe();
-    }
-    if (this.updateSub) {
-      this.updateSub.unsubscribe();
-    }
-    if (this.delSub) {
-      this.delSub.unsubscribe();
-    }
+    this.utils.unsubscribe([
+      this.listSub,
+      this.createSub,
+      this.updateSub,
+      this.delSub
+    ]);
   }
 }

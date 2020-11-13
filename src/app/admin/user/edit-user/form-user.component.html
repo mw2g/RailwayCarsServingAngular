@@ -21,7 +21,7 @@
       </li>
     </ul>
     <span *ngIf="user && user.userId">
-        Пользователь {{ user.userId }} от {{ form.value.created * 1000 | date: 'dd.MM.yyyy'}}
+        Пользователь {{ user.userId }} от {{ form.value.created | date: 'dd.MM.yyyy'}}
       </span>
   </div>
 </nav>

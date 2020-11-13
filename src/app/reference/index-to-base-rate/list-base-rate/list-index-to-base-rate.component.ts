@@ -2,10 +2,9 @@ import {Component, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/cor
 import {Subscription, throwError} from 'rxjs';
 import {Router} from '@angular/router';
 import {AlertService} from '../../../shared/service/alert.service';
-import {BaseRate, IndexToBaseRate, WagonGroup} from '../../../shared/interfaces';
-import {BaseRateService} from '../../service/base-rate.service';
-import {WagonGroupService} from '../../service/wagon-group.service';
+import {IndexToBaseRate} from '../../../shared/interfaces';
 import {IndexToBaseRateService} from '../../service/index-to-base-rate.service';
+import {UtilsService} from '../../../shared/service/utils.service';
 
 @Component({
   selector: 'app-list-base-rate',
@@ -29,7 +28,9 @@ export class ListIndexToBaseRateComponent implements OnInit, OnDestroy {
 
   constructor(private indexToBaseRateService: IndexToBaseRateService,
               private router: Router,
-              private alert: AlertService) {
+              private alert: AlertService,
+              private utils: UtilsService
+  ) {
   }
 
   ngOnInit(): void {
@@ -146,17 +147,11 @@ export class ListIndexToBaseRateComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy(): void {
-    if (this.listSub) {
-      this.listSub.unsubscribe();
-    }
-    if (this.createSub) {
-      this.createSub.unsubscribe();
-    }
-    if (this.updateSub) {
-      this.updateSub.unsubscribe();
-    }
-    if (this.delSub) {
-      this.delSub.unsubscribe();
-    }
+    this.utils.unsubscribe([
+      this.listSub,
+      this.createSub,
+      this.updateSub,
+      this.delSub
+    ]);
   }
 }

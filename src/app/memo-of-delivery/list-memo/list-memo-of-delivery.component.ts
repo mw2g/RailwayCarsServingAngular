@@ -4,9 +4,10 @@ import {Subscription, throwError} from 'rxjs';
 import {Router} from '@angular/router';
 import {AlertService} from '../../shared/service/alert.service';
 import {MemoOfDeliveryService} from '../memo-of-delivery.service';
+import {UtilsService} from '../../shared/service/utils.service';
 
 @Component({
-  selector: 'app-list-controller-statement',
+  selector: 'app-list-memo-of-delivery',
   templateUrl: './list-memo-of-delivery.component.html',
   styleUrls: ['./list-memo-of-delivery.component.scss']
 })
@@ -19,7 +20,9 @@ export class ListMemoOfDeliveryComponent implements OnInit, OnDestroy{
 
   constructor(private memoService: MemoOfDeliveryService,
               public router: Router,
-              private alert: AlertService) {
+              private alert: AlertService,
+              private utils: UtilsService
+  ) {
   }
 
   ngOnInit(): void {
@@ -30,25 +33,14 @@ export class ListMemoOfDeliveryComponent implements OnInit, OnDestroy{
     });
   }
 
-  ngOnDestroy(): void {
-    if (this.memosSub) {
-      this.memosSub.unsubscribe();
-    }
-    if (this.delSub) {
-      this.delSub.unsubscribe();
-    }
-  }
-
   delete(): void {
     this.delSub = this.memoService.delete(this.memoIdToDelete).subscribe((data) => {
-      this.alert.success(data.message);
       this.memos = this.memos.filter(memo => memo.memoOfDeliveryId !== this.memoIdToDelete);
-      // this.router.navigate(['/admin', 'memo']);
       this.unsetDelete();
     }, () => {
       this.alert.danger('Ошибка');
     }, () => {
-      this.alert.success('Пользователь удален');
+      this.alert.success('Памятка подачи удалена');
     });
   }
 
@@ -65,5 +57,12 @@ export class ListMemoOfDeliveryComponent implements OnInit, OnDestroy{
       return this.memos.find(value => value.memoOfDeliveryId === memoId).memoOfDeliveryId;
     }
     return 0;
+  }
+
+  ngOnDestroy(): void {
+    this.utils.unsubscribe([
+      this.memosSub,
+      this.delSub
+    ]);
   }
 }

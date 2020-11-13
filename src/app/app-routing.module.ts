@@ -30,8 +30,8 @@ const routes: Routes = [
     path: 'reference', loadChildren: () => import('./reference/reference.module').then(m => m.ReferenceModule)
   },
   {
-    path: 'controller-statement',
-    loadChildren: () => import('./controller-statement/controller-statement.module').then(m => m.ControllerStatementModule)
+    path: 'statement',
+    loadChildren: () => import('./statement/statement.module').then(m => m.StatementModule)
   }
 ];
 

@@ -1,110 +1,107 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white">
+<nav class="navbar navbar-expand-lg navbar-light bg-white row">
   <div class="navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active" *ngIf="form && !form.pristine">
         <div *ngIf="memoOfDispatchId">
-          <button (click)="update()" class="btn btn-outline-danger btn-sm mr-2"
-                  [disabled]="listDeliveryInMemoOfDispatchComponent.editedDelivery">Сохранить изменения
+          <button type="button" (click)="update()" title="Сохранить" class="fas fa-check btn btn-outline-success mr-2"
+                  [disabled]="listDeliveryInMemoOfDispatchComponent
+                  && listDeliveryInMemoOfDispatchComponent.editedDelivery">
           </button>
-          <button (click)="loadForm()" class="btn btn-outline-danger btn-sm mr-2">Отменить</button>
+          <button type="button" (click)="loadForm()" title="Отменить" class="fas fa-undo-alt btn btn-outline-warning mr-2"></button>
         </div>
         <div *ngIf="!memoOfDispatchId">
-          <a (click)="create()" class="btn btn-outline-primary btn-sm mr-2">Создать</a>
+          <button type="button" (click)="create()" title="Сохранить" class="fas fa-check btn btn-outline-success mr-2"></button>
         </div>
       </li>
       <li>
-        <a class="btn btn-outline-info btn-sm mr-2" [routerLink]="['/memo', 'dispatch']">Закрыть</a>
+        <a class="fas fa-arrow-left btn btn-outline-info mr-2" title="Назад" [routerLink]="['/memo', 'delivery']"></a>
       </li>
       <li *ngIf="memoOfDispatchId">
-        <a class="btn btn-outline-info btn-sm" [routerLink]="['/memo', 'dispatch', 'print-form', memoOfDispatchId]">Печать</a>
+        <a class="fas fa-print btn btn-outline-info mr-2" title="Печать" [routerLink]="['/memo', 'delivery', 'print-form', memoOfDispatchId]">
+        </a>
+      </li>
+      <li *ngIf="!enableComment && memoOfDispatchId">
+        <button type="button" class="far fa-comment-alt btn btn-outline-info" title="Коментарий" (click)="enableComment=true">
+        </button>
       </li>
     </ul>
     <span *ngIf="memoOfDispatch && memoOfDispatchId" class="ml-5">
-        Памятка подачи {{ memoOfDispatch.memoOfDispatchId }} от {{ form.value.created * 1000 | date: 'dd.MM.yyyy'}}
-      Автор: {{ memoOfDispatch.author }}
+        Памятка уборки: {{ memoOfDispatch.memoOfDispatchId }} Автор: {{ memoOfDispatch.author }}
       </span>
+<!--      {{ memoOfDispatch.created * 1000 | date: 'dd.MM.yyyy'}}-->
   </div>
 </nav>
 
-<div *ngIf="form; else loading">
+<div *ngIf="form; else loading" class="p-0">
   <form [formGroup]="form" (ngSubmit)="update()">
-    <!--    <div *ngIf="form.get('memoOfDispatchId');" class="form-row">-->
-    <!--      <div class="form-group col-md-4">-->
-    <!--        <label for="userId">Номер</label>-->
-    <!--        <input type="text" class="form-control form-control-sm-plaintext font-weight-bold" disabled-->
-    <!--               id="userId" value="{{ form.value.memoOfDispatchId }}">-->
-    <!--      </div>-->
-    <!--      <div class="form-group col-md-4"-->
-    <!--           [ngClass]="{invalid: form.get('endDate').touched && form.get('endDate').invalid}">-->
-    <!--        <label for="created">Дата создания</label>-->
-    <!--        <input type="datetime-local" class="form-control form-control-sm font-weight-bold"-->
-    <!--               id="created" formControlName="created">-->
-    <!--        &lt;!&ndash;               value="{{ form.value.created * 1000 | date: 'HH:mm dd.MM.yyy'}}">&ndash;&gt;-->
-    <!--      </div>-->
-    <!--      <div class="form-group col-md-4">-->
-    <!--        <label for="author">Автор</label>-->
-    <!--        <input type="text" class="form-control form-control-sm-plaintext font-weight-bold" disabled-->
-    <!--               id="author" value="{{ form.value.author }}">-->
-    <!--      </div>-->
-    <!--    </div>-->
 
-    <div class="form-row">
-      <div class="form-group col-md-3"
+    <div class="row">
+      <div class="form-group col-2.5 pl-0 mb-0"
            [ngClass]="{invalid: form.get('endDate').touched && form.get('endDate').invalid}">
         <label class="small" for="endDate">Окончание</label>
-        <input type="datetime-local" class="form-control form-control-sm" id="endDate" formControlName="endDate">
+        <input type="datetime-local" class="form-control form-control-sm" id="endDate" formControlName="endDate"
+               [required]="form.get('endDate').hasError('required')">
       </div>
 
-      <div class="form-group col-md-3">
+      <div class="form-group col col-md-3 mb-0">
         <label class="small" for="cargoOperation">Операция</label>
         <div class="input-group mb-3">
-          <select class="custom-select custom-select-sm" id="cargoOperation" formControlName="cargoOperation">
-            <option *ngFor="let operation of cargoOperations" value="{{ operation.operation }}">{{ operation.operation }}</option>
+          <select class="custom-select custom-select-sm" id="cargoOperation" formControlName="cargoOperation"
+                  [required]="form.get('cargoOperation').hasError('required')">
+            <option *ngFor="let operation of cargoOperations | async" value="{{ operation.operationName }}">{{ operation.operationName }}</option>
           </select>
         </div>
       </div>
 
-      <div class="form-group col-md-3"
+      <div class="form-group col-3 mb-0"
            [ngClass]="{invalid: form.get('customer').touched && form.get('customer').invalid}">
         <label class="small" for="customer">Контрагент</label>
         <div class="input-group">
-          <input type="text" class="form-control form-control-sm" id="customer" formControlName="customer"
-                 list=customerList autocomplete="off" [required]="form.get('customer').hasError('required')">
-          <div class="input-group-append">
-            <button class="fas fa-times btn btn-outline-secondary btn-sm" type="button"
-                    (click)="form.get('customer').reset(); form.markAsDirty()">
-            </button>
-          </div>
+          <select class="custom-select custom-select-sm" id="customer" formControlName="customer"
+                  [required]="form.get('customer').hasError('required')">
+            <option *ngFor="let customer of customers | async" value="{{ customer.customerName }}">{{ customer.customerName }}</option>
+          </select>
         </div>
-        <datalist id=customerList>
-          <option *ngFor="let customer of customers">{{ customer.customerName }}</option>
-        </datalist>
       </div>
 
-      <div *ngIf="memoOfDispatchId" class="form-group col-md-3">
+      <div *ngIf="memoOfDispatchId" class="form-group col mb-0">
         <label class="small" for="signer">Подписант</label>
         <div class="input-group">
-          <input type="text" class="form-control form-control-sm" id="signer" formControlName="signer" list=signerList
-                 autocomplete="off">
-          <div class="input-group-append">
-            <button class="fas fa-times btn btn-outline-secondary btn-sm" type="button" (click)="form.markAsDirty()"
-                    onclick="document.getElementById('signer').value = ''">
+          <select class="custom-select custom-select-sm" id="signer" formControlName="signer"
+                  [required]="form.get('signer').hasError('required')">
+            <option value="">Не выбран</option>
+            <option *ngFor="let signer of memoOfDispatch.customer.signerList"
+                    value="{{ signer.initials }}">{{ signer.initials }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div *ngIf="memoOfDispatchId" class="form-group col-2 pr-0 mb-0">
+        <label class="small" for="statement">Ведомость</label>
+        <div class="input-group">
+          <input type="number" class="form-control form-control-sm ms-no_arrows" id="statement"
+                 formControlName="statement" autocomplete="off">
+          <div class="input-group-append" *ngIf="memoOfDispatch && memoOfDispatch.statement">
+            <button class="fas fa-link btn btn-outline-secondary btn-sm" title="Открыть" type="button"
+                    [routerLink]="['/statement', 'edit', memoOfDispatch.statement]">
+            </button>
+          </div>
+          <div class="input-group-append" *ngIf="memoOfDispatch && memoOfDispatch.statement">
+            <button class="fas fa-unlink btn btn-outline-secondary btn-sm" title="Открепить" type="button"
+                    (click)="form.get('statement').reset(); form.markAsDirty()">
             </button>
           </div>
         </div>
-        <datalist id=signerList>
-          <option *ngFor="let signer of memoOfDispatch.customer.signerList">{{ signer.initials }}</option>
-        </datalist>
       </div>
     </div>
 
-    <div class="form-row">
+    <div *ngIf="enableComment || (memoOfDispatch && memoOfDispatch.comment)" class="row">
       <!--      <label for="comment" class="col-sm-3.5 col-form-label col-form-label-sm">Коментарий</label>-->
-      <div class="input-group input-group-sm col">
-        <input id="comment" type="text" formControlName="comment" class="form-control">
+      <div class="input-group input-group-sm col pb-3 px-0 pt-0">
+        <input id="comment" type="text" formControlName="comment" class="form-control form-control-sm">
         <div class="input-group-append">
-          <button class="fas fa-times btn btn-outline-secondary"
-                  (click)="form.get('comment').reset(); form.markAsDirty()">
+          <button class="fas fa-times btn btn-outline-secondary" type="button" title="Очистить"
+                  (click)="clearComment()">
           </button>
         </div>
       </div>
@@ -112,7 +109,7 @@
   </form>
 </div>
 
-<app-delivery-in-memo-of-dispatch class="container" *ngIf="memoOfDispatchId"
+<app-delivery-in-memo-of-dispatch class="container p-0" *ngIf="memoOfDispatchId"
                                   [memoOfDispatch]="memoOfDispatch" [memoOfDispatchId]="memoOfDispatchId"
                                   [enableForm]="form && form.pristine" [deliveryList]="deliveryList">
 </app-delivery-in-memo-of-dispatch>

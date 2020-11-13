@@ -6,7 +6,7 @@ import {ActivatedRoute, Params, Router} from '@angular/router';
 import {AlertService} from '../../../shared/service/alert.service';
 import {switchMap} from 'rxjs/operators';
 import {CustomerService} from '../../service/customer.service';
-import {UtilsService} from '../../../shared/service/utils.service.';
+import {UtilsService} from '../../../shared/service/utils.service';
 import {CargoTypeService} from '../../service/cargo-type.service';
 
 @Component({

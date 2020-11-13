@@ -1,9 +1,10 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {DeliveryOfWagon, MemoOfDelivery} from '../../shared/interfaces';
+import {DeliveryOfWagon} from '../../shared/interfaces';
 import {Subscription, throwError} from 'rxjs';
 import {Router} from '@angular/router';
 import {AlertService} from '../../shared/service/alert.service';
 import {DeliveryOfWagonService} from '../delivery-of-wagon.service';
+import {UtilsService} from '../../shared/service/utils.service';
 
 @Component({
   selector: 'app-delivery-of-wagon',
@@ -19,24 +20,17 @@ export class ListDeliveryOfWagonComponent implements OnInit, OnDestroy{
 
   constructor(private deliveryService: DeliveryOfWagonService,
               public router: Router,
-              private alert: AlertService) {
+              private alert: AlertService,
+              private utils: UtilsService
+) {
   }
 
   ngOnInit(): void {
-    this.deliveriesSub = this.deliveryService.getAllDeliveries().subscribe(deliverys => {
-      this.deliveries = deliverys;
+    this.deliveriesSub = this.deliveryService.getAllDeliveries().subscribe(deliveries => {
+      this.deliveries = deliveries;
     }, error => {
       throwError(error);
     });
-  }
-
-  ngOnDestroy(): void {
-    if (this.deliveriesSub) {
-      this.deliveriesSub.unsubscribe();
-    }
-    if (this.delSub) {
-      this.delSub.unsubscribe();
-    }
   }
 
   delete(): void {
@@ -61,8 +55,15 @@ export class ListDeliveryOfWagonComponent implements OnInit, OnDestroy{
 
   getById(deliveryId: number): string {
     if (deliveryId) {
-      return this.deliveries.find(value => value.deliveryId === deliveryId).wagon.wagonNumber;
+      return this.deliveries.find(value => value.deliveryId === deliveryId).wagon;
     }
     return '';
+  }
+
+  ngOnDestroy(): void {
+    this.utils.unsubscribe([
+      this.deliveriesSub,
+      this.delSub
+    ]);
   }
 }

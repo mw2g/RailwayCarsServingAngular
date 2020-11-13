@@ -1,0 +1,160 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white row">
+  <div class="navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active" *ngIf="form && !form.pristine">
+        <div *ngIf="statementId">
+          <button type="button" (click)="update()" title="Сохранить" class="fas fa-check btn btn-outline-success mr-2"
+                  [disabled]="listMemoInStatementComponent
+                  && listMemoInStatementComponent.editedMemo">
+          </button>
+          <button type="button" (click)="loadForm()" title="Отменить"
+                  class="fas fa-undo-alt btn btn-outline-warning mr-2"></button>
+        </div>
+        <div *ngIf="!statementId">
+          <button type="button" (click)="create()" title="Сохранить"
+                  class="fas fa-check btn btn-outline-success mr-2"></button>
+        </div>
+      </li>
+      <li>
+        <a class="fas fa-arrow-left btn btn-outline-info mr-2" title="Назад"
+           [routerLink]="['/statement']"></a>
+      </li>
+      <li *ngIf="statementId">
+        <a class="fas fa-print btn btn-outline-info mr-2" title="Печать"
+           [routerLink]="['/statement', 'print-form', statementId]">
+        </a>
+      </li>
+      <li *ngIf="!enableComment && statementId">
+        <button type="button" class="far fa-comment-alt btn btn-outline-info" title="Коментарий"
+                (click)="enableComment=true">
+        </button>
+      </li>
+    </ul>
+    <span *ngIf="statement && statement.statementId" class="ml-5">
+        Памятка подачи {{ statement.statementId }} Автор: {{ statement.author }}
+<!--      от {{ form.value.created * 1000 | date: 'dd.MM.yyyy'}}-->
+    </span>
+  </div>
+</nav>
+
+<div *ngIf="form; else loading">
+  <form [formGroup]="form" (ngSubmit)="update()">
+    <div class="row">
+      <div class="form-group col-3 pl-0 mb-0"
+           [ngClass]="{invalid: form.get('created').touched && form.get('created').invalid}">
+        <label class="small" for="created">Дата</label>
+        <input type="datetime-local" class="form-control form-control-sm" id="created" formControlName="created"
+               [required]="form.get('created').hasError('required')">
+      </div>
+
+      <div class="form-group col-3 mb-0">
+        <label class="small" for="cargoOperation">Грузовая операция</label>
+        <div class="input-group mb-3">
+          <select class="custom-select custom-select-sm" id="cargoOperation" formControlName="cargoOperation">
+            <option *ngFor="let operation of cargoOperations | async"
+                    value="{{ operation.operationName }}">{{ operation.operationName }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group col-3 mb-0"
+           [ngClass]="{invalid: form.get('customer').touched && form.get('customer').invalid}">
+        <label class="small" for="customer">Контрагент</label>
+        <div class="input-group">
+          <input type="text" class="form-control form-control-sm" id="customer" formControlName="customer"
+                 list=customerList autocomplete="off" [required]="form.get('customer').hasError('required')">
+          <div class="input-group-append">
+            <button class="fas fa-times btn btn-outline-secondary btn-sm" type="button"
+                    (click)="form.get('customer').reset(); form.markAsDirty()">
+              <!--                    onclick="document.getElementById('customer').value = ''"-->
+            </button>
+          </div>
+        </div>
+        <datalist id=customerList>
+          <option *ngFor="let customer of customers | async">{{ customer.customerName }}</option>
+        </datalist>
+      </div>
+
+      <div *ngIf="statementId" class="form-group col-3 mb-0">
+        <label class="small" for="signer">Подписант</label>
+        <div class="input-group">
+          <input type="text" class="form-control form-control-sm" id="signer" formControlName="signer" list=signerList
+                 autocomplete="off">
+          <div class="input-group-append">
+            <button class="fas fa-times btn btn-outline-secondary btn-sm" type="button"
+                    (click)="form.get('signer').reset(); form.markAsDirty()">
+            </button>
+          </div>
+        </div>
+        <datalist id=signerList>
+          <option *ngFor="let signer of form.value.customer.signerList">{{ signer.initials }}</option>
+        </datalist>
+      </div>
+    </div>
+
+    <div class="row" *ngIf="statementRate">
+      <div class="form-group col pl-0 mb-0">
+        <label class="small" for="cargoOperation">Норма подачи уборки</label>
+        <div class="input-group mb-3">
+<!--          <input type="number" class="small form-control-plaintext" disabled id="deliveryDispatchTimeNorm" formControlName="deliveryDispatchTimeNorm">-->
+          <span>{{ statementRate.deliveryDispatchTimeNorm.norm }} ч.</span>
+        </div>
+      </div>
+
+      <div class="form-group col mb-0">
+        <label class="small" for="cargoOperation">Норма оборота</label>
+        <div class="input-group mb-3">
+<!--          <input type="number" class="small" id="turnoverTimeNorm" formControlName="turnoverTimeNorm">-->
+          <span>{{ statementRate.turnoverTimeNorm.norm }} ч.</span>
+        </div>
+      </div>
+
+      <div class="form-group col mb-0">
+        <label class="small" for="cargoOperation">Маневровый тариф</label>
+        <div class="input-group mb-3">
+<!--          <input type="number" class="small" id="shuntingTariff" formControlName="shuntingTariff">-->
+          <span>{{ statementRate.shuntingTariff.tariff }} р.</span>
+        </div>
+      </div>
+
+      <div class="form-group col mb-0">
+        <label class="small" for="cargoOperation">Тариф подачи уборки</label>
+        <div class="input-group mb-3">
+<!--          <input type="number" class="small" id="deliveryDispatchTariff" formControlName="deliveryDispatchTariff">-->
+          <span>{{ statementRate.deliveryDispatchTariff.tariff }} р.</span>
+        </div>
+      </div>
+
+      <div class="form-group col mb-0 pr-0">
+        <label class="small" for="cargoOperation">Индекс к ставке</label>
+        <div class="input-group mb-3">
+<!--          <input type="number" class="small" id="indexToBaseRate" formControlName="indexToBaseRate">-->
+          <span>{{ statementRate.indexToBaseRate.indexToRate }}</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div *ngIf="enableComment || (statement && statement.comment)" class="row">
+      <!--      <label for="comment" class="col-sm-3.5 col-form-label col-form-label-sm">Коментарий</label>-->
+      <div class="input-group input-group-sm col pb-3 px-0 pt-0">
+        <input id="comment" type="text" formControlName="comment" class="form-control form-control-sm">
+        <div class="input-group-append">
+          <button class="fas fa-times btn btn-outline-secondary" type="button" title="Очистить"
+                  (click)="clearComment()">
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<app-memo-in-statement class="container p-0" *ngIf="statementId" [statement]="statement"
+                                  [enableForm]="form && form.pristine" [statementId]="statementId"
+                                  [memoList]="memoList" [statementRate]="statementRate">
+</app-memo-in-statement>
+
+<ng-template #loading>
+  <p class="text-center">Идёт загрузка...</p>
+</ng-template>

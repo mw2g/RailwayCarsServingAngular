@@ -1,10 +1,11 @@
 import {Component, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {Subscription, throwError} from 'rxjs';
+import {Observable, Subscription, throwError} from 'rxjs';
 import {Router} from '@angular/router';
 import {AlertService} from '../../../shared/service/alert.service';
 import {WagonTypeService} from '../../service/wagon-type.service';
 import {WagonGroup, WagonType} from '../../../shared/interfaces';
 import {WagonGroupService} from '../../service/wagon-group.service';
+import {UtilsService} from '../../../shared/service/utils.service';
 
 @Component({
   selector: 'app-list-wagon-type',
@@ -19,27 +20,25 @@ export class ListWagonTypeComponent implements OnInit, OnDestroy {
   wagonTypeIdToDelete: number;
   editedWagonType: WagonType;
   wagonTypeList: WagonType[];
-  wagonGroupList: WagonGroup[];
+  wagonGroupList: Observable<Array<WagonGroup>>;
   enableForm = true;
   private isNewRecord: boolean;
   private wagonTypeListSub: Subscription;
-  private wagonGroupListSub: Subscription;
-  private delSub: Subscription;
-  private updateSub: Subscription;
   private createSub: Subscription;
+  private updateSub: Subscription;
+  private delSub: Subscription;
 
   constructor(private wagonTypeService: WagonTypeService,
               private wagonGroupService: WagonGroupService,
               private router: Router,
-              private alert: AlertService) {
+              private alert: AlertService,
+              private utils: UtilsService
+  ) {
   }
 
   ngOnInit(): void {
-    this.wagonGroupListSub = this.wagonGroupService.getAll().subscribe(groups => {
-      this.wagonGroupList = groups;
-    }, error => {
-      throwError(error);
-    });
+    this.wagonGroupList = this.wagonGroupService.getAll();
+
     this.wagonTypeListSub = this.wagonTypeService.getAll().subscribe(types => {
       this.wagonTypeList = types;
     }, error => {
@@ -62,7 +61,7 @@ export class ListWagonTypeComponent implements OnInit, OnDestroy {
     this.editedWagonType = {
       typeId: 0,
       typeName: '',
-      wagonGroup: {groupId: 0 }
+      wagonGroup: {groupId: 0}
     };
     this.wagonTypeList.push(this.editedWagonType);
     this.isNewRecord = true;
@@ -76,7 +75,7 @@ export class ListWagonTypeComponent implements OnInit, OnDestroy {
     this.editedWagonType = {
       typeId: wagonType.typeId,
       typeName: wagonType.typeName,
-      wagonGroup: { groupName: wagonType.wagonGroup.groupName}
+      wagonGroup: {groupName: wagonType.wagonGroup.groupName}
     };
   }
 
@@ -112,7 +111,7 @@ export class ListWagonTypeComponent implements OnInit, OnDestroy {
         this.wagonTypeList.map(wagonType => {
           if (wagonType.typeId === this.editedWagonType.typeId) {
             wagonType.typeName = this.editedWagonType.typeName;
-            wagonType.wagonGroup = this.editedWagonType.wagonGroup;
+            wagonType.wagonGroup = {groupName: this.editedWagonType.wagonGroup.groupName};
           }
         });
       }, () => {
@@ -153,17 +152,11 @@ export class ListWagonTypeComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy(): void {
-    if (this.wagonTypeListSub) {
-      this.wagonTypeListSub.unsubscribe();
-    }
-    if (this.createSub) {
-      this.createSub.unsubscribe();
-    }
-    if (this.updateSub) {
-      this.updateSub.unsubscribe();
-    }
-    if (this.delSub) {
-      this.delSub.unsubscribe();
-    }
+    this.utils.unsubscribe([
+      this.wagonTypeListSub,
+      this.createSub,
+      this.updateSub,
+      this.delSub
+    ]);
   }
 }

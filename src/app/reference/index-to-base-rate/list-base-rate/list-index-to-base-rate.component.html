@@ -20,7 +20,8 @@
     </tr>
     <tr class="row">
       <th width="100">
-        <button class="fas fa-plus btn btn-sm btn-outline-info" (click)="addNew()" [disabled]="!enableForm"></button>
+        <button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"
+                (click)="addNew()" [disabled]="!enableForm"></button>
       </th>
 <!--      <th width="100">Номер</th>-->
       <th width="230">Дата актуальности</th>
@@ -48,10 +49,11 @@
   <td width="230">{{ indexToBaseRate.relevanceDate | date: 'dd.MM.yyyy HH:mm'}}</td>
   <td class="col">{{ indexToBaseRate.indexToRate }}</td>
   <td class="col">
-    <button type="button" class="far fa-edit btn btn-outline-info btn-sm mr-1 mt-1"
+    <button type="button" class="far fa-edit btn btn-outline-info btn-sm mr-1 mt-1" title="Редактировать"
             [disabled]="!enableForm" (click)="edit(indexToBaseRate)"></button>
     <!-- Button trigger modal -->
-    <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm mt-1" data-toggle="modal" data-target="#deleteModal"
+    <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm mt-1" title="Удалить"
+            data-toggle="modal" data-target="#deleteModal"
             [disabled]="!enableForm" (click)="setDelete(indexToBaseRate.indexId)"></button>
   </td>
 </ng-template>
@@ -70,9 +72,9 @@
            #indexToRate="ngModel" required>
   </td>
   <td class="col">
-    <input type="button" value="Сохранить" (click)="save()" class="btn btn-outline-success btn-sm mr-1"
-           [disabled]="relevanceDate.invalid || indexToRate.invalid">
-    <input type="button" value="Отмена" (click)="cancel()" class="btn btn-outline-warning btn-sm">
+    <button (click)="save()" class="fas fa-check btn btn-outline-success btn-sm mr-1 mt-1" title="Сохранить"
+            [disabled]="relevanceDate.invalid || indexToRate.invalid"></button>
+    <button (click)="cancel()" class="fas fa-undo-alt btn btn-outline-warning btn-sm mt-1" title="Отменить"></button>
   </td>
 </ng-template>
 

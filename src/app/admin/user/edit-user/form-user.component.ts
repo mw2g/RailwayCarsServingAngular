@@ -6,7 +6,7 @@ import {UserService} from '../user.service.';
 import {switchMap} from 'rxjs/operators';
 import {User} from 'src/app/shared/interfaces';
 import {AlertService} from '../../../shared/service/alert.service';
-import {UtilsService} from '../../../shared/service/utils.service.';
+import {UtilsService} from '../../../shared/service/utils.service';
 
 @Component({
   selector: 'app-edit-user',

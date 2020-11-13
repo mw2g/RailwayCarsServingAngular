@@ -6,7 +6,9 @@ import {CargoOperation} from '../../shared/interfaces';
 
 @Injectable({providedIn: 'root'})
 export class CargoOperationService {
+  operations;
   constructor(private httpClient: HttpClient) {
+    this.operations = httpClient.get(`${environment.dbUrl}/api/cargo-operation.json`);
   }
 
   getAll(): Observable<Array<CargoOperation>> {

@@ -4,6 +4,7 @@ import {Router} from '@angular/router';
 import {AlertService} from '../../../shared/service/alert.service';
 import {WagonGroupService} from '../../service/wagon-group.service';
 import {WagonGroup} from '../../../shared/interfaces';
+import {UtilsService} from '../../../shared/service/utils.service';
 
 @Component({
   selector: 'app-list-wagon-group',
@@ -21,13 +22,15 @@ export class ListWagonGroupComponent implements OnInit, OnDestroy {
   enableForm = true;
   private isNewRecord: boolean;
   private wagonGroupListSub: Subscription;
-  private delSub: Subscription;
-  private updateSub: Subscription;
   private createSub: Subscription;
+  private updateSub: Subscription;
+  private delSub: Subscription;
 
   constructor(private wagonGroupService: WagonGroupService,
               private router: Router,
-              private alert: AlertService) {
+              private alert: AlertService,
+              private utils: UtilsService
+  ) {
   }
 
   ngOnInit(): void {
@@ -81,7 +84,7 @@ export class ListWagonGroupComponent implements OnInit, OnDestroy {
   }
 
   // сохраняем
-  saveWagonGroup(): void {
+  save(): void {
     if (this.isNewRecord) {
       // добавляем
       this.createSub = this.wagonGroupService.create(this.editedWagonGroup).subscribe((data) => {
@@ -141,17 +144,11 @@ export class ListWagonGroupComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy(): void {
-    if (this.wagonGroupListSub) {
-      this.wagonGroupListSub.unsubscribe();
-    }
-    if (this.createSub) {
-      this.createSub.unsubscribe();
-    }
-    if (this.updateSub) {
-      this.updateSub.unsubscribe();
-    }
-    if (this.delSub) {
-      this.delSub.unsubscribe();
-    }
+    this.utils.unsubscribe([
+      this.wagonGroupListSub,
+      this.createSub,
+      this.updateSub,
+      this.delSub
+    ]);
   }
 }

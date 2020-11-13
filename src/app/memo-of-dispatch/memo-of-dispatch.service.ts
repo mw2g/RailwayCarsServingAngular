@@ -29,34 +29,34 @@ export class MemoOfDispatchService {
     return this.httpClient.delete<{ message: string }>(`${environment.dbUrl}/api/memo/dispatch/${memoId}.json`);
   }
 
-  getSuitableMemosForControllerStatement(statementId: number): Observable<Array<MemoOfDispatch>> {
+  getSuitableMemosForStatement(statementId: number): Observable<Array<MemoOfDispatch>> {
     return this.httpClient.get<Array<MemoOfDispatch>>(`${environment.dbUrl}/api/memo/dispatch/suitable/${statementId}.json`);
   }
 
-  addControllerStatement(memoIdToAdd: string, statementId: string): Observable<{ message: string }> {
-    return this.httpClient.get<{ message: string }>(`${environment.dbUrl}/api/memo/dispatch/add-controller-statement.json`, {
+  addStatement(memoIdToAdd: string, statementId: string): Observable<{ message: string }> {
+    return this.httpClient.get<{ message: string }>(`${environment.dbUrl}/api/memo/dispatch/add-statement.json`, {
       params: new HttpParams()
         .set(`memoIdToAdd`, memoIdToAdd)
         .set(`statementId`, statementId)
     });
   }
 
-  addControllerStatementToMemoOfDispatchList(memoIds: number[], statementId: number): Observable<{ message: string }> {
-    return this.httpClient.post<{ message: string }>(`${environment.dbUrl}/api/memo/dispatch/add-controller-statement-list.json`, {
+  addStatementToMemoOfDispatchList(memoIds: number[], statementId: number): Observable<{ message: string }> {
+    return this.httpClient.post<{ message: string }>(`${environment.dbUrl}/api/memo/dispatch/add-statement-list.json`, {
       memoIds,
       statementId
     });
   }
 
-  removeControllerStatement(memoId: any): Observable<{ message: string }> {
-    return this.httpClient.get<{ message: string }>(`${environment.dbUrl}/api/memo/dispatch/remove-controller-statement.json`, {
+  removeStatement(memoId: any): Observable<{ message: string }> {
+    return this.httpClient.get<{ message: string }>(`${environment.dbUrl}/api/memo/dispatch/remove-statement.json`, {
       params: new HttpParams()
         .set(`memoId`, memoId)
     });
   }
 
-  removeControllerStatementFromAllMemo(memoIds: number[]): Observable<{ message: string }> {
-    return this.httpClient.post<{ message: string }>(`${environment.dbUrl}/api/memo/dispatch/remove-controller-statement-list.json`,
+  removeStatementFromAllMemo(memoIds: number[]): Observable<{ message: string }> {
+    return this.httpClient.post<{ message: string }>(`${environment.dbUrl}/api/memo/dispatch/remove-statement-list.json`,
       memoIds);
   }
 }
