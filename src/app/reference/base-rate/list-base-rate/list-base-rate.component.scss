@@ -1,15 +1,30 @@
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  /* display: none; <- Crashes Chrome on hover */
-  -webkit-appearance: none;
-  margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+//input::-webkit-outer-spin-button,
+//input::-webkit-inner-spin-button {
+//  /* display: none; <- Crashes Chrome on hover */
+//  -webkit-appearance: none;
+//  margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+//}
+//
+//tr.sticky {
+//  top: 56px;
+//  position: fixed;
+//  z-index: 99;
+//}
+
+select {
+  text-align-last: center
 }
 
-tr.sticky {
-  top: 56px;
-  position: fixed;
-  z-index: 99;
+.main-viewport {
+  height: 85vh;
+  //width: 1150px;
+  //border: 1px solid black;
 }
+
+.main-item {
+  //height: 25px;
+}
+
 
 //TABLE {
 //  text-align: center;

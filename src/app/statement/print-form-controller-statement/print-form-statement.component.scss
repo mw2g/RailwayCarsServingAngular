@@ -1,0 +1,51 @@
+@media print {
+  //.page-breaker {
+  //  page-break-before: always;
+  //}
+  .tableHead{
+    -webkit-print-color-adjust: exact;
+  }
+  .tableBody {
+    break-inside: avoid;
+  }
+  .doNotPrint{display:none !important;}
+
+  //.smallBody {
+  //  counter-reset: pageNumber;
+  //}
+  //.page-number:before {
+  //  counter-increment: pageNumber;
+  //  content: "Страница:" counter(pageNumber);
+  //}
+  //.page-number {
+  //  text-align: center;
+  //}
+
+
+  //
+  //#toPrint {
+  //  display: table;
+  //}
+  //
+  //#pageFooter {
+  //  display: table-footer-group;
+  //}
+  //
+  //#pageFooter:after {
+  //  counter-increment: page;
+  //  content: counter(page);
+  //}
+
+
+  //#pageFooter:after {
+  //  counter-increment: page;
+  //  content:"Page " counter(page);
+  //  left: 0;
+  //  top: 100%;
+  //  white-space: nowrap;
+  //  z-index: 20;
+  //  -moz-border-radius: 5px;
+  //  -moz-box-shadow: 0px 0px 4px #222;
+  //  background-image: -moz-linear-gradient(top, #eeeeee, #cccccc);
+  //}
+}

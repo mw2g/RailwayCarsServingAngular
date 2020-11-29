@@ -34,6 +34,8 @@ export class FormStatementComponent implements OnInit, OnDestroy {
 
   private customers: Observable<Array<Customer>>;
   private cargoOperations: Observable<Array<CargoOperation>>;
+  statementIdToDelete: number;
+  delSub: Subscription;
   private loadSub: Subscription;
   private createSub: Subscription;
   private updateSub: Subscription;
@@ -89,9 +91,9 @@ export class FormStatementComponent implements OnInit, OnDestroy {
       // created: new FormControl(this.statement.created, Validators.required),
       created: new FormControl(this.datePipe.transform(this.statement.created, 'yyyy-MM-ddTHH:mm'), Validators.required),
       cargoOperation: new FormControl(this.statement.cargoOperation, Validators.required),
-      customer: new FormControl(this.statement.customer, Validators.required),
+      customer: new FormControl(this.statement.customer.customerName, Validators.required),
       author: new FormControl(this.statement.author),
-      signer: new FormControl(this.statement.signer),
+      signer: new FormControl(this.statement.signer ? this.statement.signer : ''),
       comment: new FormControl(this.statement.comment),
       deliveryDispatchTimeNorm: new FormControl(this.statementRate.deliveryDispatchTimeNorm.norm),
       turnoverTimeNorm: new FormControl(this.statementRate.turnoverTimeNorm.norm),
@@ -123,7 +125,8 @@ export class FormStatementComponent implements OnInit, OnDestroy {
 
   initEmptyForm(): void {
     this.form = new FormGroup({
-      cargoOperation: new FormControl('1', Validators.required),
+      created: new FormControl('', Validators.required),
+      cargoOperation: new FormControl('', Validators.required),
       customer: new FormControl('', Validators.required),
       signer: new FormControl(''),
       comment: new FormControl(''),
@@ -137,9 +140,9 @@ export class FormStatementComponent implements OnInit, OnDestroy {
     }
     this.updateSub = this.statementService.update({
       ...this.statement,
-      created: this.form.value.created,
+      created: new Date(this.form.value.created),
       cargoOperation: this.form.value.cargoOperation,
-      customer: this.form.value.customer,
+      customer: {customerName: this.form.value.customer},
       signer: this.form.value.signer,
       comment: this.form.value.comment
     }).subscribe((data) => {
@@ -161,9 +164,9 @@ export class FormStatementComponent implements OnInit, OnDestroy {
     }
     this.createSub = this.statementService.create({
       ...this.statement,
-      created: this.form.value.created,
+      created: new Date(this.form.value.created),
       cargoOperation: this.form.value.cargoOperation,
-      customer: this.form.value.customer,
+      customer: {customerName: this.form.value.customer},
       comment: this.form.value.comment,
       // author: this.form.value.author,
     }).subscribe((data) => {
@@ -193,11 +196,31 @@ export class FormStatementComponent implements OnInit, OnDestroy {
   //   return this.customers.find(customer => customer.customerName === customerName).signerList;
   // }
 
+  delete(): void {
+    this.delSub = this.statementService.delete(this.statementIdToDelete).subscribe((data) => {
+      this.unsetDelete();
+    }, () => {
+      this.alert.danger('Ошибка');
+    }, () => {
+      this.alert.success('Ведомость удалена');
+      this.router.navigate(['/statement']);
+    });
+  }
+
+  setDelete(memoId: number): void {
+    this.statementIdToDelete = memoId;
+  }
+
+  unsetDelete(): void {
+    this.statementIdToDelete = null;
+  }
+
   ngOnDestroy(): void {
     this.utils.unsubscribe([
       this.loadSub,
       this.createSub,
       this.updateSub,
+      this.delSub,
       this.rateSub
     ]);
   }

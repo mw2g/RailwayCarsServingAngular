@@ -9,7 +9,8 @@ import {FormMemoOfDispatchComponent} from './edit-memo/form-memo-of-dispatch.com
 import {AuthGuard} from '../admin/shared/services/auth.guard';
 import {ListDeliveryInMemoOfDispatchComponent} from './list-delivery-in-memo-of-dispatch/list-delivery-in-memo-of-dispatch.component';
 import {MainLayoutComponent} from '../shared/components/main-layout/main-layout.component';
-import { PrintFormMemoComponent } from './print-form-memo/print-form-memo.component';
+import { PrintFormMemoOfDispatchComponent } from './print-form-memo/print-form-memo-of-dispatch.component';
+import {FilterMemoOfDispatchPipe} from './pipe/filterMemoOfDispatch.pipe';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { PrintFormMemoComponent } from './print-form-memo/print-form-memo.compon
     ListMemoOfDispatchComponent,
     FormMemoOfDispatchComponent,
     ListDeliveryInMemoOfDispatchComponent,
-    PrintFormMemoComponent
+    PrintFormMemoOfDispatchComponent,
+    FilterMemoOfDispatchPipe,
   ],
   imports: [
     CommonModule,
@@ -31,7 +33,7 @@ import { PrintFormMemoComponent } from './print-form-memo/print-form-memo.compon
           {path: '', component: ListMemoOfDispatchComponent, canActivate: [AuthGuard]},
           {path: 'edit/:memoOfDispatchId', component: FormMemoOfDispatchComponent, canActivate: [AuthGuard]},
           {path: 'create', component: FormMemoOfDispatchComponent, canActivate: [AuthGuard]},
-          {path: 'print-form/:memoOfDispatchId', component: PrintFormMemoComponent, canActivate: [AuthGuard]},
+          {path: 'print-form/:memoOfDispatchId', component: PrintFormMemoOfDispatchComponent, canActivate: [AuthGuard]},
         ]
       }
     ])

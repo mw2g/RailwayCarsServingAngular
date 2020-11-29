@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PrintFormMemoComponent } from './print-form-memo.component';
+import { PrintFormMemoOfDispatchComponent } from './print-form-memo-of-dispatch.component';
 
 describe('PrintFormMemoComponent', () => {
-  let component: PrintFormMemoComponent;
-  let fixture: ComponentFixture<PrintFormMemoComponent>;
+  let component: PrintFormMemoOfDispatchComponent;
+  let fixture: ComponentFixture<PrintFormMemoOfDispatchComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PrintFormMemoComponent ]
+      declarations: [ PrintFormMemoOfDispatchComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PrintFormMemoComponent);
+    fixture = TestBed.createComponent(PrintFormMemoOfDispatchComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

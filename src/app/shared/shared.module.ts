@@ -9,32 +9,43 @@ import {AlertComponent} from './components/alert/alert.component';
 import {CommonModule} from '@angular/common';
 import {AutofocusDirective} from './directive/autofocus.directive';
 import {WeightPipe} from './pipe/weight.pipe';
-import {WaitInterceptor} from './wat-interceptor.service';
-
+// import {WaitInterceptor} from './wat-interceptor.service';
+import {SearchPipe} from './pipe/search.pipe';
+import { ScrollingModule} from '@angular/cdk/scrolling';
+import {FilterDeliveryPipe} from './pipe/filterDelivery.pipe';
+import {DeliveryOfWagonPaginationPipe} from './pipe/deliveryOfWagonPagination.pipe';
 // import {QuillModule} from 'ngx-quill';
 
 @NgModule({
-    declarations: [
-        AlertComponent,
-        AutofocusDirective,
-        WeightPipe
-    ],
+  declarations: [
+    AlertComponent,
+    AutofocusDirective,
+    WeightPipe,
+    SearchPipe,
+    FilterDeliveryPipe,
+    DeliveryOfWagonPaginationPipe
+  ],
   imports: [
     HttpClientModule,
     NgxWebstorageModule.forRoot(),
     NgbModule,
     CommonModule,
+    ScrollingModule
     // QuillModule.forRoot()
   ],
-    exports: [
-        HttpClientModule,
-        NgxWebstorageModule,
-        NgbModule,
-        AlertComponent,
-        AutofocusDirective,
-        WeightPipe
-        // QuillModule
-    ],
+  exports: [
+    HttpClientModule,
+    NgxWebstorageModule,
+    NgbModule,
+    AlertComponent,
+    AutofocusDirective,
+    WeightPipe,
+    SearchPipe,
+    FilterDeliveryPipe,
+    ScrollingModule,
+    DeliveryOfWagonPaginationPipe
+    // QuillModule
+  ],
   providers: [
     AuthGuard,
     AlertService,
@@ -43,11 +54,11 @@ import {WaitInterceptor} from './wat-interceptor.service';
       useClass: TokenInterceptor,
       multi: true
     },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: WaitInterceptor,
-      multi: true
-    }
+    // {
+    //   provide: HTTP_INTERCEPTORS,
+    //   useClass: WaitInterceptor,
+    //   multi: true
+    // }
   ]
 })
 export class SharedModule {

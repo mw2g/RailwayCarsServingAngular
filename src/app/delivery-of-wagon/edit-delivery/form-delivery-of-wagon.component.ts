@@ -7,7 +7,7 @@ import {AlertService} from '../../shared/service/alert.service';
 import {switchMap} from 'rxjs/operators';
 import {DeliveryOfWagonService} from '../delivery-of-wagon.service';
 import {CustomerService} from '../../reference/service/customer.service';
-import {DatePipe} from '@angular/common';
+import {DatePipe, DecimalPipe} from '@angular/common';
 import {WagonTypeService} from '../../reference/service/wagon-type.service';
 import {CargoOperationService} from '../../reference/service/cargo-operation.service';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -17,13 +17,13 @@ import {UtilsService} from '../../shared/service/utils.service';
   selector: 'app-form-delivery-of-wagon',
   templateUrl: './form-delivery-of-wagon.component.html',
   styleUrls: ['./form-delivery-of-wagon.component.scss'],
-  providers: [DatePipe]
+  providers: [DatePipe, DecimalPipe]
 })
 export class FormDeliveryOfWagonComponent implements OnInit, OnDestroy {
 
   form: FormGroup;
   delivery: DeliveryOfWagon;
-  private cargoOperations: Observable<Array<CargoOperation>>;
+  cargoOperations: Observable<Array<CargoOperation>>;
   customers: Observable<Array<Customer>>;
   wagonTypeList: Observable<Array<WagonType>>;
   cargoTypeList: Observable<Array<CargoType>>;
@@ -32,17 +32,18 @@ export class FormDeliveryOfWagonComponent implements OnInit, OnDestroy {
   updateSub: Subscription;
   loadSub: Subscription;
   autocompleteSub: Subscription;
-
+  delSub: Subscription;
 
   constructor(
     private route: ActivatedRoute,
-    private deliveryOfWagonService: DeliveryOfWagonService,
+    private deliveryService: DeliveryOfWagonService,
     private wagonTypeService: WagonTypeService,
     private customerService: CustomerService,
     private cargoOperationService: CargoOperationService,
     public router: Router,
     private alert: AlertService,
     private datePipe: DatePipe,
+    private decimalPipe: DecimalPipe,
     private utils: UtilsService
   ) {
   }
@@ -51,13 +52,13 @@ export class FormDeliveryOfWagonComponent implements OnInit, OnDestroy {
     this.cargoOperations = this.cargoOperationService.getAll();
     this.customers = this.customerService.getAll();
     this.wagonTypeList = this.wagonTypeService.getAll();
-    this.cargoTypeList = this.deliveryOfWagonService.getAllCargoTypes();
-    this.ownersList = this.deliveryOfWagonService.getAllOwners();
+    this.cargoTypeList = this.deliveryService.getAllCargoTypes();
+    this.ownersList = this.deliveryService.getAllOwners();
 
     this.loadSub = this.route.params.pipe(
       switchMap((params: Params) => {
         if (params.deliveryId) {
-          return this.deliveryOfWagonService.getById(params.deliveryId);
+          return this.deliveryService.getById(params.deliveryId);
         } else {
           this.initEmptyForm();
           return new Observable<User>();
@@ -100,9 +101,10 @@ export class FormDeliveryOfWagonComponent implements OnInit, OnDestroy {
       startDate: new FormControl(this.datePipe.transform(this.delivery.startDate, 'yyyy-MM-ddTHH:mm')),
       endDate: new FormControl(this.datePipe.transform(this.delivery.endDate, 'yyyy-MM-ddTHH:mm')),
       cargoOperation: new FormControl(this.delivery.cargoOperation, Validators.required),
-      cargoWeight: new FormControl(this.delivery.cargoWeight),
+      cargoWeight: new FormControl(this.decimalPipe.transform(this.delivery.cargoWeight, '0.2')),
       loadUnloadWork: new FormControl(this.delivery.loadUnloadWork, Validators.required),
-      shuntingWorks: new FormControl(this.delivery.shuntingWorks === 0 ? '' : this.delivery.shuntingWorks),
+      shuntingWorks: new FormControl(this.delivery.shuntingWorks === 0 ? '' :
+        this.decimalPipe.transform(this.delivery.shuntingWorks, '0.2')),
       memoOfDelivery: new FormControl(this.delivery.memoOfDelivery ? this.delivery.memoOfDelivery : ''),
       memoOfDispatch: new FormControl(this.delivery.memoOfDispatch ? this.delivery.memoOfDispatch : ''),
       statement: new FormControl(
@@ -117,7 +119,7 @@ export class FormDeliveryOfWagonComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.createSub = this.deliveryOfWagonService.create({
+    this.createSub = this.deliveryService.create({
       ...this.delivery,
       wagon: this.form.value.wagonNumber,
       wagonType: this.form.value.wagonType,
@@ -152,7 +154,7 @@ export class FormDeliveryOfWagonComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.updateSub = this.deliveryOfWagonService.update({
+    this.updateSub = this.deliveryService.update({
       ...this.delivery,
       wagon: this.form.value.wagonNumber,
       wagonType: this.form.value.wagonType,
@@ -189,7 +191,7 @@ export class FormDeliveryOfWagonComponent implements OnInit, OnDestroy {
   autocomplete(): void {
     const wagonNumber = this.form.value.wagonNumber;
     if (wagonNumber.length > 5) {
-      this.autocompleteSub = this.deliveryOfWagonService.getDeliveryForAutocomplete(this.form.value.wagonNumber).subscribe(data => {
+      this.autocompleteSub = this.deliveryService.getDeliveryForAutocomplete(this.form.value.wagonNumber).subscribe(data => {
         if (data.wagon) {
           this.form.get('customer').setValue(data.customer);
           this.form.get('owner').setValue(data.owner);
@@ -200,11 +202,23 @@ export class FormDeliveryOfWagonComponent implements OnInit, OnDestroy {
     }
   }
 
+  delete(deliveryId: number): void {
+    this.delSub = this.deliveryService.delete(deliveryId).subscribe((data) => {
+      this.alert.success(data.message);
+    }, () => {
+      this.alert.danger('Ошибка');
+    }, () => {
+      this.alert.success('Общая подача удалена');
+      this.router.navigate(['/delivery']);
+    });
+  }
+
   ngOnDestroy(): void {
     this.utils.unsubscribe([
       this.createSub,
       this.updateSub,
       this.loadSub,
+      this.delSub,
       this.autocompleteSub
     ]);
   }

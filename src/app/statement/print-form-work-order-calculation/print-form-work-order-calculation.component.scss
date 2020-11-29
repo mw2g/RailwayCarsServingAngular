@@ -1,0 +1,12 @@
+@media print {
+  .page-breaker {
+    page-break-before: always;
+  }
+  .tableHead{
+    -webkit-print-color-adjust: exact;
+  }
+  .tableBody {
+    break-inside: avoid;
+  }
+  .doNotPrint{display:none !important;}
+}

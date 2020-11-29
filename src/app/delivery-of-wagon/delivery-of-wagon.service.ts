@@ -13,8 +13,8 @@ export class DeliveryOfWagonService {
   //   return this.httpClient.get<Array<DeliveryOfWagon>>(`${environment.dbUrl}/api/delivery/memo/${memoId}.json`);
   // }
 
-  getAllDeliveries(): Observable<Array<DeliveryOfWagon>> {
-    return this.httpClient.get<Array<DeliveryOfWagon>>(`${environment.dbUrl}/api/delivery.json`);
+  getAllDeliveries(afterDate: Date, beforeDate: Date): Observable<Array<DeliveryOfWagon>> {
+    return this.httpClient.get<Array<DeliveryOfWagon>>(`${environment.dbUrl}/api/delivery/${afterDate}/${beforeDate}.json`);
   }
 
   getAllCargoTypes(): Observable<Array<CargoType>> {

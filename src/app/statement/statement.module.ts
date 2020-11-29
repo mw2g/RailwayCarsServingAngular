@@ -9,7 +9,10 @@ import {FormStatementComponent} from './edit-statement/form-statement.component'
 import {AuthGuard} from '../admin/shared/services/auth.guard';
 import {ListMemoInStatementComponent} from './list-memo-in-statement/list-memo-in-statement.component';
 import {MainLayoutComponent} from '../shared/components/main-layout/main-layout.component';
-import {PrintFormStatementComponent} from './print-form-memo/print-form-statement.component';
+import {PrintFormStatementComponent} from './print-form-controller-statement/print-form-statement.component';
+import {FilterStatementPipe} from './pipe/filterStatement.pipe';
+import {PrintFormPaymentStatementComponent} from './print-form-payment-statement/print-form-payment-statement.component';
+import {PrintFormWorkOrderCalculationComponent} from './print-form-work-order-calculation/print-form-work-order-calculation.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +20,10 @@ import {PrintFormStatementComponent} from './print-form-memo/print-form-statemen
     ListStatementComponent,
     FormStatementComponent,
     ListMemoInStatementComponent,
-    PrintFormStatementComponent
+    PrintFormStatementComponent,
+    PrintFormPaymentStatementComponent,
+    PrintFormWorkOrderCalculationComponent,
+    FilterStatementPipe
   ],
   imports: [
     CommonModule,
@@ -32,6 +38,12 @@ import {PrintFormStatementComponent} from './print-form-memo/print-form-statemen
           {path: 'edit/:statementId', component: FormStatementComponent, canActivate: [AuthGuard]},
           {path: 'create', component: FormStatementComponent, canActivate: [AuthGuard]},
           {path: 'print-form/:statementId', component: PrintFormStatementComponent, canActivate: [AuthGuard]},
+          {path: 'print-form-payment-statement/:statementId', component: PrintFormPaymentStatementComponent, canActivate: [AuthGuard]},
+          {
+            path: 'print-form-work-order-calculation/:statementId',
+            component: PrintFormWorkOrderCalculationComponent,
+            canActivate: [AuthGuard]
+          },
         ]
       }
     ])

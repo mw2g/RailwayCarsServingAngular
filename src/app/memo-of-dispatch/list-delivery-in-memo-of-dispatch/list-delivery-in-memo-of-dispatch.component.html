@@ -39,7 +39,6 @@
   </div>
 </nav>
 
-<!--  *ngIf="deliveries.length; else loading"-->
 <table class="table table-sm table-bordered border-0" style="text-align: center">
   <thead class="thead-light">
   <tr class="row">
@@ -54,14 +53,11 @@
     <th class="col-md col-sm col">Действия</th>
   </tr>
   </thead>
-  <tbody>
-
+  <tbody *ngIf="deliveryList.length; else loading">
   <tr class="row my-0 p-0" *ngFor="let delivery of deliveryList; let idx = index">
     <ng-template [ngTemplateOutlet]="loadTemplate(delivery)"
                  [ngTemplateOutletContext]="{ $implicit: delivery, idx: idx}">
     </ng-template>
-
-
   </tr>
   </tbody>
 </table>
@@ -73,16 +69,19 @@
   <!--    <a [routerLink]="['/delivery', 'edit', delivery.deliveryId]">{{ delivery.deliveryId }}</a></td>-->
   <!--  <a [routerLink]="['/delivery', 'edit', delivery.deliveryId]">-->
   <td width="120"><a [routerLink]="['/delivery', 'edit', delivery.deliveryId]"
-                                    title="Открыть общую подачу">{{ delivery.wagon }}</a></td>
+                     title="Открыть общую подачу">{{ delivery.wagon }}</a></td>
   <td width="170">{{ delivery.wagon }}</td>
   <td width="170">{{ delivery.owner }}</td>
-  <td width="80">{{ delivery.cargoWeight }}</td>
-  <td width="50" style="padding-left: 18px; padding-top: 12px; padding-bottom: 0px"
-      *ngIf="memoOfDispatch && memoOfDispatch.cargoOperation==='ВЫГРУЗКА'">
-    <input class="form-check" disabled type="checkbox" [checked]="delivery.loadUnloadWork">
+  <td width="80">{{ delivery.cargoWeight | number:'0.2-2' }}</td>
+  <td width="50" *ngIf="memoOfDispatch && memoOfDispatch.cargoOperation==='ВЫГРУЗКА'">
+    <i class="fas fa-check" [hidden]="!delivery.loadUnloadWork" style="color: grey"></i>
   </td>
+  <!--  <td width="50" style="padding-left: 18px; padding-top: 12px; padding-bottom: 0px"-->
+<!--      *ngIf="memoOfDispatch && memoOfDispatch.cargoOperation==='ВЫГРУЗКА'">-->
+<!--    <input class="form-check" disabled type="checkbox" [checked]="delivery.loadUnloadWork">-->
+<!--  </td>-->
   <td width="150">
-    <a *ngIf="delivery.memoOfDelivery.memoOfDeliveryId; else justDate" title="Открыть памятку подачи"
+    <a *ngIf="delivery.memoOfDelivery; else justDate" title="Открыть памятку подачи"
        [routerLink]="['/memo', 'delivery', 'edit', delivery.memoOfDelivery]">
       {{ delivery["startDate"] | date : 'dd.MM.yyyy HH:mm' }}
     </a>
@@ -108,14 +107,14 @@
   <!--  <td width="100">{{ delivery.deliveryId }}</td>-->
   <td width="120"><a [routerLink]="['/delivery', 'edit', delivery.deliveryId]"
                      title="Открыть общую подачу">{{ delivery.wagon }}</a></td>
-<!--  <td width="120">-->
-<!--    <input type="text" [(ngModel)]="editedDelivery.wagon.wagonNumber" class="form-control"-->
-<!--           #wagonNumber="ngModel" required [ngClass]="{'is-invalid': wagonNumber.touched && wagonNumber.invalid,-->
-<!--                                                    'is-valid': wagonNumber.touched && wagonNumber.valid}">-->
-<!--    <div class="invalid-feedback">-->
-<!--      Введите номер вагона-->
-<!--    </div>-->
-<!--  </td>-->
+  <!--  <td width="120">-->
+  <!--    <input type="text" [(ngModel)]="editedDelivery.wagon.wagonNumber" class="form-control"-->
+  <!--           #wagonNumber="ngModel" required [ngClass]="{'is-invalid': wagonNumber.touched && wagonNumber.invalid,-->
+  <!--                                                    'is-valid': wagonNumber.touched && wagonNumber.valid}">-->
+  <!--    <div class="invalid-feedback">-->
+  <!--      Введите номер вагона-->
+  <!--    </div>-->
+  <!--  </td>-->
   <td width="170">
     <select class="custom-select-sm form-control ms-valid_input" [(ngModel)]="editedDelivery.wagonType"
             #wagonType="ngModel" required>
@@ -129,7 +128,7 @@
     </select>
   </td>
   <td width="80">
-    <input type="number" [(ngModel)]="editedDelivery.cargoWeight" class="form-control form-control-sm"
+    <input type="number" step="any" [(ngModel)]="editedDelivery.cargoWeight" class="form-control form-control-sm"
            #cargoWeight="ngModel"
            [ngClass]="{'is-invalid': cargoWeight.touched && cargoWeight.invalid}"
            (keyup)="checkWeight()">
@@ -147,7 +146,7 @@
       {{ delivery["startDate"] | date : 'dd.MM.yyyy HH:mm' }}
     </ng-template>
   </td>
-<!--  <td width="150">{{ delivery["startDate"] | date : 'dd.MM.yyyy HH:mm' }}</td>-->
+  <!--  <td width="150">{{ delivery["startDate"] | date : 'dd.MM.yyyy HH:mm' }}</td>-->
 
   <!--  <td width="230">-->
   <!--    <input type="datetime-local" [ngModel]="editedDelivery.startDate | date: 'yyyy-MM-ddTHH:mm'"-->

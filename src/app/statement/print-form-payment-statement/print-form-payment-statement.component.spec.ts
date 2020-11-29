@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PrintFormMemoComponent } from './print-form-memo.component';
+import { PrintFormPaymentStatementComponent } from './print-form-payment-statement.component';
 
 describe('PrintFormMemoComponent', () => {
-  let component: PrintFormMemoComponent;
-  let fixture: ComponentFixture<PrintFormMemoComponent>;
+  let component: PrintFormPaymentStatementComponent;
+  let fixture: ComponentFixture<PrintFormPaymentStatementComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PrintFormMemoComponent ]
+      declarations: [ PrintFormPaymentStatementComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PrintFormMemoComponent);
+    fixture = TestBed.createComponent(PrintFormPaymentStatementComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

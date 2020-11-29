@@ -1,13 +1,13 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white">
+<nav class="navbar navbar-expand navbar-light bg-white pr-0">
   <div class="navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-<!--      <li class="nav-item active" *ngIf="form && !form.pristine">-->
-<!--        <div>-->
-<!--          <button (click)="update()" title="Сохранить" class="fas fa-check btn btn-outline-success mr-2"></button>-->
-<!--          <button *ngIf="delivery && delivery.deliveryId"-->
-<!--                  (click)="loadForm()" title="Отменить" class="fas fa-undo-alt btn btn-outline-warning mr-2"></button>-->
-<!--        </div>-->
-<!--      </li>-->
+      <!--      <li class="nav-item active" *ngIf="form && !form.pristine">-->
+      <!--        <div>-->
+      <!--          <button (click)="update()" title="Сохранить" class="fas fa-check btn btn-outline-success mr-2"></button>-->
+      <!--          <button *ngIf="delivery && delivery.deliveryId"-->
+      <!--                  (click)="loadForm()" title="Отменить" class="fas fa-undo-alt btn btn-outline-warning mr-2"></button>-->
+      <!--        </div>-->
+      <!--      </li>-->
       <li class="nav-item active" *ngIf="form && !form.pristine">
         <div *ngIf="delivery && delivery.deliveryId">
           <button (click)="update()" title="Сохранить" class="fas fa-check btn btn-outline-success mr-2"></button>
@@ -23,7 +23,11 @@
     </ul>
     <span *ngIf="delivery && delivery.deliveryId">
         Общая подача: {{ delivery.deliveryId }} от: {{ delivery.created | date: 'dd.MM.yyyy'}}
-      Автор: {{ delivery.author }}
+      <span *ngIf="delivery.author">Автор: {{ delivery.author }}</span>
+    <!-- Button trigger modal -->
+    <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm ml-2" title="Удалить"
+            data-toggle="modal" data-target="#deleteModal">
+    </button>
       </span>
   </div>
 </nav>
@@ -58,17 +62,17 @@
             <option *ngFor="let cargoType of cargoTypeList | async"
                     value="{{ cargoType.typeName }}">{{ cargoType.typeName }}</option>
           </select>
-<!--          <input type="text" class="form-control form-control-sm" id="cargoType" formControlName="cargoType"-->
-<!--                 list=cargoTypeList autocomplete="off" [required]="form.get('cargoType').hasError('required')">-->
-<!--          <div class="input-group-append">-->
-<!--            <button class="fas fa-times btn btn-outline-secondary btn-sm" title="Очистить" type="button"-->
-<!--                    (click)="form.get('cargoType').reset(); form.markAsDirty()">-->
-<!--            </button>-->
-<!--          </div>-->
+          <!--          <input type="text" class="form-control form-control-sm" id="cargoType" formControlName="cargoType"-->
+          <!--                 list=cargoTypeList autocomplete="off" [required]="form.get('cargoType').hasError('required')">-->
+          <!--          <div class="input-group-append">-->
+          <!--            <button class="fas fa-times btn btn-outline-secondary btn-sm" title="Очистить" type="button"-->
+          <!--                    (click)="form.get('cargoType').reset(); form.markAsDirty()">-->
+          <!--            </button>-->
+          <!--          </div>-->
         </div>
-<!--        <datalist id=cargoTypeList>-->
-<!--          <option *ngFor="let cargoType of cargoTypeList | async">{{ cargoType.typeName }}</option>-->
-<!--        </datalist>-->
+        <!--        <datalist id=cargoTypeList>-->
+        <!--          <option *ngFor="let cargoType of cargoTypeList | async">{{ cargoType.typeName }}</option>-->
+        <!--        </datalist>-->
       </div>
       <div class="form-group col-md-3">
         <label class="small" for="cargoOperation">Операция</label>
@@ -101,17 +105,17 @@
             <option *ngFor="let customer of customers | async"
                     value="{{ customer.customerName }}">{{ customer.customerName }}</option>
           </select>
-<!--          <input type="text" class="form-control form-control-sm" id="customer" formControlName="customer"-->
-<!--                 list=customerList autocomplete="off" [required]="form.get('customer').hasError('required')">-->
-<!--          <div class="input-group-append">-->
-<!--            <button class="fas fa-times btn btn-outline-secondary btn-sm" title="Очистить" type="button"-->
-<!--                    (click)="form.get('customer').reset(); form.markAsDirty()">-->
-<!--            </button>-->
-<!--          </div>-->
+          <!--          <input type="text" class="form-control form-control-sm" id="customer" formControlName="customer"-->
+          <!--                 list=customerList autocomplete="off" [required]="form.get('customer').hasError('required')">-->
+          <!--          <div class="input-group-append">-->
+          <!--            <button class="fas fa-times btn btn-outline-secondary btn-sm" title="Очистить" type="button"-->
+          <!--                    (click)="form.get('customer').reset(); form.markAsDirty()">-->
+          <!--            </button>-->
+          <!--          </div>-->
         </div>
-<!--        <datalist id=customerList>-->
-<!--          <option *ngFor="let customer of customers | async">{{ customer.customerName }}</option>-->
-<!--        </datalist>-->
+        <!--        <datalist id=customerList>-->
+        <!--          <option *ngFor="let customer of customers | async">{{ customer.customerName }}</option>-->
+        <!--        </datalist>-->
       </div>
 
       <div class="form-group col-md-3">
@@ -119,7 +123,8 @@
         <div class="input-group mb-3">
           <select class="custom-select custom-select-sm" id="owner" formControlName="owner"
                   [required]="form.get('wagonType').hasError('required')">
-            <option value="{{ owner.ownerName }}" *ngFor="let owner of ownersList | async">{{ owner.ownerName }}</option>
+            <option value="{{ owner.ownerName }}"
+                    *ngFor="let owner of ownersList | async">{{ owner.ownerName }}</option>
           </select>
         </div>
       </div>
@@ -163,7 +168,8 @@
       <div class="form-group col-3">
         <label class="small" for="cargoWeight">Вес груза</label>
         <div class="input-group mb-3" id="cargoWeight">
-          <input type="number" class="form-control form-control-sm ms-no_arrows" formControlName="cargoWeight"
+          <input type="number" step="any" class="form-control form-control-sm ms-no_arrows"
+                 formControlName="cargoWeight"
                  autocomplete="off">
           <div class="input-group-append">
           <span class="input-group-text bg-white border-0">
@@ -176,8 +182,9 @@
       <div class="form-group col-3">
         <label class="small" for="shuntingWorks">Маневровые работы</label>
         <div class="input-group mb-3" id="shuntingWorks">
-          <input type="number" class="form-control form-control-sm ms-no_arrows" formControlName="shuntingWorks"
-               autocomplete="off">
+          <input type="number" step="any" class="form-control form-control-sm ms-no_arrows"
+                 formControlName="shuntingWorks"
+                 autocomplete="off">
           <div class="input-group-append">
             <button class="fas fa-times btn btn-outline-secondary btn-sm" title="Очистить" type="button"
                     (click)="form.get('shuntingWorks').reset(); form.markAsDirty()">
@@ -193,3 +200,26 @@
 <ng-template #loading>
   <p class="text-center">Идёт загрузка...</p>
 </ng-template>
+
+<!-- Modal -->
+<div *ngIf="delivery && delivery.deliveryId" class="modal fade" id="deleteModal" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Удаление</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Удалить общую подачу {{ delivery.deliveryId }} с номером вагона {{ delivery.wagon }} ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+        <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="delete(delivery.deliveryId)">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -6,6 +6,7 @@ import {LoginResponsePayload} from '../../login-page/login-response.payload';
 import {LoginRequestPayload} from '../../login-page/login-request.payload';
 import {LocalStorageService} from 'ngx-webstorage';
 import {Router} from '@angular/router';
+import {environment} from '../../../../environments/environment';
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
@@ -20,11 +21,11 @@ export class AuthService {
   }
 
   // signup(signupRequestPayload: SignupRequestPayload): Observable<any> {
-  //   return this.httpClient.post('http://localhost:8080/api/auth/signup', signupRequestPayload, { responseType: 'text' });
+  //   return this.httpClient.post(`${environment.dbUrl}/api/auth/signup`, signupRequestPayload, { responseType: 'text' });
   // }
 
   login(loginRequestPayload: LoginRequestPayload): Observable<boolean> {
-    return this.httpClient.post<LoginResponsePayload>('http://localhost:8080/api/auth/login',
+    return this.httpClient.post<LoginResponsePayload>(`${environment.dbUrl}/api/auth/login`,
       loginRequestPayload).pipe(map(data => {
       this.localStorage.store('authenticationToken', data.authenticationToken);
       this.localStorage.store('username', data.username);
@@ -45,7 +46,7 @@ export class AuthService {
   }
 
   refreshToken(): Observable<LoginResponsePayload> {
-    return this.httpClient.post<LoginResponsePayload>('http://localhost:8080/api/auth/refresh/token',
+    return this.httpClient.post<LoginResponsePayload>(`${environment.dbUrl}/api/auth/refresh/token`,
       {refreshToken: this.getRefreshToken(), username: this.getUsername()})
       .pipe(tap(response => {
         if (response.refreshToken !== 'kickedOut') {
@@ -59,7 +60,7 @@ export class AuthService {
   }
 
   logout(): void {
-    this.httpClient.post('http://localhost:8080/api/auth/logout',
+    this.httpClient.post(`${environment.dbUrl}/api/auth/logout`,
       {refreshToken: this.getRefreshToken(), username: this.getUsername()},
       {responseType: 'text'})
       .subscribe(data => {

@@ -24,15 +24,16 @@ export class FormMemoOfDispatchComponent implements OnInit, OnDestroy {
   memoOfDispatchId: number;
   deliveryList: DeliveryOfWagon[] = [];
   memoOfDispatch: MemoOfDispatch;
+  enableComment = true;
 
   form: FormGroup;
 
   private customers: Observable<Array<Customer>>;
   private cargoOperations: Observable<Array<CargoOperation>>;
   private createSub: Subscription;
+  private delSub: Subscription;
   private updateSub: Subscription;
   private loadSub: Subscription;
-  enableComment = true;
 
   constructor(
     private route: ActivatedRoute,
@@ -77,7 +78,7 @@ export class FormMemoOfDispatchComponent implements OnInit, OnDestroy {
       cargoOperation: new FormControl(this.memoOfDispatch.cargoOperation, Validators.required),
       customer: new FormControl(this.memoOfDispatch.customer.customerName, Validators.required),
       author: new FormControl(this.memoOfDispatch.author),
-      signer: new FormControl(this.memoOfDispatch.signer),
+      signer: new FormControl(this.memoOfDispatch.signer ? this.memoOfDispatch.signer : ''),
       comment: new FormControl(this.memoOfDispatch.comment),
     });
   }
@@ -148,11 +149,22 @@ export class FormMemoOfDispatchComponent implements OnInit, OnDestroy {
     }
   }
 
+  delete(memoIdToDelete: number): void {
+    this.delSub = this.memoOfDispatchService.delete(memoIdToDelete).subscribe((data) => {
+    }, () => {
+      this.alert.danger('Ошибка');
+    }, () => {
+      this.alert.success('Памятка подачи удалена');
+      this.router.navigate(['/memo', 'delivery']);
+    });
+  }
+
   ngOnDestroy(): void {
     this.utils.unsubscribe([
       this.createSub,
       this.updateSub,
-      this.loadSub
+      this.loadSub,
+      this.delSub
     ]);
   }
 }

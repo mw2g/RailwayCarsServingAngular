@@ -1,0 +1,32 @@
+//.spacer {
+//  background-color: white;
+//  height: 50px;
+//  width: 100%;
+//  position: fixed;
+//  z-index: 50;
+//}
+
+.container {
+  min-width: 900px;
+  max-width: 1000px;
+}
+//
+//@media print {
+//  .container {
+//    margin-top: 0px;
+//    padding-top-top: 0px;
+//  }
+//}
+
+//ul:hover li:not(:hover) {
+//  opacity:0.5;
+//}
+
+//ul:hover li {
+//  opacity:0.5;
+//}
+
+ul:hover li:hover {
+  background-color: lightgreen;
+  border-radius: 5px;
+}

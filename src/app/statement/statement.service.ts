@@ -9,8 +9,8 @@ export class StatementService {
   constructor(private httpClient: HttpClient) {
   }
 
-  getAllStatements(): Observable<Array<Statement>> {
-    return this.httpClient.get<Array<Statement>>(`${environment.dbUrl}/api/statement.json`);
+  getAllStatements(afterDate: Date, beforeDate: Date): Observable<Array<Statement>> {
+    return this.httpClient.get<Array<Statement>>(`${environment.dbUrl}/api/statement/${afterDate}/${beforeDate}.json`);
   }
 
   getById(statementId: string): Observable<StatementWithRate> {

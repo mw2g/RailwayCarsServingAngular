@@ -6,6 +6,11 @@
 .ms-no_arrows::-webkit-inner-spin-button {
   display: none;
 }
+.ms-no_select_arrows {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
 
 .form-control:invalid {
   border: 1px solid red;
@@ -18,3 +23,13 @@
 //.form-control:valid {
 //  border: 2px solid green;
 //}
+
+#mainContainer {
+  margin-top: 70px;
+}
+
+@media print {
+  #mainContainer {
+    margin-top: 0px;
+  }
+}

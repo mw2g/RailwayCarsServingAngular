@@ -1,0 +1,98 @@
+<button class="btn btn-outline-success doNotPrint" (click)="print()">Печать</button>
+<div class="smallBody" *ngIf="statement && pages" id="toPrint">
+  <p style="text-align: center; margin-bottom: 8px; margin-top: 10px"><strong>АО "ППЖТ Юбилейное"</strong></p>
+  <p style="text-align: center; margin-bottom: 5px">Расчет ведомости на подачу и уборку вагонов № {{ statementId }} от
+    {{ statement.statement.created  | date : 'dd.MM.yyyy' }}г.
+  </p>
+  <p style="text-align: center; margin-bottom: 0">
+    Наименование грузополучателя (грузоотправителя) <strong>{{ statement.statement.customer.customerFullName }}</strong>
+  </p>
+  <p style="text-align: center; margin-bottom: 0">
+    На основании ведомости приемосдатчика №
+    {{ statementId }} от {{ statement.statement.created  | date : 'dd.MM.yyyy' }}г.
+  </p>
+  <div class="page-number" style="text-align: right" [class.page-breaker]="numberOfPage > 0"
+       *ngFor="let numberOfPage of pages">
+    <i style="text-align: right;" class="align-content-end">{{ numberOfPage + 1 }} / {{ pages.length }}</i>
+    <table style="text-align: center; font-size: 10px" border="1" align="center">
+      <thead class="tableHead" style="background-color: beige; font-weight: bold">
+      <tr>
+        <td style="width: 50px" rowspan="2">ПН</td>
+        <td style="width: 150px">Номер вагона</td>
+        <td style="width: 200px">Грузовая операция</td>
+        <td style="width: 200px">Наименование груза</td>
+        <td style="width: 150px">Дата и время подачи</td>
+        <td style="width: 150px">Общее время нахождения под грузовой операцией</td>
+        <td style="width: 100px">Время для расчета платы (час.)</td>
+        <td style="width: 100px">Время для расчета штрафа (час.)</td>
+        <td style="width: 100px">Время на маневровые работы (час.)</td>
+        <td style="width: 100px" rowspan="2">Всего по вагону (руб.)</td>
+      </tr>
+      <tr>
+        <td>Тип вагона</td>
+        <td>Тариф (руб.)</td>
+        <td>Масса груза (тонн)</td>
+        <td>Дата и время уборки</td>
+        <td>Расчетное время нахождения под грузовой операцией</td>
+        <td>Сумма платы (руб.)</td>
+        <td>Сумма штрафа (руб.)</td>
+        <td>Сумма за маневровые работы (руб.)</td>
+      </tr>
+      </thead>
+      <tbody class="tableBody" *ngFor="let delivery of deliveryList |
+      deliveryOfWagonPagination:numberOfPage:rowsOnPage; let idx = index">
+      <tr *ngIf="delivery.calculation">
+        <td style="width: 50px" rowspan="2">{{ idx + 1 + numberOfPage * rowsOnPage }}</td>
+        <td style="width: 150px">{{ delivery.wagon }}</td>
+        <td style="width: 200px">{{ delivery.cargoOperation }}</td>
+        <td style="width: 200px">{{ delivery.cargoType }}</td>
+        <td style="width: 150px">{{ delivery.startDate | date : 'dd.MM.yyyy HH:mm' }}</td>
+        <td style="width: 150px">{{ delivery.calculation.totalTime | number:'0.2-2' }}</td>
+        <td style="width: 100px">{{ delivery.calculation.payTime | number:'0.2-2' }}</td>
+        <td style="width: 100px">{{ delivery.calculation.penaltyTime | number:'0.2-2' }}</td>
+        <td style="width: 100px">{{ delivery.calculation.shuntingWorkTime | number:'0.2-2' }}</td>
+        <td style="width: 100px" rowspan="2">{{ delivery.calculation.totalSum | number:'0.2-2' }}</td>
+      </tr>
+      <tr *ngIf="delivery.calculation">
+        <td>{{ delivery.wagonType }}</td>
+        <td>{{ statement.rate.deliveryDispatchTariff.tariff }}</td>
+        <td>{{ delivery.cargoWeight }}</td>
+        <td>{{ delivery.endDate | date : 'dd.MM.yyyy HH:mm' }}</td>
+        <td>{{ delivery.calculation.calculationTime | number:'0.2-2' }}</td>
+        <td>{{ delivery.calculation.paySum | number:'0.2-2' }}</td>
+        <td>{{ delivery.calculation.penaltySum | number:'0.2-2' }}</td>
+        <td>{{ delivery.calculation.shuntingWorkSum | number:'0.2-2' }}</td>
+      </tr>
+      </tbody>
+      <tfoot style="font-weight: bold">
+      {{ getTotalCost() }}
+      <td colspan="2">
+        Итого по ведомости:
+      </td>
+      <td colspan="1">
+        Вагонов: {{ deliveryList.length }}
+      </td>
+      <td colspan="1">
+        {{ sumWeight | number:'0.2-2'}}
+      </td>
+      <td colspan="2">
+      </td>
+      <td colspan="1">
+        {{ totalPaySum | number:'0.2-2'}}
+      </td>
+      <td colspan="2">
+      </td>
+      <td colspan="1">
+        {{ totalCost | number:'0.2-2'}}
+      </td>
+      </tfoot>
+    </table>
+  <p style="text-align: center; margin-top: 20px">Подпись представителя АО "ППЖТ Юбилейное"________________/ {{ statement.statement.author }}</p>
+  </div>
+
+<!--  <p style="text-align: center; margin-bottom: 0">Представитель ОАО "ИСКИТИМИЗВЕСТЬ"-->
+<!--    ________________/ {{ statement.statement.signer }}</p>-->
+
+</div>
+
+

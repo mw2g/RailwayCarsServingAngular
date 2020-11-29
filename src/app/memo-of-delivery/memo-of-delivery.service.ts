@@ -9,8 +9,8 @@ export class MemoOfDeliveryService {
   constructor(private httpClient: HttpClient) {
   }
 
-  getAllMemos(): Observable<Array<MemoOfDelivery>> {
-    return this.httpClient.get<Array<MemoOfDelivery>>(`${environment.dbUrl}/api/memo/delivery.json`);
+  getAllMemos(afterDate: Date, beforeDate: Date): Observable<Array<MemoOfDelivery>> {
+    return this.httpClient.get<Array<MemoOfDelivery>>(`${environment.dbUrl}/api/memo/delivery/${afterDate}/${beforeDate}`);
   }
 
   getById(memoId: string): Observable<MemoOfDelivery> {

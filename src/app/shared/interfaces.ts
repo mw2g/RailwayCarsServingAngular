@@ -137,6 +137,7 @@ export interface StatementRate {
   turnoverTimeNorm: TimeNorm;
   deliveryDispatchTariff: Tariff;
   shuntingTariff: Tariff;
+  loadUnloadTariff: Tariff;
   indexToBaseRate: IndexToBaseRate;
 }
 
@@ -144,7 +145,7 @@ export interface Statement {
   created?: Date;
   statementId: number;
   cargoOperation?: string;
-  customer?: string;
+  customer?: Customer;
   author?: string;
   signer?: string;
   comment?: string;

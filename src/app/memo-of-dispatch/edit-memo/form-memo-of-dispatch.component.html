@@ -14,10 +14,10 @@
         </div>
       </li>
       <li>
-        <a class="fas fa-arrow-left btn btn-outline-info mr-2" title="Назад" [routerLink]="['/memo', 'delivery']"></a>
+        <a class="fas fa-arrow-left btn btn-outline-info mr-2" title="Назад" [routerLink]="['/memo', 'dispatch']"></a>
       </li>
       <li *ngIf="memoOfDispatchId">
-        <a class="fas fa-print btn btn-outline-info mr-2" title="Печать" [routerLink]="['/memo', 'delivery', 'print-form', memoOfDispatchId]">
+        <a class="fas fa-print btn btn-outline-info mr-2" title="Печать" [routerLink]="['/memo', 'dispatch', 'print-form', memoOfDispatchId]">
         </a>
       </li>
       <li *ngIf="!enableComment && memoOfDispatchId">
@@ -26,7 +26,11 @@
       </li>
     </ul>
     <span *ngIf="memoOfDispatch && memoOfDispatchId" class="ml-5">
-        Памятка уборки: {{ memoOfDispatch.memoOfDispatchId }} Автор: {{ memoOfDispatch.author }}
+      Памятка уборки: {{ memoOfDispatch.memoOfDispatchId }} <span *ngIf="memoOfDispatch.author">Автор: {{ memoOfDispatch.author }}</span>
+      <!-- Button trigger modal -->
+                <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm ml-2" title="Удалить"
+                        data-toggle="modal" data-target="#deleteMemoModal">
+                </button>
       </span>
 <!--      {{ memoOfDispatch.created * 1000 | date: 'dd.MM.yyyy'}}-->
   </div>
@@ -117,3 +121,25 @@
 <ng-template #loading>
   <p class="text-center">Идёт загрузка...</p>
 </ng-template>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteMemoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Удаление</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Удалить памятку {{ memoOfDispatchId }} ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+        <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="delete(memoOfDispatchId)">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>

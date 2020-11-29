@@ -31,7 +31,7 @@ import {MainLayoutComponent} from '../shared/components/main-layout/main-layout.
       }
     ])
   ],
-  exports: [RouterModule]
+    exports: [RouterModule]
 })
 export class DeliveryOfWagonModule {
 

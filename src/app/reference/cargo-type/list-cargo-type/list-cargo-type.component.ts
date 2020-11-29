@@ -20,7 +20,8 @@ export class ListCargoTypeComponent implements OnInit, OnDestroy {
   editedCargoType: CargoType;
   cargoTypeList: CargoType[];
   enableForm = true;
-  private sort = true;
+  sort = true;
+  searchStr = '';
   private isNewRecord: boolean;
   private listSub: Subscription;
   private createSub: Subscription;

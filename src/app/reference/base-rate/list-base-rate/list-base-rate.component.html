@@ -13,60 +13,66 @@
 <!--  class="posts col"-->
 <!--&gt;-->
   <!--  *ngIf="deliveries.length; else loading"-->
-  <table class="table table-sm table-bordered border-0"  style="text-align: center">
+  <table class="table table-sm table-bordered border-0 mx-auto"  style="text-align: center; max-width: 700px">
     <thead class="thead-light">
     <tr class="row">
       <strong>Базовая ставка</strong>
     </tr>
     <tr class="row">
-      <th width="100" #tableColumn1>
+      <th [width]="100" #tableColumn1>
         <button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"
                 (click)="addNew()" [disabled]="!enableForm"></button>
       </th>
 <!--      <th width="100">Номер</th>-->
-      <th width="230" #tableColumn2>Дата актуальности</th>
-      <th width="100" #tableColumn3>Часы</th>
-      <th class="col" #tableColumn4>Группа вагона</th>
-      <th width="100" #tableColumn5>Ставка</th>
-      <th class="col" #tableColumn6>Действия</th>
+      <th class="col" #tableColumn2>Дата актуальности</th>
+      <th [width]="100" #tableColumn3>Часы</th>
+      <th [width]="100" #tableColumn4>
+        <select class="custom-select custom-select-sm" [(ngModel)]="wagonGroupFilter">
+          <option value="">Группа</option>
+          <option *ngFor="let group of wagonGroupList | async"
+                  value="{{ group.groupName }}">{{ group.groupName }}</option>
+        </select>
+      </th>
+      <th [width]="100" #tableColumn5>Ставка</th>
+      <th [width]="100" #tableColumn6>Действия</th>
+      <th [width]="18" #tableColumn7></th>
     </tr>
     </thead>
     <tbody>
-
-    <tr class="row" *ngFor="let baseRate of baseRateList; let idx = index">
+    <cdk-virtual-scroll-viewport itemSize="37" class="main-viewport row">
+    <tr *cdkVirtualFor="let baseRate of baseRateList | filterBaseRate:wagonGroupFilter; let idx = index">
       <ng-template [ngTemplateOutlet]="loadTemplate(baseRate)"
                    [ngTemplateOutletContext]="{ $implicit: baseRate, idx: idx}">
       </ng-template>
-
-
     </tr>
+    </cdk-virtual-scroll-viewport>
     </tbody>
   </table>
 
-<table class="table table-sm table-bordered border-0" style="text-align: center" [class.d-none]="!showFixedTableHeader">
-  <thead class="thead-light">
-  <tr [class.sticky]="showFixedTableHeader" class="row">
-    <th [width]="tableColumn1.offsetWidth"><button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"
-                                                   (click)="addNew()" [disabled]="!enableForm"></button></th>
-    <th [width]="tableColumn2.offsetWidth">Дата актуальности</th>
-    <th [width]="tableColumn3.offsetWidth">Часы</th>
-    <th [width]="tableColumn4.offsetWidth">Группа вагона</th>
-    <th [width]="tableColumn5.offsetWidth">Ставка</th>
-    <th [width]="tableColumn6.offsetWidth">Действия</th>
-  </tr>
-  </thead>
-</table>
+<!--<table class="table table-sm table-bordered border-0" style="text-align: center" [class.d-none]="!showFixedTableHeader">-->
+<!--  <thead class="thead-light">-->
+<!--  <tr [class.sticky]="showFixedTableHeader" class="row">-->
+<!--    <th [width]="tableColumn1.offsetWidth"><button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"-->
+<!--                                                   (click)="addNew()" [disabled]="!enableForm"></button></th>-->
+<!--    <th [width]="tableColumn2.offsetWidth">Дата актуальности</th>-->
+<!--    <th [width]="tableColumn3.offsetWidth">Часы</th>-->
+<!--    <th [width]="tableColumn4.offsetWidth">Группа вагона</th>-->
+<!--    <th [width]="tableColumn5.offsetWidth">Ставка</th>-->
+<!--    <th [width]="tableColumn6.offsetWidth">Действия</th>-->
+<!--  </tr>-->
+<!--  </thead>-->
+<!--</table>-->
 <!--</div>-->
 
 <!--шаблон для чтения-->
 <ng-template #readOnlyTemplate let-baseRate let-idx="idx">
-  <td width="100">{{ idx + 1 }}</td>
+  <td [width]="tableColumn1.offsetWidth">{{ idx + 1 }}</td>
 <!--  <td width="100">{{ baseRate.rateId }}</td>-->
-  <td width="230">{{ baseRate.relevanceDate | date: 'dd.MM.yyyy HH:mm'}}</td>
-  <td width="100">{{ baseRate.hours }}</td>
-  <td class="col">{{ baseRate.wagonGroup.groupName }}</td>
-  <td width="100">{{ baseRate.rate }}</td>
-  <td class="col">
+  <td [width]="tableColumn2.offsetWidth">{{ baseRate.relevanceDate | date: 'dd.MM.yyyy HH:mm'}}</td>
+  <td [width]="tableColumn3.offsetWidth">{{ baseRate.hours }}</td>
+  <td [width]="tableColumn4.offsetWidth">{{ baseRate.wagonGroup.groupName }}</td>
+  <td [width]="tableColumn5.offsetWidth">{{ baseRate.rate }}</td>
+  <td [width]="tableColumn6.offsetWidth">
     <button type="button" class="far fa-edit btn btn-outline-info btn-sm mr-1 mt-1" title="Редактировать"
             [disabled]="!enableForm" (click)="editWagonGroup(baseRate)"></button>
     <!-- Button trigger modal -->
@@ -78,18 +84,18 @@
 
 <!--шаблон для редактирования-->
 <ng-template #editTemplate let-baseRate let-idx="idx">
-  <td width="100">{{ idx + 1 }}</td>
+  <td [width]="tableColumn1.offsetWidth">{{ idx + 1 }}</td>
 <!--  <td width="100">{{ baseRate.groupId }}</td>-->
-  <td width="230">
+  <td [width]="tableColumn2.offsetWidth">
     <input type="datetime-local" [ngModel]="editedBaseRate.relevanceDate | date: 'yyyy-MM-ddTHH:mm'"
            (ngModelChange)="editedBaseRate.relevanceDate = $event" class="form-control form-control-sm ms-valid_input"
            appMyAutofocus #relevanceDate="ngModel" required>
   </td>
-  <td width="100">
+  <td [width]="tableColumn3.offsetWidth">
     <input type="text" [(ngModel)]="editedBaseRate.hours" class="form-control form-control-sm ms-valid_input"
            #hours="ngModel" required>
   </td>
-  <td class="col">
+  <td [width]="tableColumn4.offsetWidth">
     <select class="custom-select form-control form-control-sm ms-valid_input"
             [(ngModel)]="editedBaseRate.wagonGroup.groupName" #wagonGroup="ngModel" required>
       <option *ngFor="let wagonGroup of wagonGroupList | async" value="{{ wagonGroup.groupName }}">{{ wagonGroup.groupName }}</option>
@@ -98,11 +104,11 @@
 <!--    <input type="text" [(ngModel)]="editedBaseRate.wagonGroup.groupName" class="form-control ms-valid_input"-->
 <!--           #wagonGroup="ngModel" required>-->
   </td>
-  <td width="100">
+  <td [width]="tableColumn5.offsetWidth">
     <input type="text" [(ngModel)]="editedBaseRate.rate" class="form-control form-control-sm ms-valid_input"
            #rate="ngModel" required>
   </td>
-  <td class="col">
+  <td [width]="tableColumn6.offsetWidth">
     <button (click)="save()" class="fas fa-check btn btn-outline-success btn-sm mr-1 mt-1" title="Сохранить"
             [disabled]="relevanceDate.invalid || hours.invalid || rate.invalid || wagonGroup.invalid"></button>
     <button (click)="cancel()" class="fas fa-undo-alt btn btn-outline-warning btn-sm mt-1" title="Отменить"></button>

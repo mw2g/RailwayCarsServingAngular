@@ -16,7 +16,7 @@
     </ul>
     <span *ngIf="customer && customerId">
         Контрагент {{ customer.customerId }} от {{ form.value.created | date: 'dd.MM.yyyy'}}
-      Автор: {{ customer.author }}
+      <span *ngIf="customer.author">Автор: {{ customer.author }}</span>
       </span>
   </div>
 </nav>

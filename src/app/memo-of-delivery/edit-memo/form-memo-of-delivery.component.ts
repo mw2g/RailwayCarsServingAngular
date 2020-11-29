@@ -13,7 +13,7 @@ import {ListDeliveryInMemoOfDeliveryComponent} from '../list-delivery-in-memo-of
 import {CargoOperationService} from '../../reference/service/cargo-operation.service';
 
 @Component({
-  selector: 'app-edit-statement',
+  selector: 'app-edit-memo-of-delivery',
   templateUrl: './form-memo-of-delivery.component.html',
   styleUrls: ['./form-memo-of-delivery.component.scss'],
   providers: [DatePipe]
@@ -30,6 +30,7 @@ export class FormMemoOfDeliveryComponent implements OnInit, OnDestroy {
 
   private customers: Observable<Array<Customer>>;
   private cargoOperations: Observable<Array<CargoOperation>>;
+  private delSub: Subscription;
   private loadSub: Subscription;
   private createSub: Subscription;
   private updateSub: Subscription;
@@ -77,7 +78,7 @@ export class FormMemoOfDeliveryComponent implements OnInit, OnDestroy {
       cargoOperation: new FormControl(this.memoOfDelivery.cargoOperation, Validators.required),
       customer: new FormControl(this.memoOfDelivery.customer.customerName, Validators.required),
       author: new FormControl(this.memoOfDelivery.author),
-      signer: new FormControl(this.memoOfDelivery.signer),
+      signer: new FormControl(this.memoOfDelivery.signer ? this.memoOfDelivery.signer : ''),
       comment: new FormControl(this.memoOfDelivery.comment),
     });
   }
@@ -145,11 +146,22 @@ export class FormMemoOfDeliveryComponent implements OnInit, OnDestroy {
     }
   }
 
+  delete(memoIdToDelete: number): void {
+    this.delSub = this.memoOfDeliveryService.delete(memoIdToDelete).subscribe((data) => {
+    }, () => {
+      this.alert.danger('Ошибка');
+    }, () => {
+      this.alert.success('Памятка подачи удалена');
+      this.router.navigate(['/memo', 'delivery']);
+    });
+  }
+
   ngOnDestroy(): void {
     this.utils.unsubscribe([
       this.loadSub,
       this.createSub,
-      this.updateSub
+      this.updateSub,
+      this.delSub
     ]);
   }
 }

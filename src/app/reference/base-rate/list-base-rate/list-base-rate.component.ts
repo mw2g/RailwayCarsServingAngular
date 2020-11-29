@@ -27,6 +27,7 @@ export class ListBaseRateComponent implements OnInit, OnDestroy {
   private delSub: Subscription;
   private updateSub: Subscription;
   private createSub: Subscription;
+  wagonGroupFilter = '';
 
   constructor(private baseRateService: BaseRateService,
               private wagonGroupService: WagonGroupService,

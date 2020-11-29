@@ -4,6 +4,7 @@ import {AuthService} from '../shared/services/auth.service';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {LoginRequestPayload} from './login-request.payload';
 import {AlertService} from '../../shared/service/alert.service';
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-login-page',
@@ -15,6 +16,7 @@ export class LoginPageComponent implements OnInit {
   form: FormGroup;
   submitted = false;
   message: string;
+  environment = environment;
 
   constructor(
     public authService: AuthService,
@@ -58,7 +60,6 @@ export class LoginPageComponent implements OnInit {
     this.authService.login(loginRequestPayload).subscribe(() => {
       this.form.reset();
       this.router.navigate(['/']);
-      // this.submitted = false;
     }, () => {
       this.submitted = false;
     }, () => {

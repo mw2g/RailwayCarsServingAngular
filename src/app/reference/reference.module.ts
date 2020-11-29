@@ -21,6 +21,8 @@ import {ListTimeNormComponent} from './time-norm/list-time-norm/list-time-norm.c
 import {ListTariffTypeComponent} from './tariff-type/list-tariff-type/list-tariff-type.component';
 import {ListTariffComponent} from './tariff/list-tariff/list-tariff.component';
 import {ListPenaltyComponent} from './penalty/list-penalty/list-penalty.component';
+import {SearchCargoTypePipe} from './cargo-type/pipe/searchCargoType.pipe';
+import {FilterBaseRatePipe} from './base-rate/pipe/filterBaseRate.pipe';
 
 @NgModule({
   declarations: [
@@ -39,7 +41,9 @@ import {ListPenaltyComponent} from './penalty/list-penalty/list-penalty.componen
     ListTimeNormComponent,
     ListTariffTypeComponent,
     ListTariffComponent,
-    ListPenaltyComponent
+    ListPenaltyComponent,
+    SearchCargoTypePipe,
+    FilterBaseRatePipe
   ],
   imports: [
     CommonModule,

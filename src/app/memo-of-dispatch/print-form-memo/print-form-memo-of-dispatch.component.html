@@ -1,0 +1,66 @@
+<button class="btn btn-outline-success doNotPrint" (click)="print()">Печать</button>
+<div class="smallBody" *ngIf="memoOfDispatch && pages" id="toPrint">
+  <p style="text-align: center; margin-bottom: 8px; margin-top: 10px"><strong>АО "ППЖТ Юбилейное"</strong></p>
+  <p style="text-align: center; margin-bottom: 5px">Памятка приемосдатчика на подачу и уборку вагонов
+    № {{ memoOfDispatch.memoOfDispatchId }}</p>
+  <p style="text-align: center; margin-bottom: 0">
+    Наименование грузополучателя (грузоотправителя) <strong>{{ memoOfDispatch.customer.customerFullName }}</strong></p>
+  <div class="page-number" style="text-align: right" [class.page-breaker]="numberOfPage > 0"
+       *ngFor="let numberOfPage of pages">
+    <i style="text-align: right;" class="align-content-end">{{ numberOfPage + 1 }} / {{ pages.length }}</i>
+    <table style="text-align: center; font-size: 11px" border="1" align="center">
+      <thead class="tableHead" style="background-color: beige; font-weight: bold">
+      <tr>
+        <td style="width: 50px" rowspan="2">ПН</td>
+        <td style="width: 100px" rowspan="2">Номер вагона</td>
+        <td style="width: 200px">Тип вагона</td>
+        <td style="width: 200px">Наименование груза</td>
+        <td style="width: 100px" rowspan="2">Масса груза (тонн)</td>
+        <td style="width: 150px" rowspan="2">Дата и время подачи</td>
+        <td style="width: 150px" rowspan="2">Дата и время уборки</td>
+        <td style="width: 100px" rowspan="2">Маневровые работы (час.)</td>
+      </tr>
+      <tr>
+        <td>Собственник</td>
+        <td>Грузовая операция</td>
+      </tr>
+      </thead>
+      <tbody class="tableBody" *ngFor="let delivery of deliveryList |
+      deliveryOfWagonPagination:numberOfPage:rowsOnPage; let idx = index">
+      <tr>
+        <td style="width: 50px" rowspan="2">{{ idx + 1 + numberOfPage * rowsOnPage}}</td>
+        <td style="width: 100px" rowspan="2">{{ delivery.wagon }}</td>
+        <td style="width: 200px">{{ delivery.wagonType }}</td>
+        <td style="width: 200px">{{ delivery.cargoType }}</td>
+        <td style="width: 100px" rowspan="2">{{ delivery.cargoWeight | number:'0.2-2'}}</td>
+        <td style="width: 150px" rowspan="2">{{ delivery.startDate | date : 'dd.MM.yyyy HH:mm' }}</td>
+        <td style="width: 150px" rowspan="2">{{ delivery.endDate | date : 'dd.MM.yyyy HH:mm' }}</td>
+        <td style="width: 100px" rowspan="2">{{ delivery.shuntingWorks }}</td>
+      </tr>
+      <tr>
+        <td>{{ delivery.owner }}</td>
+        <td>{{ delivery.cargoOperation }}</td>
+      </tr>
+      </tbody>
+      <tfoot style="font-weight: bold">
+<!--      {{ calculateTotal() }}-->
+      <td colspan="4">
+        Всего вагонов: {{ deliveryList.length }}
+      </td>
+      <td colspan="4">
+        Итого масса груза: {{ totalWeight | number:'0.2-2' }}
+      </td>
+      </tfoot>
+    </table>
+  </div>
+
+<!--  <p>&nbsp;</p>-->
+  <div style="text-align: left; margin-top: 20px">
+    <p>Вагоны сдал представитель АО "ППЖТ Юбилейное"_______________________________________/ {{ memoOfDispatch.author }}</p>
+    <p>Вагоны принял представитель {{memoOfDispatch.customer.customerFullName}}___________________________________/ {{ memoOfDispatch.signer }}</p>
+    <p>Вагоны сдал представитель {{memoOfDispatch.customer.customerFullName}}______________________________________/ {{ memoOfDispatch.author }}</p>
+    <p>Вагоны принял представитель АО "ППЖТ Юбилейное"___________________________________/ {{ memoOfDispatch.signer }}</p>
+  </div>
+</div>
+
+

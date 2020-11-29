@@ -1,0 +1,63 @@
+<button class="btn btn-outline-success doNotPrint" (click)="print()">Печать</button>
+<div class="smallBody" *ngIf="statement && pages" id="toPrint">
+  <p style="text-align: center; margin-bottom: 8px; margin-top: 10px"><strong>АО "ППЖТ Юбилейное"</strong></p>
+  <p style="text-align: center; margin-bottom: 5px">Расчет заказ-наряда на погрузочно-разгрузочные работы № {{ statementId }}
+    {{ statement.statement.created  | date : 'dd.MM.yyyy' }}г.
+  </p>
+  <p style="text-align: center; margin-bottom: 0">
+    Наименование грузополучателя (грузоотправителя) <strong>{{ statement.statement.customer.customerFullName }}</strong>
+  </p>
+  <div class="page-number" style="text-align: right" [class.page-breaker]="numberOfPage > 0"
+       *ngFor="let numberOfPage of pages">
+    <i style="text-align: right;" class="align-content-end">{{ numberOfPage + 1 }} / {{ pages.length }}</i>
+    <table style="text-align: center; font-size: 10px" border="1" align="center">
+      <thead class="tableHead" style="background-color: beige; font-weight: bold">
+      <tr>
+        <td style="width: 50px">ПН</td>
+        <td style="width: 150px">Номер вагона</td>
+        <td style="width: 200px">Наименование груза</td>
+        <td style="width: 150px">Тип вагона</td>
+        <td style="width: 150px">Масса груза (тонн)</td>
+        <td style="width: 150px">Тариф</td>
+        <td style="width: 150px">Взыскано за грузовую операцию</td>
+      </tr>
+      </thead>
+      <tbody class="tableBody" *ngFor="let delivery of deliveryList |
+      deliveryOfWagonPagination:numberOfPage:rowsOnPage; let idx = index">
+      <tr *ngIf="delivery">
+        <td style="width: 50px">{{ idx + 1 + numberOfPage * rowsOnPage }}</td>
+        <td style="width: 150px">{{ delivery.wagon }}</td>
+        <td style="width: 200px">{{ delivery.cargoType }}</td>
+        <td style="width: 150px">{{ delivery.wagonType }}</td>
+        <td style="width: 150px">{{ delivery.cargoWeight }}</td>
+        <td style="width: 150px">{{ statement.rate.loadUnloadTariff.tariff }}</td>
+        <td style="width: 150px">{{ (delivery.cargoWeight * statement.rate.loadUnloadTariff.tariff) | number:'0.2-2' }}</td>
+      </tr>
+      </tbody>
+      <tfoot style="font-weight: bold">
+      {{ calculateTotal() }}
+      <td colspan="2">
+        Итого по заказ-наряду:
+      </td>
+      <td colspan="2">
+        Вагонов: {{ deliveryList.length }}
+      </td>
+      <td>
+        {{ sumWeight | number:'0.2-2'}}
+      </td>
+      <td>
+      </td>
+      <td>
+        {{ totalCost | number:'0.2-2'}}
+      </td>
+      </tfoot>
+    </table>
+  <p style="text-align: center; margin-top: 20px">Подпись представителя АО "ППЖТ Юбилейное"________________/ {{ statement.statement.author }}</p>
+  </div>
+
+<!--  <p style="text-align: center; margin-bottom: 0">Представитель ОАО "ИСКИТИМИЗВЕСТЬ"-->
+<!--    ________________/ {{ statement.statement.signer }}</p>-->
+
+</div>
+
+

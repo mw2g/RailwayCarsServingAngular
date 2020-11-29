@@ -28,10 +28,10 @@ export class ListMemoInStatementComponent implements OnInit, OnDestroy {
   addMemoBar = true;
   deliveryList: DeliveryOfWagon[] = [];
   suitableMemos: MemoOfDispatch[] = [];
-  memoIdToDelete: number;
   memoIdToAdd: number;
+  totalCost: number;
+  searchStr = '';
   public editedMemo: MemoOfDispatch;
-  private isNewRecord: boolean;
 
   private updateSub: Subscription;
   private createSub: Subscription;
@@ -41,9 +41,6 @@ export class ListMemoInStatementComponent implements OnInit, OnDestroy {
   private addMemoSub: Subscription;
   private baseRateAndPenaltySub: Subscription;
   private removeAllMemoSub: Subscription;
-  // private memoSub: Subscription;
-  // private ownerSub: Subscription;
-  // private ownersList: Owner[] = [];
 
   constructor(private deliveryService: DeliveryOfWagonService,
               private memoOfDispatchService: MemoOfDispatchService,
@@ -56,87 +53,101 @@ export class ListMemoInStatementComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // this.ownerSub = this.deliveryService.getAllOwners().subscribe(owners => {
-    //   this.ownersList = owners;
-    // }, error => {
-    //   throwError(error);
-    // });
     this.loadSuitableMemos(this.statementId);
   }
 
   public loadDeliveryList(): void {
     this.deliveryList = [];
-    for (const memo of this.memoList) {
-      this.deliveryList = this.deliveryList.concat(memo.deliveryOfWagonList);
-    }
-
-    this.deliveryList.map(delivery => {
-      const totalTime = (new Date(delivery.endDate).getTime() - new Date(delivery.startDate).getTime()) / 3600000;
-      const exactCalculationTime = totalTime - this.statementRate.deliveryDispatchTimeNorm.norm;
-      let calculationTime;
-      if (exactCalculationTime > 0) {
-        calculationTime = (exactCalculationTime % 1) >= 0.25 ? Math.ceil(exactCalculationTime) : Math.floor(exactCalculationTime);
-      } else {
-        calculationTime = 0;
-      }
-      const maxPayTime = this.statementRate.turnoverTimeNorm.norm - this.statementRate.deliveryDispatchTimeNorm.norm + 24;
-      let payTime = calculationTime > maxPayTime ? maxPayTime : calculationTime;
-      payTime = (payTime % 1) >= 0.25 ? Math.ceil(payTime) : Math.floor(payTime);
-
-      if (delivery.owner === 'ВСП') {
-        payTime = calculationTime;
-      }
-
-      let penaltyTime = calculationTime - payTime;
-      const shuntingWorkTime = delivery.shuntingWorks != null ? delivery.shuntingWorks : 0;
-
-      let paySum = 0;
-      let penaltySum = 0;
-      let shuntingWorkSum = 0;
-
-      if (delivery.owner === 'Собств.(аренда)' || delivery.cargoType === 'ВЕСОПОВЕРОЧНЫЙ') {
-        // calculationTime = 0;
-        payTime = 0;
-        paySum = 0;
-        penaltyTime = 0;
-        penaltySum = 0;
-      }
-      if (payTime > 0 || shuntingWorkTime > 0) {
-        this.baseRateAndPenaltySub = this.deliveryService
-          .getBaseRateAndPenalty(delivery.deliveryId, payTime, this.statement.created).subscribe(data => {
-            paySum = +(data.baseRate * this.statementRate.indexToBaseRate.indexToRate).toFixed(1);
-            penaltySum = data.penalty * penaltyTime;
-          }, () => {
-            this.alert.danger('Ошибка при загрузке базовой ставки и штрафа');
-          }, () => {
-
-            if (delivery.owner === 'Другие ЖД') {
-              paySum = paySum * 1.3;
-            }
-
-            shuntingWorkSum = shuntingWorkTime * this.statementRate.shuntingTariff.tariff;
-            const totalSum = this.statementRate.deliveryDispatchTariff.tariff + paySum + penaltySum + shuntingWorkSum;
-
-            delivery.calculation = {
-              totalTime, calculationTime, payTime, paySum, penaltyTime, penaltySum, shuntingWorkTime, shuntingWorkSum, totalSum
-            };
-          });
-      } else {
-        delivery.calculation = {
-          totalTime,
-          calculationTime,
-          payTime: 0,
-          paySum: 0,
-          penaltyTime: 0,
-          penaltySum: 0,
-          shuntingWorkTime,
-          shuntingWorkSum,
-          totalSum: 0
-        };
-      }
-
-    });
+    // for (const memo of this.memoList) {
+    //   this.deliveryList = this.deliveryList.concat(memo.deliveryOfWagonList);
+    // }
+    this.deliveryList = this.utils.calculateDeliveries(this.statement, this.statementRate);
   }
+
+  public getTotalCost(): number {
+    this.totalCost = 0;
+    this.deliveryList.map(delivery => {
+      this.totalCost += delivery.calculation && delivery.calculation.totalSum ? delivery.calculation.totalSum : 0;
+    });
+    this.totalCost = +this.totalCost.toFixed(0);
+    return this.totalCost;
+  }
+
+  // public calculateDeliveries(deliveryList: DeliveryOfWagon[]): DeliveryOfWagon[] {
+  //   deliveryList.map(delivery => {
+  //     const totalTime = (new Date(delivery.endDate).getTime() - new Date(delivery.startDate).getTime()) / 3600000;
+  //     const exactCalculationTime = totalTime - this.statementRate.deliveryDispatchTimeNorm.norm;
+  //     let calculationTime;
+  //     if (exactCalculationTime > 0) {
+  //       calculationTime = (exactCalculationTime % 1) >= 0.25 ? Math.ceil(exactCalculationTime) : Math.floor(exactCalculationTime);
+  //     } else {
+  //       calculationTime = 0;
+  //     }
+  //     const maxPayTime = this.statementRate.turnoverTimeNorm.norm - this.statementRate.deliveryDispatchTimeNorm.norm + 24;
+  //     let payTime = calculationTime > maxPayTime ? maxPayTime : calculationTime;
+  //     payTime = (payTime % 1) >= 0.25 ? Math.ceil(payTime) : Math.floor(payTime);
+  //
+  //     if (delivery.owner === 'ВСП') {
+  //       payTime = calculationTime;
+  //     }
+  //
+  //     let penaltyTime = calculationTime - payTime;
+  //     const shuntingWorkTime = delivery.shuntingWorks != null ? delivery.shuntingWorks : 0;
+  //
+  //     let paySum = 0;
+  //     let penaltySum = 0;
+  //     let shuntingWorkSum = 0;
+  //
+  //     if (delivery.owner === 'Собств.(аренда)' || delivery.cargoType === 'ВЕСОПОВЕРОЧНЫЙ') {
+  //       // calculationTime = 0;
+  //       payTime = 0;
+  //       paySum = 0;
+  //       penaltyTime = 0;
+  //       penaltySum = 0;
+  //     }
+  //
+  //     shuntingWorkSum = shuntingWorkTime * this.statementRate.shuntingTariff.tariff;
+  //
+  //     if (payTime > 0) {
+  //       this.baseRateAndPenaltySub = this.deliveryService
+  //         .getBaseRateAndPenalty(delivery.deliveryId, payTime, this.statement.created).subscribe(data => {
+  //           paySum = +(data.baseRate * this.statementRate.indexToBaseRate.indexToRate).toFixed(1);
+  //           penaltySum = data.penalty * penaltyTime;
+  //         }, () => {
+  //           this.alert.danger('Ошибка при загрузке базовой ставки и штрафа');
+  //         }, () => {
+  //
+  //           if (delivery.owner === 'СНГ') {
+  //             paySum = paySum * 1.3;
+  //           }
+  //
+  //           const totalSum = this.statementRate.deliveryDispatchTariff.tariff + paySum + penaltySum + shuntingWorkSum;
+  //
+  //           delivery.calculation = {
+  //             totalTime, calculationTime, payTime, paySum, penaltyTime, penaltySum, shuntingWorkTime, shuntingWorkSum, totalSum
+  //           };
+  //
+  //           // this.totalCost += totalSum;
+  //         });
+  //     } else {
+  //       delivery.calculation = {
+  //         totalTime,
+  //         calculationTime,
+  //         payTime: 0,
+  //         paySum: 0,
+  //         penaltyTime: 0,
+  //         penaltySum: 0,
+  //         shuntingWorkTime,
+  //         shuntingWorkSum,
+  //         totalSum: shuntingWorkSum + this.statementRate.deliveryDispatchTariff.tariff
+  //       };
+  //       // this.totalCost += shuntingWorkSum + this.statementRate.deliveryDispatchTariff.tariff;
+  //     }
+  //
+  //   });
+  //
+  //   return deliveryList;
+  // }
 
   public loadSuitableMemos(statementId: number): void {
     this.suitableMemoSub = this.memoOfDispatchService.getSuitableMemosForStatement(statementId).subscribe(memos => {
@@ -224,12 +235,6 @@ export class ListMemoInStatementComponent implements OnInit, OnDestroy {
     });
   }
 
-  // checkWeight(): void {
-  //   if (this.editedMemo.cargoWeight > 999) {
-  //     this.editedMemo.cargoWeight = null;
-  //   }
-  // }
-
   ngOnDestroy(): void {
     this.utils.unsubscribe([
       this.createSub,
@@ -240,5 +245,13 @@ export class ListMemoInStatementComponent implements OnInit, OnDestroy {
       this.removeAllMemoSub,
       this.suitableMemoSub
     ]);
+  }
+
+  calcSummary(): number {
+    let summary;
+    for (const delivery of this.deliveryList) {
+      summary += delivery.calculation ? delivery.calculation.totalSum : 0;
+    }
+    return summary;
   }
 }

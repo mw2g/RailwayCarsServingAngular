@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white row">
+<nav class="navbar navbar-expand navbar-light bg-white row">
   <div class="navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active" *ngIf="form && !form.pristine">
@@ -24,6 +24,16 @@
            [routerLink]="['/statement', 'print-form', statementId]">
         </a>
       </li>
+      <li *ngIf="statementId">
+        <a class="fas fa-print btn btn-outline-info mr-2" title="Печать"
+           [routerLink]="['/statement', 'print-form-payment-statement', statementId]"><i class="ml-2 fas fa-ruble-sign"></i>
+        </a>
+      </li>
+      <li *ngIf="statementId">
+        <a class="fas fa-print btn btn-outline-info mr-2" title="Печать"
+           [routerLink]="['/statement', 'print-form-work-order-calculation', statementId]"><i class="ml-2 fas fa-snowplow"></i>
+        </a>
+      </li>
       <li *ngIf="!enableComment && statementId">
         <button type="button" class="far fa-comment-alt btn btn-outline-info" title="Коментарий"
                 (click)="enableComment=true">
@@ -31,8 +41,14 @@
       </li>
     </ul>
     <span *ngIf="statement && statement.statementId" class="ml-5">
-        Памятка подачи {{ statement.statementId }} Автор: {{ statement.author }}
+        Ведомость {{ statement.statementId }}
+      <span *ngIf="statement.author">Автор: {{ statement.author }}</span>
 <!--      от {{ form.value.created * 1000 | date: 'dd.MM.yyyy'}}-->
+              <!-- Button trigger modal -->
+              <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm ml-2" data-toggle="modal"
+                      data-target="#deleteModal"
+                      (click)="setDelete(statement.statementId)">
+              </button>
     </span>
   </div>
 </nav>
@@ -40,8 +56,7 @@
 <div *ngIf="form; else loading">
   <form [formGroup]="form" (ngSubmit)="update()">
     <div class="row">
-      <div class="form-group col-3 pl-0 mb-0"
-           [ngClass]="{invalid: form.get('created').touched && form.get('created').invalid}">
+      <div class="form-group col-3 pl-0 mb-0">
         <label class="small" for="created">Дата</label>
         <input type="datetime-local" class="form-control form-control-sm" id="created" formControlName="created"
                [required]="form.get('created').hasError('required')">
@@ -50,45 +65,35 @@
       <div class="form-group col-3 mb-0">
         <label class="small" for="cargoOperation">Грузовая операция</label>
         <div class="input-group mb-3">
-          <select class="custom-select custom-select-sm" id="cargoOperation" formControlName="cargoOperation">
+          <select class="custom-select custom-select-sm" id="cargoOperation" formControlName="cargoOperation"
+                  [required]="form.get('cargoOperation').hasError('required')">
             <option *ngFor="let operation of cargoOperations | async"
                     value="{{ operation.operationName }}">{{ operation.operationName }}</option>
           </select>
         </div>
       </div>
 
-      <div class="form-group col-3 mb-0"
-           [ngClass]="{invalid: form.get('customer').touched && form.get('customer').invalid}">
+      <div class="form-group col-3 mb-0">
         <label class="small" for="customer">Контрагент</label>
         <div class="input-group">
-          <input type="text" class="form-control form-control-sm" id="customer" formControlName="customer"
-                 list=customerList autocomplete="off" [required]="form.get('customer').hasError('required')">
-          <div class="input-group-append">
-            <button class="fas fa-times btn btn-outline-secondary btn-sm" type="button"
-                    (click)="form.get('customer').reset(); form.markAsDirty()">
-              <!--                    onclick="document.getElementById('customer').value = ''"-->
-            </button>
-          </div>
+          <select class="custom-select custom-select-sm" id="customer" formControlName="customer"
+                  [required]="form.get('customer').hasError('required')">
+            <option *ngFor="let customer of customers | async"
+                    value="{{ customer.customerName }}">{{ customer.customerName }}</option>
+          </select>
         </div>
-        <datalist id=customerList>
-          <option *ngFor="let customer of customers | async">{{ customer.customerName }}</option>
-        </datalist>
       </div>
 
       <div *ngIf="statementId" class="form-group col-3 mb-0">
         <label class="small" for="signer">Подписант</label>
         <div class="input-group">
-          <input type="text" class="form-control form-control-sm" id="signer" formControlName="signer" list=signerList
-                 autocomplete="off">
-          <div class="input-group-append">
-            <button class="fas fa-times btn btn-outline-secondary btn-sm" type="button"
-                    (click)="form.get('signer').reset(); form.markAsDirty()">
-            </button>
-          </div>
+          <select class="custom-select custom-select-sm" id="signer" formControlName="signer"
+                  [required]="form.get('signer').hasError('required')">
+            <option value="">Не выбран</option>
+            <option *ngFor="let signer of statement.customer.signerList"
+                    value="{{ signer.initials }}">{{ signer.initials }}</option>
+          </select>
         </div>
-        <datalist id=signerList>
-          <option *ngFor="let signer of form.value.customer.signerList">{{ signer.initials }}</option>
-        </datalist>
       </div>
     </div>
 
@@ -113,7 +118,7 @@
         <label class="small" for="cargoOperation">Маневровый тариф</label>
         <div class="input-group mb-3">
 <!--          <input type="number" class="small" id="shuntingTariff" formControlName="shuntingTariff">-->
-          <span>{{ statementRate.shuntingTariff.tariff }} р.</span>
+          <span>{{ statementRate.shuntingTariff.tariff | number:'0.2'}} р.</span>
         </div>
       </div>
 
@@ -121,7 +126,7 @@
         <label class="small" for="cargoOperation">Тариф подачи уборки</label>
         <div class="input-group mb-3">
 <!--          <input type="number" class="small" id="deliveryDispatchTariff" formControlName="deliveryDispatchTariff">-->
-          <span>{{ statementRate.deliveryDispatchTariff.tariff }} р.</span>
+          <span>{{ statementRate.deliveryDispatchTariff.tariff | number:'0.2'}} р.</span>
         </div>
       </div>
 
@@ -158,3 +163,26 @@
 <ng-template #loading>
   <p class="text-center">Идёт загрузка...</p>
 </ng-template>
+
+<!-- Modal -->
+<div *ngIf="statement && statement.statementId" class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Удаление</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Удалить ведомость № {{ statementIdToDelete }}
+        от {{ statement.created | date : 'dd.MM.yyyy HH:mm' }} ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="unsetDelete()">Отменить</button>
+        <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="delete()">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>
