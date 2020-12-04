@@ -10,22 +10,22 @@ export class IndexToBaseRateService {
   }
 
   getAll(): Observable<Array<IndexToBaseRate>> {
-    return this.httpClient.get<Array<IndexToBaseRate>>(`${environment.dbUrl}/api/index-to-base-rate.json`);
+    return this.httpClient.get<Array<IndexToBaseRate>>(`${environment.dbUrl}/api/index-to-base-rate`);
   }
 
   getById(indexId: string): Observable<IndexToBaseRate> {
-    return this.httpClient.get<IndexToBaseRate>(`${environment.dbUrl}/api/index-to-base-rate/${indexId}.json`);
+    return this.httpClient.get<IndexToBaseRate>(`${environment.dbUrl}/api/index-to-base-rate/${indexId}`);
   }
 
   update(indexToBaseRate: IndexToBaseRate): Observable<{ response: any }> {
-    return this.httpClient.put<{ response: any }>(`${environment.dbUrl}/api/index-to-base-rate.json`, indexToBaseRate);
+    return this.httpClient.put<{ response: any }>(`${environment.dbUrl}/api/index-to-base-rate`, indexToBaseRate);
   }
 
   create(indexToBaseRate: IndexToBaseRate): Observable<IndexToBaseRate> {
-    return this.httpClient.post<IndexToBaseRate>(`${environment.dbUrl}/api/index-to-base-rate.json`, indexToBaseRate);
+    return this.httpClient.post<IndexToBaseRate>(`${environment.dbUrl}/api/index-to-base-rate`, indexToBaseRate);
   }
 
   delete(indexId: number): Observable<{ response: any }> {
-    return this.httpClient.delete<{ response: any }>(`${environment.dbUrl}/api/index-to-base-rate/${indexId}.json`);
+    return this.httpClient.delete<{ response: any }>(`${environment.dbUrl}/api/index-to-base-rate/${indexId}`);
   }
 }

@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {CargoOperation, MemoOfDispatch, Customer} from '../../shared/interfaces';
+import {CargoOperation, MemoOfDispatch, Customer, MemoOfDelivery} from '../../shared/interfaces';
 import {Observable, Subscription, throwError} from 'rxjs';
 import {Router} from '@angular/router';
 import {AlertService} from '../../shared/service/alert.service';
@@ -21,6 +21,7 @@ export class ListMemoOfDispatchComponent implements OnInit, OnDestroy {
   delSub: Subscription;
   cargoOperations: Observable<Array<CargoOperation>>;
   customers: Observable<Array<Customer>>;
+  sortState = {memoOfDeliveryId: null, startDate: true, wagonQuantity: null};
   sortById = true;
   sortByWagonQuantity: boolean;
   sortByDate: boolean;
@@ -45,6 +46,34 @@ export class ListMemoOfDispatchComponent implements OnInit, OnDestroy {
     this.cargoOperations = this.cargoOperationService.getAll();
     this.afterDate.setFullYear(this.afterDate.getFullYear() - 1);
     this.afterDate.setDate(this.afterDate.getDay() - 5);
+    this.loadMemos();
+  }
+
+  sortList(field: string, primer?, fromMemo?): void {
+    if (!fromMemo) {
+      for (const key of Object.keys(this.sortState)) {
+        this.sortState[key] = key === field ? !this.sortState[key] : null;
+      }
+    }
+    const prep = primer ? (x) => primer(x) : (x) => x[field];
+    const reverse = this.sortState[field] ? 1 : -1;
+    this.memos = [...this.memos.sort((a, b) => {
+      return a = prep(a), b = prep(b), reverse * (a > b ? 1 : -1);
+    })];
+  }
+
+  public deliveryListLengthFunc = (memo: MemoOfDelivery): number => memo.deliveryOfWagonList.length;
+
+  clearViewSettings(): void {
+    localStorage.removeItem('memoOfDeliveryViewSettings');
+    this.sortState = {memoOfDeliveryId: null, startDate: true, wagonQuantity: null};
+    this.searchStr = '';
+    this.customerFilter = '';
+    this.cargoOperationFilter = '';
+    this.afterDate = new Date();
+    this.afterDate.setFullYear(this.afterDate.getFullYear() - 1);
+    this.beforeDate = new Date();
+
     this.loadMemos();
   }
 
@@ -85,18 +114,17 @@ export class ListMemoOfDispatchComponent implements OnInit, OnDestroy {
   }
 
   loadMemos(): void {
-    if (this.afterDate) {
-      this.afterDate = new Date(this.afterDate);
-    } else {
-      this.afterDate = new Date(2019, 0);
-    }
-    if (this.beforeDate) {
-      this.beforeDate = new Date(this.beforeDate);
-    } else {
-      this.beforeDate = new Date();
-    }
+    this.afterDate = this.utils.prepareDate(this.afterDate, new Date(new Date().getFullYear() - 1, new Date().getMonth() - 1));
+    this.beforeDate = this.utils.prepareDate(this.beforeDate, new Date());
+
     this.memosSub = this.memoService.getAllMemos(this.afterDate, this.beforeDate).subscribe(memos => {
       this.memos = memos;
+      for (const key of Object.keys(this.sortState)) {
+        if (this.sortState[key] != null) {
+          this.sortList(key, key === 'wagonQuantity' ? this.deliveryListLengthFunc : null, true);
+          return;
+        }
+      }
     }, error => {
       throwError(error);
     });

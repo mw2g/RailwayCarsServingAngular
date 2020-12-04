@@ -12,10 +12,10 @@
             </button>
           </div>
           <input type="number" list=deliveryList class="input-text text" [(ngModel)]="deliveryIdToAdd"
-                 style="width: 100px">
+                 style="width: 100px" (keydown.escape)="deliveryIdToAdd = null">
           <div class="input-group-append">
             <button class="btn btn-outline-info btn-sm mr-2" title="Очистить"
-                    type="button" (click)="clearDeliveryIdToAdd()">&times;
+                    type="button" (click)="deliveryIdToAdd = null">&times;
             </button>
           </div>
           <datalist id=deliveryList *ngIf="suitableDeliveries">
@@ -53,7 +53,7 @@
     <th class="col-md col-sm col">Действия</th>
   </tr>
   </thead>
-  <tbody *ngIf="deliveryList.length; else loading">
+  <tbody *ngIf="deliveryList.length; else loading" (keydown.escape)="cancel()" (keydown.enter)="saveDelivery()">
   <tr class="row my-0 p-0" *ngFor="let delivery of deliveryList; let idx = index">
     <ng-template [ngTemplateOutlet]="loadTemplate(delivery)"
                  [ngTemplateOutletContext]="{ $implicit: delivery, idx: idx}">
@@ -70,9 +70,11 @@
   <!--  <a [routerLink]="['/delivery', 'edit', delivery.deliveryId]">-->
   <td width="120"><a [routerLink]="['/delivery', 'edit', delivery.deliveryId]"
                      title="Открыть общую подачу">{{ delivery.wagon }}</a></td>
-  <td width="170">{{ delivery.wagon }}</td>
+  <td width="170">{{ delivery.wagonType }}</td>
   <td width="170">{{ delivery.owner }}</td>
-  <td width="80">{{ delivery.cargoWeight | number:'0.2-2' }}</td>
+  <td width="80" type="button" (click)="enableForm ? editDelivery(delivery) : null">
+    {{ delivery.cargoWeight | number:'0.2-2' }}
+  </td>
   <td width="50" *ngIf="memoOfDispatch && memoOfDispatch.cargoOperation==='ВЫГРУЗКА'">
     <i class="fas fa-check" [hidden]="!delivery.loadUnloadWork" style="color: grey"></i>
   </td>
@@ -115,22 +117,11 @@
   <!--      Введите номер вагона-->
   <!--    </div>-->
   <!--  </td>-->
-  <td width="170">
-    <select class="custom-select-sm form-control ms-valid_input" [(ngModel)]="editedDelivery.wagonType"
-            #wagonType="ngModel" required>
-      <option *ngFor="let wagonType of wagonTypeList" value="{{ wagonType.typeName }}">{{ wagonType.typeName }}</option>
-    </select>
-  </td>
-  <td width="170">
-    <select class="custom-select-sm form-control ms-valid_input" [(ngModel)]="editedDelivery.owner"
-            #owner="ngModel" required>
-      <option value="{{owner.ownerName}}" *ngFor="let owner of ownersList">{{ owner.ownerName }}</option>
-    </select>
-  </td>
+  <td width="170">{{ delivery.wagonType }}</td>
+  <td width="170">{{ delivery.owner }}</td>
   <td width="80">
     <input type="number" step="any" [(ngModel)]="editedDelivery.cargoWeight" class="form-control form-control-sm"
-           #cargoWeight="ngModel"
-           [ngClass]="{'is-invalid': cargoWeight.touched && cargoWeight.invalid}"
+           #cargoWeight="ngModel" appMyAutofocus
            (keyup)="checkWeight()">
   </td>
   <td width="50" style="padding-left: 8px; padding-top: 8px; padding-bottom: 0px"
@@ -138,8 +129,8 @@
     <input type="checkbox" [(ngModel)]="editedDelivery.loadUnloadWork" #loadUnloadWork="ngModel">
   </td>
   <td width="150">
-    <a *ngIf="delivery.memoOfDelivery.memoOfDeliveryId; else justDate" title="Открыть памятку подачи"
-       [routerLink]="['/memo', 'delivery', 'edit', delivery.memoOfDelivery.memoOfDeliveryId]">
+    <a *ngIf="delivery.memoOfDelivery; else justDate" title="Открыть памятку подачи"
+       [routerLink]="['/memo', 'delivery', 'edit', delivery.memoOfDelivery]">
       {{ delivery["startDate"] | date : 'dd.MM.yyyy HH:mm' }}
     </a>
     <ng-template #justDate>
@@ -158,8 +149,8 @@
   <!--    </div>-->
   <!--  </td>-->
   <td class="col-md col-sm col">
-    <button (click)="saveDelivery()" class="fas fa-check btn btn-outline-success btn-sm mr-1 mt-1" title="Сохранить"
-            [disabled]="wagonType.invalid || owner.invalid"></button>
+    <button (click)="saveDelivery()" class="fas fa-check btn btn-outline-success btn-sm mr-1 mt-1"
+            title="Сохранить"></button>
     <button value="Отмена" (click)="cancel()"
             class="fas fa-undo-alt btn btn-outline-warning btn-sm mt-1" title="Отменить"></button>
   </td>

@@ -59,7 +59,7 @@ export class LoginPageComponent implements OnInit {
 
     this.authService.login(loginRequestPayload).subscribe(() => {
       this.form.reset();
-      this.router.navigate(['/']);
+      this.router.navigate(['/delivery']);
     }, () => {
       this.submitted = false;
     }, () => {

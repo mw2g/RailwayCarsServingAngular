@@ -13,7 +13,7 @@
 <!--  class="posts col"-->
 <!--&gt;-->
   <!--  *ngIf="deliveries.length; else loading"-->
-  <table class="table table-sm table-bordered border-0 mx-auto"  style="text-align: center; max-width: 700px">
+  <table class="table table-sm table-bordered border-0 mx-auto"  style="text-align: center; max-width: 700px" (keydown.escape)="cancel()">
     <thead class="thead-light">
     <tr class="row">
       <strong>Базовая ставка</strong>
@@ -26,7 +26,7 @@
 <!--      <th width="100">Номер</th>-->
       <th class="col" #tableColumn2>Дата актуальности</th>
       <th [width]="100" #tableColumn3>Часы</th>
-      <th [width]="100" #tableColumn4>
+      <th [width]="150" #tableColumn4>
         <select class="custom-select custom-select-sm" [(ngModel)]="wagonGroupFilter">
           <option value="">Группа</option>
           <option *ngFor="let group of wagonGroupList | async"
@@ -96,7 +96,7 @@
            #hours="ngModel" required>
   </td>
   <td [width]="tableColumn4.offsetWidth">
-    <select class="custom-select form-control form-control-sm ms-valid_input"
+    <select class="custom-select custom-select-sm form-control form-control-sm ms-valid_input"
             [(ngModel)]="editedBaseRate.wagonGroup.groupName" #wagonGroup="ngModel" required>
       <option *ngFor="let wagonGroup of wagonGroupList | async" value="{{ wagonGroup.groupName }}">{{ wagonGroup.groupName }}</option>
     </select>

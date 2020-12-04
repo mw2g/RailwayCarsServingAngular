@@ -1,8 +1,11 @@
 <nav class="navbar navbar-expand navbar-light bg-light row">
   <ul class="navbar-nav mr-auto">
     <li>
-      <button class="fas fa-plus btn btn-sm btn-outline-info mr-3" title="Добавить"
+      <button class="fas fa-plus btn btn-outline-info mr-3" title="Добавить"
               [routerLink]="['/memo/dispatch', 'create']"></button>
+    </li>
+    <li>
+      <i class="fas fa-align-justify btn btn-outline-info mr-1" type="button" (click)="clearViewSettings()"></i>
     </li>
     <li class="nav-item active mr-1 py-0 my-0">
       <input type="datetime-local" [ngModel]="afterDate | date: 'yyyy-MM-ddTHH:mm'"
@@ -35,10 +38,10 @@
 <table class="table table-sm table-bordered border-0" style="text-align: center">
   <thead class="thead-light">
   <tr class="row">
-    <th [width]="120" #tableColumn2 type="button" (click)="sortListById()">
+    <th [width]="120" #tableColumn2 type="button" (click)="sortList('memoOfDispatchId')">
       Н
-      <i *ngIf="sortById === true" class="fas fa-sort-up btn pr-0 mr-0"></i>
-      <i *ngIf="sortById === false" class="fas fa-sort-down btn pr-0 mr-0"></i>
+      <i [ngClass]="{'fa-sort-up': sortState['memoOfDispatchId'] === true,
+                     'fa-sort-down': sortState['memoOfDispatchId'] === false}" class="fas"></i>
     </th>
     <th [width]="190" #tableColumn3 type="button" (click)="sortListByDate()">Окончание
       <i *ngIf="sortByDate === true" class="fas fa-sort-up btn pr-0 mr-0"></i>

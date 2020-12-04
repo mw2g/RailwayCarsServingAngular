@@ -125,9 +125,9 @@ export class ListCargoTypeComponent implements OnInit, OnDestroy {
         this.editedCargoType.typeId = data.typeId;
       }, () => {
         this.cargoTypeList.pop();
-        this.alert.danger('Ошибка при создании группы вагонов, возможно группа с таким наименованием уже существует');
+        this.alert.danger('Ошибка при создании вида груза, возможно вид с таким наименованием уже существует');
       }, () => {
-        this.alert.success('Группа вагонов создана');
+        this.alert.success('Вид груза создан');
         this.editedCargoType = null;
       });
       this.isNewRecord = false;
@@ -143,7 +143,7 @@ export class ListCargoTypeComponent implements OnInit, OnDestroy {
       }, () => {
         this.alert.danger('Ошибка');
       }, () => {
-        this.alert.success('Группа вагонов сохранена');
+        this.alert.success('Вид груза сохранен');
         this.editedCargoType = null;
         this.enableForm = true;
       });
@@ -155,9 +155,9 @@ export class ListCargoTypeComponent implements OnInit, OnDestroy {
       this.cargoTypeList = this.cargoTypeList.filter(cargoType => cargoType.typeId !== this.cargoTypeIdToDelete);
       this.unsetDelete();
     }, () => {
-      this.alert.danger('Ошибка при удалении группы вагона');
+      this.alert.danger('Ошибка при удалении вида груза');
     }, () => {
-      this.alert.success('Группа вагона удалена');
+      this.alert.success('Вид груза удален');
     });
   }
 

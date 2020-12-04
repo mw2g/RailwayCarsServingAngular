@@ -18,7 +18,7 @@
         </div>
       </li>
       <li>
-        <button class="fas fa-arrow-left btn btn-outline-info" title="Назад" [routerLink]="['/delivery']"></button>
+        <button class="fas fa-align-justify btn btn-outline-info" title="В список" [routerLink]="['/delivery']"></button>
       </li>
     </ul>
     <span *ngIf="delivery && delivery.deliveryId">
@@ -33,7 +33,7 @@
 </nav>
 
 <div *ngIf="form; else loading">
-  <form [formGroup]="form" (ngSubmit)="update()">
+  <form [formGroup]="form" (ngSubmit)="update()" (keydown.escape)="loadForm()">
     <div class="form-row">
       <div class="form-group col-md-3"
            [ngClass]="{invalid: form.get('wagonNumber').touched && form.get('wagonNumber').invalid}">

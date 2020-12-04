@@ -176,12 +176,12 @@ export class ListMemoInStatementComponent implements OnInit, OnDestroy {
   addMemoById(): void {
     if (!this.suitableMemos.find(memo => memo.memoOfDispatchId === this.memoIdToAdd)) {
       this.alert.warning('Нет подходящей памятки с таким номером');
-      this.clearMemoIdToAdd();
+      this.memoIdToAdd = null;
       return;
     }
     this.addMemoSub = this.memoOfDispatchService.addStatement(this.memoIdToAdd.toString(), String(this.statementId))
       .subscribe(() => {
-        this.clearMemoIdToAdd();
+        this.memoIdToAdd = null;
       }, () => {
         this.alert.danger('Ошибка при добавлении памятки по номеру');
       }, () => {
@@ -204,12 +204,8 @@ export class ListMemoInStatementComponent implements OnInit, OnDestroy {
     });
   }
 
-  clearMemoIdToAdd(): void {
-    this.memoIdToAdd = null;
-  }
-
   addAllSuitableMemos(): void {
-    this.clearMemoIdToAdd();
+    this.memoIdToAdd = null;
     this.addListMemoSub = this.memoOfDispatchService
       .addStatementToMemoOfDispatchList(this.suitableMemos.map(memo => memo.memoOfDispatchId), this.statementId)
       .subscribe(() => {

@@ -204,7 +204,7 @@ export class FormDeliveryOfWagonComponent implements OnInit, OnDestroy {
 
   delete(deliveryId: number): void {
     this.delSub = this.deliveryService.delete(deliveryId).subscribe((data) => {
-      this.alert.success(data.message);
+      // this.alert.success(data.message);
     }, () => {
       this.alert.danger('Ошибка');
     }, () => {

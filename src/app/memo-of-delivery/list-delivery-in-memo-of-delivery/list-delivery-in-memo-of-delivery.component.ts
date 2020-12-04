@@ -215,7 +215,7 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
   addDeliveryById(): void {
     if (!this.suitableDeliveries.find(delivery => delivery.deliveryId === this.deliveryIdToAdd)) {
       this.alert.warning('Нет подходящей подачи с таким номером');
-      this.clearDeliveryIdToAdd();
+      this.deliveryIdToAdd = null;
       return;
     }
     this.addMemoSub = this.deliveryService.addMemoOfDelivery(this.deliveryIdToAdd.toString(), String(this.memoOfDeliveryId))
@@ -224,7 +224,7 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
         this.alert.danger('Ошибка при добавлении общей подачи по номеру');
       }, () => {
         this.deliveryList.find(delivery => delivery.deliveryId === this.deliveryIdToAdd).memoOfDelivery = this.memoOfDeliveryId;
-        this.clearDeliveryIdToAdd();
+        this.deliveryIdToAdd = null;
         this.alert.success('В общую подачу добавлена памятка подачи');
       });
 
@@ -244,12 +244,8 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
     });
   }
 
-  clearDeliveryIdToAdd(): void {
-    this.deliveryIdToAdd = null;
-  }
-
   addAllSuitableDeliveries(): void {
-    this.clearDeliveryIdToAdd();
+    this.deliveryIdToAdd = null;
     this.addMemoToListSub = this.deliveryService
       .addMemoOfDeliveryToDeliveryList(this.suitableDeliveries.map(delivery => delivery.deliveryId), this.memoOfDeliveryId)
       .subscribe(() => {

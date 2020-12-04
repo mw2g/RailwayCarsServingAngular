@@ -10,22 +10,22 @@ export class TimeNormTypeService {
   }
 
   getAll(): Observable<Array<TimeNormType>> {
-    return this.httpClient.get<Array<TimeNormType>>(`${environment.dbUrl}/api/time-norm-type.json`);
+    return this.httpClient.get<Array<TimeNormType>>(`${environment.dbUrl}/api/time-norm-type`);
   }
 
   getById(typeId: string): Observable<TimeNormType> {
-    return this.httpClient.get<TimeNormType>(`${environment.dbUrl}/api/time-norm-type/${typeId}.json`);
+    return this.httpClient.get<TimeNormType>(`${environment.dbUrl}/api/time-norm-type/${typeId}`);
   }
 
   update(timeNormType: TimeNormType): Observable<{ response: any }> {
-    return this.httpClient.put<{ response: any }>(`${environment.dbUrl}/api/time-norm-type.json`, timeNormType);
+    return this.httpClient.put<{ response: any }>(`${environment.dbUrl}/api/time-norm-type`, timeNormType);
   }
 
   create(timeNormType: TimeNormType): Observable<TimeNormType> {
-    return this.httpClient.post<TimeNormType>(`${environment.dbUrl}/api/time-norm-type.json`, timeNormType);
+    return this.httpClient.post<TimeNormType>(`${environment.dbUrl}/api/time-norm-type`, timeNormType);
   }
 
   delete(typeId: number): Observable<{ response: any }> {
-    return this.httpClient.delete<{ response: any }>(`${environment.dbUrl}/api/time-norm-type/${typeId}.json`);
+    return this.httpClient.delete<{ response: any }>(`${environment.dbUrl}/api/time-norm-type/${typeId}`);
   }
 }

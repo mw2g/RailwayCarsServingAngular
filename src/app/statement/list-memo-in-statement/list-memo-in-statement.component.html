@@ -15,10 +15,10 @@
             </button>
           </div>
           <input type="number" list=deliveryList class="input-text text" [(ngModel)]="memoIdToAdd"
-                 style="width: 100px">
+                 style="width: 100px" (keydown.escape)="memoIdToAdd = null">
           <div class="input-group-append">
             <button class="fas fa-times btn btn-outline-info btn-sm mr-2"
-                    type="button" (click)="clearMemoIdToAdd()"></button>
+                    type="button" (click)="memoIdToAdd = null"></button>
           </div>
           <datalist id=deliveryList *ngIf="suitableMemos">
             <option *ngFor="let memo of suitableMemos" value="{{memo.memoOfDispatchId}}"

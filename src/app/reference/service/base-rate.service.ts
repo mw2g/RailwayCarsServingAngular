@@ -10,22 +10,22 @@ export class BaseRateService {
   }
 
   getAll(): Observable<Array<BaseRate>> {
-    return this.httpClient.get<Array<BaseRate>>(`${environment.dbUrl}/api/base-rate.json`);
+    return this.httpClient.get<Array<BaseRate>>(`${environment.dbUrl}/api/base-rate`);
   }
 
   getById(rateId: string): Observable<BaseRate> {
-    return this.httpClient.get<BaseRate>(`${environment.dbUrl}/api/base-rate/${rateId}.json`);
+    return this.httpClient.get<BaseRate>(`${environment.dbUrl}/api/base-rate/${rateId}`);
   }
 
   update(baseRate: BaseRate): Observable<{ response: any }> {
-    return this.httpClient.put<{ response: any }>(`${environment.dbUrl}/api/base-rate.json`, baseRate);
+    return this.httpClient.put<{ response: any }>(`${environment.dbUrl}/api/base-rate`, baseRate);
   }
 
   create(baseRate: BaseRate): Observable<BaseRate> {
-    return this.httpClient.post<BaseRate>(`${environment.dbUrl}/api/base-rate.json`, baseRate);
+    return this.httpClient.post<BaseRate>(`${environment.dbUrl}/api/base-rate`, baseRate);
   }
 
   delete(rateId: number): Observable<{ response: any }> {
-    return this.httpClient.delete<{ response: any }>(`${environment.dbUrl}/api/base-rate/${rateId}.json`);
+    return this.httpClient.delete<{ response: any }>(`${environment.dbUrl}/api/base-rate/${rateId}`);
   }
 }

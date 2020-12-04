@@ -10,22 +10,22 @@ export class WagonGroupService {
   }
 
   getAll(): Observable<Array<WagonGroup>> {
-    return this.httpClient.get<Array<WagonGroup>>(`${environment.dbUrl}/api/wagon-group.json`);
+    return this.httpClient.get<Array<WagonGroup>>(`${environment.dbUrl}/api/wagon-group`);
   }
 
   getById(groupId: string): Observable<WagonGroup> {
-    return this.httpClient.get<WagonGroup>(`${environment.dbUrl}/api/wagon-group/${groupId}.json`);
+    return this.httpClient.get<WagonGroup>(`${environment.dbUrl}/api/wagon-group/${groupId}`);
   }
 
   update(wagonGroup: WagonGroup): Observable<{ response: any }> {
-    return this.httpClient.put<{ response: any }>(`${environment.dbUrl}/api/wagon-group.json`, wagonGroup);
+    return this.httpClient.put<{ response: any }>(`${environment.dbUrl}/api/wagon-group`, wagonGroup);
   }
 
   create(wagonGroup: WagonGroup): Observable<WagonGroup> {
-    return this.httpClient.post<WagonGroup>(`${environment.dbUrl}/api/wagon-group.json`, wagonGroup);
+    return this.httpClient.post<WagonGroup>(`${environment.dbUrl}/api/wagon-group`, wagonGroup);
   }
 
   delete(groupId: number): Observable<{ response: any }> {
-    return this.httpClient.delete<{ response: any }>(`${environment.dbUrl}/api/wagon-group/${groupId}.json`);
+    return this.httpClient.delete<{ response: any }>(`${environment.dbUrl}/api/wagon-group/${groupId}`);
   }
 }

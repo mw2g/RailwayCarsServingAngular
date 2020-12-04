@@ -30,9 +30,7 @@
       <div class="form-group col-md-6"
            [ngClass]="{invalid: form.get('type').touched && form.get('type').invalid}">
         <label for="name">Наименование вида груза</label>
-        <input type="text" class="form-control" id="name" formControlName="type"
-               [ngClass]="{'is-invalid': form.get('type').touched && form.get('type').invalid,
-               'is-valid': form.get('type').touched && form.get('type').valid}">
+        <input type="text" class="form-control" id="name" formControlName="type">
         <div class="invalid-feedback">
           Введите наименование
         </div>

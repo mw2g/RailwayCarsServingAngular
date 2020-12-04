@@ -10,22 +10,22 @@ export class WagonTypeService {
   }
 
   getAll(): Observable<Array<WagonType>> {
-    return this.httpClient.get<Array<WagonType>>(`${environment.dbUrl}/api/wagon-type.json`);
+    return this.httpClient.get<Array<WagonType>>(`${environment.dbUrl}/api/wagon-type`);
   }
 
   getById(typeId: string): Observable<WagonType> {
-    return this.httpClient.get<WagonType>(`${environment.dbUrl}/api/wagon-type/${typeId}.json`);
+    return this.httpClient.get<WagonType>(`${environment.dbUrl}/api/wagon-type/${typeId}`);
   }
 
   update(wagonType: WagonType): Observable<{ response: any }> {
-    return this.httpClient.put<{ response: any }>(`${environment.dbUrl}/api/wagon-type.json`, wagonType);
+    return this.httpClient.put<{ response: any }>(`${environment.dbUrl}/api/wagon-type`, wagonType);
   }
 
   create(wagonType: WagonType): Observable<WagonType> {
-    return this.httpClient.post<WagonType>(`${environment.dbUrl}/api/wagon-type.json`, wagonType);
+    return this.httpClient.post<WagonType>(`${environment.dbUrl}/api/wagon-type`, wagonType);
   }
 
   delete(typeId: number): Observable<{ response: any }> {
-    return this.httpClient.delete<{ response: any }>(`${environment.dbUrl}/api/wagon-type/${typeId}.json`);
+    return this.httpClient.delete<{ response: any }>(`${environment.dbUrl}/api/wagon-type/${typeId}`);
   }
 }

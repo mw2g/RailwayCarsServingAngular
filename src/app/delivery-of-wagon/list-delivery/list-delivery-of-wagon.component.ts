@@ -7,6 +7,7 @@ import {DeliveryOfWagonService} from '../delivery-of-wagon.service';
 import {UtilsService} from '../../shared/service/utils.service';
 import {CargoOperationService} from '../../reference/service/cargo-operation.service';
 import {CustomerService} from '../../reference/service/customer.service';
+import {LocalStorageService} from 'ngx-webstorage';
 
 @Component({
   selector: 'app-delivery-of-wagon',
@@ -16,143 +17,105 @@ import {CustomerService} from '../../reference/service/customer.service';
 export class ListDeliveryOfWagonComponent implements OnInit, OnDestroy {
 
   deliveries: DeliveryOfWagon[] = [];
-  deliveryIdToDelete: number;
   deliveriesSub: Subscription;
   delSub: Subscription;
   cargoOperations: Observable<Array<CargoOperation>>;
   customers: Observable<Array<Customer>>;
-  sortByStartDate: boolean;
-  sortByEndDate: boolean;
-  sortByWagon: boolean;
-  sortById = true;
+  sortState = {deliveryId: null, wagon: null, startDate: true, endDate: null, cargoWeight: null};
   searchStr = '';
-  cargoOperationFilter = '';
   customerFilter = '';
+  cargoOperationFilter = '';
   loadUnloadWorkFilter = '';
 
-  beforeDate: Date = new Date();
-  afterDate: Date = new Date();
-
-  // afterDate: Date = new Date(this.beforeDate.getMilliseconds() - new Date(0, 1).getDate());
+  beforeDate: Date;
+  afterDate: Date;
 
   constructor(private deliveryService: DeliveryOfWagonService,
               public router: Router,
               private alert: AlertService,
               private utils: UtilsService,
               private cargoOperationService: CargoOperationService,
+              private localStorage: LocalStorageService,
               private customerService: CustomerService
   ) {
   }
 
-  sortListByStartDate(): void {
-    this.sortByEndDate = null;
-    this.sortById = null;
-    this.sortByWagon = null;
-    if (this.sortByStartDate) {
-      this.deliveries = [...this.deliveries.sort((a, b) => a.startDate < b.startDate ? 1 : -1)];
-      this.sortByStartDate = false;
-    } else {
-      this.deliveries = [...this.deliveries.sort((a, b) => a.startDate > b.startDate ? 1 : -1)];
-      this.sortByStartDate = true;
-    }
-  }
-
-  sortListByEndDate(): void {
-    this.sortByStartDate = null;
-    this.sortByWagon = null;
-    this.sortById = null;
-    if (this.sortByEndDate) {
-      this.deliveries = [...this.deliveries.sort((a, b) => a.endDate < b.endDate ? 1 : -1)];
-      this.sortByEndDate = false;
-    } else {
-      this.deliveries = [...this.deliveries.sort((a, b) => a.endDate > b.endDate ? 1 : -1)];
-      this.sortByEndDate = true;
-    }
-  }
-
-  sortListById(): void {
-    this.sortByStartDate = null;
-    this.sortByEndDate = null;
-    this.sortByWagon = null;
-    if (this.sortById) {
-      this.deliveries = [...this.deliveries.sort((a, b) => a.deliveryId < b.deliveryId ? 1 : -1)];
-      this.sortById = false;
-    } else {
-      this.deliveries = [...this.deliveries.sort((a, b) => a.deliveryId > b.deliveryId ? 1 : -1)];
-      this.sortById = true;
-    }
-  }
-
-  sortListByWagon(): void {
-    this.sortByStartDate = null;
-    this.sortByEndDate = null;
-    this.sortById = null;
-    if (this.sortByWagon) {
-      this.deliveries = [...this.deliveries.sort((a, b) => a.wagon < b.wagon ? 1 : -1)];
-      this.sortByWagon = false;
-    } else {
-      this.deliveries = [...this.deliveries.sort((a, b) => a.wagon > b.wagon ? 1 : -1)];
-      this.sortByWagon = true;
-    }
-  }
-
   ngOnInit(): void {
+    const deliveryListViewSettings = JSON.parse(localStorage.getItem('deliveryListViewSettings'));
+    if (deliveryListViewSettings) {
+      this.sortState = deliveryListViewSettings.sortState ? deliveryListViewSettings.sortState : this.sortState;
+      this.searchStr = deliveryListViewSettings.searchStr ? deliveryListViewSettings.searchStr : '';
+      this.customerFilter = deliveryListViewSettings.customerFilter ? deliveryListViewSettings.customerFilter : '';
+      this.cargoOperationFilter = deliveryListViewSettings.cargoOperationFilter ? deliveryListViewSettings.cargoOperationFilter : '';
+      this.loadUnloadWorkFilter = deliveryListViewSettings.loadUnloadWorkFilter ? deliveryListViewSettings.loadUnloadWorkFilter : '';
+      this.beforeDate = deliveryListViewSettings.beforeDate ? deliveryListViewSettings.beforeDate : this.beforeDate;
+      this.afterDate = deliveryListViewSettings.afterDate ? deliveryListViewSettings.afterDate : this.afterDate;
+    }
+
     this.customers = this.customerService.getAll();
     this.cargoOperations = this.cargoOperationService.getAll();
-    this.afterDate.setFullYear(this.afterDate.getFullYear() - 1);
-    this.afterDate.setDate(this.afterDate.getDay() - 5);
     this.loadDeliveries();
   }
 
   loadDeliveries(): void {
-    if (this.afterDate) {
-      this.afterDate = new Date(this.afterDate);
-    } else {
-      this.afterDate = new Date(2019, 0);
-    }
-    if (this.beforeDate) {
-      this.beforeDate = new Date(this.beforeDate);
-    } else {
-      this.beforeDate = new Date();
-    }
+    this.afterDate = this.utils.prepareDate(this.afterDate, new Date(new Date().getFullYear() - 1, new Date().getMonth() - 1));
+    this.beforeDate = this.utils.prepareDate(this.beforeDate, new Date());
+
     this.deliveriesSub = this.deliveryService.getAllDeliveries(this.afterDate, this.beforeDate).subscribe(deliveries => {
       this.deliveries = deliveries;
+      for (const key of Object.keys(this.sortState)) {
+        if (this.sortState[key] != null) {
+          this.sortList(key, true);
+          return;
+        }
+      }
     }, error => {
       throwError(error);
     });
   }
 
-  delete(): void {
-    this.delSub = this.deliveryService.delete(this.deliveryIdToDelete).subscribe((data) => {
-      this.alert.success(data.message);
-      this.deliveries = this.deliveries.filter(delivery => delivery.deliveryId !== this.deliveryIdToDelete);
-      this.unsetDelete();
-    }, () => {
-      this.alert.danger('Ошибка');
-    }, () => {
-      this.alert.success('Общая подача удалена');
-    });
-  }
-
-  setDelete(deliveryId: number): void {
-    this.deliveryIdToDelete = deliveryId;
-  }
-
-  unsetDelete(): void {
-    this.deliveryIdToDelete = null;
-  }
-
-  getWagonNumberById(deliveryId: number): string {
-    if (deliveryId) {
-      return this.deliveries.find(value => value.deliveryId === deliveryId).wagon;
+  sortList(field: string, fromMemory?): void {
+    if (!fromMemory) {
+      for (const key of Object.keys(this.sortState)) {
+        this.sortState[key] = key === field ? !this.sortState[key] : null;
+      }
     }
-    return '';
+    const reverse = this.sortState[field] ? 1 : -1;
+    this.deliveries = [...this.deliveries.sort((a, b) => {
+      return a = a[field], b = b[field], reverse * (a > b ? 1 : -1);
+    })];
+  }
+
+  clearViewSettings(): void {
+    localStorage.removeItem('deliveryListViewSettings');
+    this.sortState = {deliveryId: null, wagon: null, startDate: true, endDate: null, cargoWeight: null};
+    this.searchStr = '';
+    this.customerFilter = '';
+    this.cargoOperationFilter = '';
+    this.loadUnloadWorkFilter = '';
+    this.afterDate = new Date();
+    this.afterDate.setFullYear(this.afterDate.getFullYear() - 1);
+    this.beforeDate = new Date();
+
+    this.loadDeliveries();
   }
 
   ngOnDestroy(): void {
+    const deliveryListViewSettings = {
+      sortState: this.sortState,
+      searchStr: this.searchStr,
+      customerFilter: this.customerFilter,
+      cargoOperationFilter: this.cargoOperationFilter,
+      loadUnloadWorkFilter: this.loadUnloadWorkFilter,
+      beforeDate: this.beforeDate,
+      afterDate: this.afterDate
+    };
+    localStorage.setItem('deliveryListViewSettings', JSON.stringify(deliveryListViewSettings));
+
     this.utils.unsubscribe([
       this.deliveriesSub,
       this.delSub
     ]);
   }
+
 }

@@ -10,22 +10,22 @@ export class TimeNormService {
   }
 
   getAll(): Observable<Array<TimeNorm>> {
-    return this.httpClient.get<Array<TimeNorm>>(`${environment.dbUrl}/api/time-norm.json`);
+    return this.httpClient.get<Array<TimeNorm>>(`${environment.dbUrl}/api/time-norm`);
   }
 
   getById(normId: string): Observable<TimeNorm> {
-    return this.httpClient.get<TimeNorm>(`${environment.dbUrl}/api/time-norm/${normId}.json`);
+    return this.httpClient.get<TimeNorm>(`${environment.dbUrl}/api/time-norm/${normId}`);
   }
 
   update(timeNorm: TimeNorm): Observable<{ response: any }> {
-    return this.httpClient.put<{ response: any }>(`${environment.dbUrl}/api/time-norm.json`, timeNorm);
+    return this.httpClient.put<{ response: any }>(`${environment.dbUrl}/api/time-norm`, timeNorm);
   }
 
   create(timeNorm: TimeNorm): Observable<TimeNorm> {
-    return this.httpClient.post<TimeNorm>(`${environment.dbUrl}/api/time-norm.json`, timeNorm);
+    return this.httpClient.post<TimeNorm>(`${environment.dbUrl}/api/time-norm`, timeNorm);
   }
 
   delete(normId: number): Observable<{ response: any }> {
-    return this.httpClient.delete<{ response: any }>(`${environment.dbUrl}/api/time-norm/${normId}.json`);
+    return this.httpClient.delete<{ response: any }>(`${environment.dbUrl}/api/time-norm/${normId}`);
   }
 }

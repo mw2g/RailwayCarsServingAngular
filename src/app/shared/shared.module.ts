@@ -14,6 +14,7 @@ import {SearchPipe} from './pipe/search.pipe';
 import { ScrollingModule} from '@angular/cdk/scrolling';
 import {FilterDeliveryPipe} from './pipe/filterDelivery.pipe';
 import {DeliveryOfWagonPaginationPipe} from './pipe/deliveryOfWagonPagination.pipe';
+import {SortPipe} from './pipe/sort.pipe';
 // import {QuillModule} from 'ngx-quill';
 
 @NgModule({
@@ -23,6 +24,7 @@ import {DeliveryOfWagonPaginationPipe} from './pipe/deliveryOfWagonPagination.pi
     WeightPipe,
     SearchPipe,
     FilterDeliveryPipe,
+    SortPipe,
     DeliveryOfWagonPaginationPipe
   ],
   imports: [
@@ -42,6 +44,7 @@ import {DeliveryOfWagonPaginationPipe} from './pipe/deliveryOfWagonPagination.pi
     WeightPipe,
     SearchPipe,
     FilterDeliveryPipe,
+    SortPipe,
     ScrollingModule,
     DeliveryOfWagonPaginationPipe
     // QuillModule

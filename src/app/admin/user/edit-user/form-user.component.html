@@ -3,21 +3,15 @@
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active" *ngIf="form && !form.pristine">
         <div *ngIf="user && user.userId">
-          <button (click)="update()" class="btn btn-outline-danger btn-sm mr-2">
-            Сохранить изменения
-          </button>
-          <button (click)="loadForm()" class="btn btn-outline-danger btn-sm mr-2">Отменить</button>
+          <button (click)="update()" title="Сохранить" class="fas fa-check btn btn-outline-success mr-2"></button>
+          <button (click)="loadForm()" title="Отменить" class="fas fa-undo-alt btn btn-outline-warning mr-2"></button>
         </div>
         <div *ngIf="!user || !user.userId">
-          <a (click)="create()" class="btn btn-outline-primary btn-sm mr-2">Создать</a>
+          <button (click)="create()" title="Создать" class="fas fa-check btn btn-outline-success mr-2"></button>
         </div>
       </li>
       <li>
-        <a
-          class="btn btn-outline-info btn-sm"
-          [routerLink]="['/admin', 'user']"
-        >Закрыть
-        </a>
+        <a class="fas fa-align-justify btn btn-outline-info" title="В список" [routerLink]="['/admin', 'user']"></a>
       </li>
     </ul>
     <span *ngIf="user && user.userId">
@@ -92,7 +86,7 @@
         <label class="custom-control-label" for="user">Пользователь</label>
       </div>
       <div class="custom-control custom-switch form-group col-md-3">
-        <input type="checkbox" class="custom-control-input" id="watch" formControlName="watchRole">
+        <input type="checkbox" value="WATCH" class="custom-control-input" id="watch" formControlName="watchRole">
         <label class="custom-control-label" for="watch">Просмотр</label>
       </div>
       <div class="custom-control custom-switch form-group col-md-3">

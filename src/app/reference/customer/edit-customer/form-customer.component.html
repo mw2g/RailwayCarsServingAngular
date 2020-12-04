@@ -7,15 +7,16 @@
           <button (click)="loadForm()" title="Отменить" class="fas fa-undo-alt btn btn-outline-warning mr-2"></button>
         </div>
         <div *ngIf="!customer">
-          <a (click)="create()" title="Сохранить" class="fas fa-check btn btn-outline-success mr-2"></a>
+          <button (click)="create()" title="Сохранить" class="fas fa-check btn btn-outline-success mr-2"></button>
         </div>
       </li>
       <li>
-        <a class="fas fa-arrow-left btn btn-outline-info" title="Назад" [routerLink]="['/reference/customer']"></a>
+        <a class="fas fa-align-justify btn btn-outline-info" title="В список" [routerLink]="['/reference/customer']"></a>
       </li>
     </ul>
     <span *ngIf="customer && customerId">
-        Контрагент {{ customer.customerId }} от {{ form.value.created | date: 'dd.MM.yyyy'}}
+        Контрагент {{ customer.customerId }}
+      <span *ngIf="customer.created">Создан {{ customer.created | date: 'dd.MM.yyyy'}}</span>
       <span *ngIf="customer.author">Автор: {{ customer.author }}</span>
       </span>
   </div>

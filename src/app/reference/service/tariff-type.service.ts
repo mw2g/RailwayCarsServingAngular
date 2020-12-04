@@ -10,22 +10,22 @@ export class TariffTypeService {
   }
 
   getAll(): Observable<Array<TariffType>> {
-    return this.httpClient.get<Array<TariffType>>(`${environment.dbUrl}/api/tariff-type.json`);
+    return this.httpClient.get<Array<TariffType>>(`${environment.dbUrl}/api/tariff-type`);
   }
 
   getById(typeId: string): Observable<TariffType> {
-    return this.httpClient.get<TariffType>(`${environment.dbUrl}/api/tariff-type/${typeId}.json`);
+    return this.httpClient.get<TariffType>(`${environment.dbUrl}/api/tariff-type/${typeId}`);
   }
 
   update(tariffType: TariffType): Observable<{ response: any }> {
-    return this.httpClient.put<{ response: any }>(`${environment.dbUrl}/api/tariff-type.json`, tariffType);
+    return this.httpClient.put<{ response: any }>(`${environment.dbUrl}/api/tariff-type`, tariffType);
   }
 
   create(tariffType: TariffType): Observable<TariffType> {
-    return this.httpClient.post<TariffType>(`${environment.dbUrl}/api/tariff-type.json`, tariffType);
+    return this.httpClient.post<TariffType>(`${environment.dbUrl}/api/tariff-type`, tariffType);
   }
 
   delete(typeId: number): Observable<{ response: any }> {
-    return this.httpClient.delete<{ response: any }>(`${environment.dbUrl}/api/tariff-type/${typeId}.json`);
+    return this.httpClient.delete<{ response: any }>(`${environment.dbUrl}/api/tariff-type/${typeId}`);
   }
 }

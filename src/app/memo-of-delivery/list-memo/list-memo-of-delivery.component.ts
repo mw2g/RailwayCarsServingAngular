@@ -20,15 +20,13 @@ export class ListMemoOfDeliveryComponent implements OnInit, OnDestroy {
   memosSub: Subscription;
   cargoOperations: Observable<Array<CargoOperation>>;
   customers: Observable<Array<Customer>>;
-  sortById = true;
-  sortByDate: boolean;
-  sortByWagonQuantity: boolean;
+  sortState = {memoOfDeliveryId: null, startDate: true, wagonQuantity: null};
   searchStr = '';
   cargoOperationFilter = '';
   customerFilter = '';
 
-  beforeDate: Date = new Date();
-  afterDate: Date = new Date();
+  afterDate: Date;
+  beforeDate: Date;
 
   constructor(private memoService: MemoOfDeliveryService,
               public router: Router,
@@ -40,68 +38,77 @@ export class ListMemoOfDeliveryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    const memoOfDeliveryViewSettings = JSON.parse(localStorage.getItem('memoOfDeliveryViewSettings'));
+    if (memoOfDeliveryViewSettings) {
+      this.sortState = memoOfDeliveryViewSettings.sortState ? memoOfDeliveryViewSettings.sortState : this.sortState;
+      this.searchStr = memoOfDeliveryViewSettings.searchStr ? memoOfDeliveryViewSettings.searchStr : '';
+      this.customerFilter = memoOfDeliveryViewSettings.customerFilter ? memoOfDeliveryViewSettings.customerFilter : '';
+      this.cargoOperationFilter = memoOfDeliveryViewSettings.cargoOperationFilter ? memoOfDeliveryViewSettings.cargoOperationFilter : '';
+      this.afterDate = memoOfDeliveryViewSettings.afterDate ? memoOfDeliveryViewSettings.afterDate : this.afterDate;
+      this.beforeDate = memoOfDeliveryViewSettings.beforeDate ? memoOfDeliveryViewSettings.beforeDate : this.beforeDate;
+    }
+
     this.customers = this.customerService.getAll();
     this.cargoOperations = this.cargoOperationService.getAll();
-    this.afterDate.setFullYear(this.afterDate.getFullYear() - 1);
-    this.afterDate.setDate(this.afterDate.getDay() - 5);
     this.loadMemos();
   }
 
-  sortListById(): void {
-    this.sortByWagonQuantity = null;
-    this.sortByDate = null;
-    if (this.sortById) {
-      this.memos = [...this.memos.sort((a, b) => a.memoOfDeliveryId < b.memoOfDeliveryId ? 1 : -1)];
-      this.sortById = false;
-    } else {
-      this.memos = [...this.memos.sort((a, b) => a.memoOfDeliveryId > b.memoOfDeliveryId ? 1 : -1)];
-      this.sortById = true;
-    }
-  }
-
-  sortListByDate(): void {
-    this.sortById = null;
-    this.sortByWagonQuantity = null;
-    if (this.sortByDate) {
-      this.memos = [...this.memos.sort((a, b) => a.startDate < b.startDate ? 1 : -1)];
-      this.sortByDate = false;
-    } else {
-      this.memos = [...this.memos.sort((a, b) => a.startDate > b.startDate ? 1 : -1)];
-      this.sortByDate = true;
-    }
-  }
-
-  sortListByWagonQuantity(): void {
-    this.sortById = null;
-    this.sortByDate = null;
-    if (this.sortByWagonQuantity) {
-      this.memos = [...this.memos.sort((a, b) => a.deliveryOfWagonList.length < b.deliveryOfWagonList.length ? 1 : -1)];
-      this.sortByWagonQuantity = false;
-    } else {
-      this.memos = [...this.memos.sort((a, b) => a.deliveryOfWagonList.length > b.deliveryOfWagonList.length ? 1 : -1)];
-      this.sortByWagonQuantity = true;
-    }
-  }
-
   loadMemos(): void {
-    if (this.afterDate) {
-      this.afterDate = new Date(this.afterDate);
-    } else {
-      this.afterDate = new Date(2019, 0);
-    }
-    if (this.beforeDate) {
-      this.beforeDate = new Date(this.beforeDate);
-    } else {
-      this.beforeDate = new Date();
-    }
+    this.afterDate = this.utils.prepareDate(this.afterDate, new Date(new Date().getFullYear() - 1, new Date().getMonth() - 1));
+    this.beforeDate = this.utils.prepareDate(this.beforeDate, new Date());
+
     this.memosSub = this.memoService.getAllMemos(this.afterDate, this.beforeDate).subscribe(memos => {
       this.memos = memos;
+      for (const key of Object.keys(this.sortState)) {
+        if (this.sortState[key] != null) {
+          this.sortList(key, key === 'wagonQuantity' ? this.deliveryListLengthFunc : null, true);
+          return;
+        }
+      }
     }, error => {
       throwError(error);
     });
   }
 
+  sortList(field: string, primer?, fromMemo?): void {
+    if (!fromMemo) {
+      for (const key of Object.keys(this.sortState)) {
+        this.sortState[key] = key === field ? !this.sortState[key] : null;
+      }
+    }
+    const prep = primer ? (x) => primer(x) : (x) => x[field];
+    const reverse = this.sortState[field] ? 1 : -1;
+    this.memos = [...this.memos.sort((a, b) => {
+      return a = prep(a), b = prep(b), reverse * (a > b ? 1 : -1);
+    })];
+  }
+
+  public deliveryListLengthFunc = (memo: MemoOfDelivery): number => memo.deliveryOfWagonList.length;
+
+  clearViewSettings(): void {
+    localStorage.removeItem('memoOfDeliveryViewSettings');
+    this.sortState = {memoOfDeliveryId: null, startDate: true, wagonQuantity: null};
+    this.searchStr = '';
+    this.customerFilter = '';
+    this.cargoOperationFilter = '';
+    this.afterDate = new Date();
+    this.afterDate.setFullYear(this.afterDate.getFullYear() - 1);
+    this.beforeDate = new Date();
+
+    this.loadMemos();
+  }
+
   ngOnDestroy(): void {
+    const memoOfDeliveryViewSettings = {
+      sortState: this.sortState,
+      searchStr: this.searchStr,
+      customerFilter: this.customerFilter,
+      cargoOperationFilter: this.cargoOperationFilter,
+      afterDate: this.afterDate,
+      beforeDate: this.beforeDate
+    };
+    localStorage.setItem('memoOfDeliveryViewSettings', JSON.stringify(memoOfDeliveryViewSettings));
+
     this.utils.unsubscribe([
       this.memosSub,
       this.delSub

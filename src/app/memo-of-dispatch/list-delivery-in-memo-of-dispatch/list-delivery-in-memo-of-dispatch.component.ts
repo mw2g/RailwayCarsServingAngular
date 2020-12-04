@@ -28,7 +28,6 @@ export class ListDeliveryInMemoOfDispatchComponent implements OnInit, OnDestroy 
   deliveryIdToDelete: number;
   deliveryIdToAdd: number;
   public editedDelivery: DeliveryOfWagon;
-  private isNewRecord: boolean;
 
   private updateSub: Subscription;
   private createSub: Subscription;
@@ -37,10 +36,6 @@ export class ListDeliveryInMemoOfDispatchComponent implements OnInit, OnDestroy 
   private suitableDeliverySub: Subscription;
   private addMemoToListSub: Subscription;
   private addMemoSub: Subscription;
-  wagonTypeSub: Subscription;
-  wagonTypeList: Array<WagonType>;
-  private ownerSub: Subscription;
-  ownersList: Array<Owner>;
 
   constructor(private deliveryService: DeliveryOfWagonService,
               private customerService: CustomerService,
@@ -75,7 +70,6 @@ export class ListDeliveryInMemoOfDispatchComponent implements OnInit, OnDestroy 
 
   // редактирование
   editDelivery(delivery: DeliveryOfWagon): void {
-    this.isNewRecord = false;
     this.editedDelivery = {
       ...delivery
     };
@@ -83,36 +77,14 @@ export class ListDeliveryInMemoOfDispatchComponent implements OnInit, OnDestroy 
 
   // отмена редактирования
   cancel(): void {
-    // если отмена при добавлении, удаляем последнюю запись
-    if (this.isNewRecord) {
-      this.deliveryList.pop();
-      this.isNewRecord = false;
-    }
     this.editedDelivery = null;
   }
 
   // сохраняем
   saveDelivery(): void {
-    this.editedDelivery.startDate = this.prepareDate(this.editedDelivery.startDate);
-    if (this.isNewRecord) {
-      // добавляем
-      this.createSub = this.deliveryService.create(this.editedDelivery).subscribe((data) => {
-        this.editedDelivery.deliveryId = data.deliveryId;
-      }, () => {
-        this.alert.danger('Ошибка');
-      }, () => {
-        this.alert.success('Общая подача создана');
-        this.editedDelivery = null;
-      });
-      this.isNewRecord = false;
-    } else {
-    // изменяем
-    this.updateSub = this.deliveryService.create(this.editedDelivery).subscribe((data) => {
+    this.updateSub = this.deliveryService.update(this.editedDelivery).subscribe((data) => {
       this.deliveryList.map(delivery => {
         if (delivery.deliveryId === this.editedDelivery.deliveryId) {
-          delivery.wagonType = data.wagonType;
-          delivery.cargoType = data.cargoType;
-          delivery.owner = data.owner;
           delivery.cargoWeight = data.cargoWeight;
           delivery.loadUnloadWork = data.loadUnloadWork;
         }
@@ -124,7 +96,6 @@ export class ListDeliveryInMemoOfDispatchComponent implements OnInit, OnDestroy 
       this.editedDelivery = null;
       this.enableForm = true;
     });
-    }
   }
 
   prepareDate(date: Date): Date {
@@ -161,14 +132,14 @@ export class ListDeliveryInMemoOfDispatchComponent implements OnInit, OnDestroy 
   addDeliveryById(): void {
     if (!this.suitableDeliveries.find(delivery => delivery.deliveryId === this.deliveryIdToAdd)) {
       this.alert.warning('Нет подходящей подачи с таким номером');
-      this.clearDeliveryIdToAdd();
+      this.deliveryIdToAdd = null;
       return;
     }
     this.addMemoSub = this.deliveryService.addMemoOfDispatch(this.deliveryIdToAdd.toString(), String(this.memoOfDispatchId))
       .subscribe((data) => {
         this.deliveryList.find(delivery => delivery.deliveryId === this.deliveryIdToAdd)
           .memoOfDispatch = this.memoOfDispatch.memoOfDispatchId;
-        this.clearDeliveryIdToAdd();
+        this.deliveryIdToAdd = null;
       }, () => {
         this.alert.danger('Ошибка при добавлении общей подачи по номеру');
       }, () => {
@@ -189,10 +160,6 @@ export class ListDeliveryInMemoOfDispatchComponent implements OnInit, OnDestroy 
       this.deliveryList = this.deliveryList.filter(delivery => delivery.deliveryId !== deliveryId);
       this.alert.success('Общая подача убрана из памятки');
     });
-  }
-
-  clearDeliveryIdToAdd(): void {
-    this.deliveryIdToAdd = null;
   }
 
   addAllSuitableDeliveries(): void {
@@ -225,7 +192,7 @@ export class ListDeliveryInMemoOfDispatchComponent implements OnInit, OnDestroy 
   }
 
   checkWeight(): void {
-    if (this.editedDelivery.cargoWeight > 999) {
+    if (this.editedDelivery.cargoWeight > 200) {
       this.editedDelivery.cargoWeight = null;
     }
   }

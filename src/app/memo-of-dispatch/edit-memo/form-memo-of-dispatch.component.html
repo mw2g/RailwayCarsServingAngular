@@ -14,7 +14,7 @@
         </div>
       </li>
       <li>
-        <a class="fas fa-arrow-left btn btn-outline-info mr-2" title="Назад" [routerLink]="['/memo', 'dispatch']"></a>
+        <a class="fas fa-align-justify btn btn-outline-info mr-2" title="В список" [routerLink]="['/memo', 'dispatch']"></a>
       </li>
       <li *ngIf="memoOfDispatchId">
         <a class="fas fa-print btn btn-outline-info mr-2" title="Печать" [routerLink]="['/memo', 'dispatch', 'print-form', memoOfDispatchId]">

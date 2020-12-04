@@ -16,6 +16,22 @@ export class UtilsService implements OnDestroy {
   ) {
   }
 
+  prepareDate(date: Date, newDate: Date): Date {
+    return date ? new Date(date) : newDate;
+  }
+
+  // sortList(list: Array<any>, sortState: Array<string>, field: string, fromMemory?): void {
+  //   if (!fromMemory) {
+  //     for (const key of Object.keys(sortState)) {
+  //       sortState[key] = key === field ? !sortState[key] : null;
+  //     }
+  //   }
+  //   const reverse = sortState[field] ? 1 : -1;
+  //   list = [...list.sort((a, b) => {
+  //     return a = a[field], b = b[field], reverse * (a > b ? 1 : -1);
+  //   })];
+  // }
+
   public unsubscribe(subscribes: Array<Subscription>): void {
     for (const subscribe of subscribes) {
       if (subscribe) {
@@ -68,9 +84,9 @@ export class UtilsService implements OnDestroy {
           .getBaseRateAndPenalty(delivery.deliveryId, payTime, statement.created).subscribe(data => {
             paySum = +(data.baseRate * statementRate.indexToBaseRate.indexToRate).toFixed(1);
             penaltySum = data.penalty * penaltyTime;
-          // }, () => {
-          //   this.alert.danger('Ошибка при загрузке базовой ставки и штрафа');
-          // }, () => {
+            // }, () => {
+            //   this.alert.danger('Ошибка при загрузке базовой ставки и штрафа');
+            // }, () => {
 
             if (delivery.owner === 'СНГ') {
               paySum = paySum * 1.3;
@@ -129,25 +145,6 @@ export class UtilsService implements OnDestroy {
     boolean {
     if (form.invalid) {
       alert.warning('Форма невалидна');
-      return true;
-    }
-    // if (customers && !customers.find(customer => customer.customerName === form.value.customer)) {
-    //   alert.warning('Неверный ввод контрагента');
-    //   form.get('customer').setValue('');
-    //   return true;
-    // }
-    // if (cargoTypeList && !cargoTypeList.find(cargoType => cargoType.typeName === form.value.cargoType)) {
-    //   alert.warning('Неверный ввод вида груза');
-    //   form.get('cargoType').setValue('');
-    //   return true;
-    // }
-    return false;
-  }
-
-  checkCargoType(form: FormGroup, cargoTypeList: Array<CargoType>, alert: AlertService): boolean {
-    if (!cargoTypeList.find(cargoType => cargoType.typeName === form.value.cargoType)) {
-      alert.warning('Неверный ввод вида груза');
-      form.get('cargoType').setValue('');
       return true;
     }
     return false;

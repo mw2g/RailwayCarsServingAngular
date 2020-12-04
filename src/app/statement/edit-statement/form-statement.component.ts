@@ -179,7 +179,7 @@ export class FormStatementComponent implements OnInit, OnDestroy {
     }, () => {
       this.alert.danger('Ошибка');
     }, () => {
-      this.alert.success('Памятка создана');
+      this.alert.success('Ведомость создана');
     });
   }
 

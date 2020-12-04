@@ -63,7 +63,8 @@
 <!--  </div>-->
 <!--</div>-->
 
-<table class="table table-sm table-bordered border-0 mx-auto" style="text-align: center; width: 600px">
+<table class="table table-sm table-bordered border-0 mx-auto" style="text-align: center; width: 600px"
+       (keydown.escape)="cancel()" (keydown.enter)="save()">
   <thead class="thead-light">
   <tr class="">
     <strong>Вид груза</strong>

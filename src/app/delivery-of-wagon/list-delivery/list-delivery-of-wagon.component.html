@@ -1,9 +1,11 @@
-<!--<div class="spacer"></div>-->
 <nav class="navbar navbar-expand navbar-light bg-light row">
   <ul class="navbar-nav mr-auto">
     <li class="nav-item active mr-3 py-0 my-0">
       <button class="fas fa-plus btn btn-outline-info" title="Добавить"
               [routerLink]="['/delivery', 'create']"></button>
+    </li>
+    <li>
+      <i class="fas fa-align-justify btn btn-outline-info mr-1" type="button" (click)="clearViewSettings()"></i>
     </li>
     <li class="nav-item active mr-1 py-0 my-0">
       <input type="datetime-local" [ngModel]="afterDate | date: 'yyyy-MM-ddTHH:mm'"
@@ -36,25 +38,25 @@
 <table class="table table-sm table-bordered border-0" style="text-align: center">
   <thead class="thead-light">
   <tr class="row">
-    <th [width]="80" #tableColumn1 (click)="sortListById()" type="button">
+    <th [width]="80" #tableColumn1 (click)="sortList('deliveryId')" type="button">
       Н
-      <i *ngIf="sortById === true" class="fas fa-sort-up btn"></i>
-      <i *ngIf="sortById === false" class="fas fa-sort-down btn"></i>
+      <i [ngClass]="{'fa-sort-up': sortState['deliveryId'] === true,
+                     'fa-sort-down': sortState['deliveryId'] === false}" class="fas fa-sort-up btn"></i>
     </th>
-    <th [width]="100" #tableColumn2 (click)="sortListByWagon()" type="button">
+    <th [width]="100" #tableColumn2 (click)="sortList('wagon')" type="button">
       Вагон
-      <i *ngIf="sortByWagon === true" class="fas fa-sort-up btn"></i>
-      <i *ngIf="sortByWagon === false" class="fas fa-sort-down btn"></i>
+      <i [ngClass]="{'fa-sort-up': sortState['wagon'] === true,
+                     'fa-sort-down': sortState['wagon'] === false}" class="fas"></i>
     </th>
-    <th [width]="150" #tableColumn3 (click)="sortListByStartDate()" type="button">
+    <th [width]="150" #tableColumn3 (click)="sortList('startDate')" type="button">
       Начало
-      <i *ngIf="sortByStartDate === true" class="fas fa-sort-up btn"></i>
-      <i *ngIf="sortByStartDate === false" class="fas fa-sort-down btn"></i>
+      <i [ngClass]="{'fa-sort-up': sortState['startDate'] === true,
+                     'fa-sort-down': sortState['startDate'] === false}" class="fas"></i>
     </th>
-    <th [width]="150" #tableColumn4 (click)="sortListByEndDate()" type="button">
+    <th [width]="150" #tableColumn4 (click)="sortList('endDate')" type="button">
       Окончание
-      <i *ngIf="sortByEndDate === true" class="fas fa-sort-up btn"></i>
-      <i *ngIf="sortByEndDate === false" class="fas fa-sort-down btn"></i>
+      <i [ngClass]="{'fa-sort-up': sortState['endDate'] === true,
+                     'fa-sort-down': sortState['endDate'] === false}" class="fas"></i>
     </th>
     <th class="col" style="min-width: 150px" #tableColumn5>
       <select class="custom-select custom-select-sm" [(ngModel)]="customerFilter">
@@ -69,7 +71,11 @@
       <option *ngFor="let operation of cargoOperations | async"
               value="{{ operation.operationName }}">{{ operation.operationName }}</option>
     </select></th>
-    <th [width]="80" #tableColumn7 class="hide-less-945">Вес</th>
+    <th [width]="80" #tableColumn7 class="hide-less-945" (click)="sortList('cargoWeight')" type="button">
+      Вес
+      <i [ngClass]="{'fa-sort-up': sortState['cargoWeight'] === true,
+                     'fa-sort-down': sortState['cargoWeight'] === false}" class="fas"></i>
+    </th>
     <th [width]="60" #tableColumn8>
       <select class="small form-control form-control-sm ms-no_select_arrows" [(ngModel)]="loadUnloadWorkFilter">
         <option value="">ПРР</option>
@@ -77,8 +83,7 @@
         <option value="no">Нет</option>
       </select>
     </th>
-<!--    <th [width]="80" #tableColumn9 class="fas fa-cog" style="padding-top: 10px; padding-bottom: 0px" #tableColumn9></th>-->
-    <th [width]="18" #tableColumn10></th>
+    <th [width]="18"></th>
 
   </tr>
   </thead>
@@ -100,86 +105,12 @@
     <td [width]="tableColumn8.offsetWidth">
       <i class="fas fa-check" [hidden]="!delivery.loadUnloadWork" style="color: grey"></i>
     </td>
-<!--      <td [width]="tableColumn8.offsetWidth" style="padding-left: 23px; padding-top: 12px; padding-bottom: 0px">-->
-<!--      <input class="form-check" disabled type="checkbox" [checked]="delivery.loadUnloadWork">-->
-<!--    </td>-->
-<!--    <td [width]="tableColumn9.offsetWidth">-->
-<!--      &lt;!&ndash; Button trigger modal &ndash;&gt;-->
-<!--      <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm ml-2" title="Удалить"-->
-<!--              data-toggle="modal" data-target="#deleteModal" (click)="setDelete(delivery.deliveryId)">-->
-<!--      </button>-->
-<!--    </td>-->
   </tr>
   </cdk-virtual-scroll-viewport>
   </tbody>
 </table>
 
-<!--<table class="table table-sm table-bordered border-0" style="text-align: center">-->
-<!--  <thead class="thead-light">-->
-<!--  <tr class="row sticky">-->
-<!--    <th [width]="tableColumn1.offsetWidth">-->
-<!--      <button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"-->
-<!--              [routerLink]="['/delivery', 'create']"></button>-->
-<!--    </th>-->
-<!--    <th [width]="tableColumn2.offsetWidth">Вагон</th>-->
-<!--    <th [width]="tableColumn3.offsetWidth">-->
-<!--      Начало-->
-<!--      <i *ngIf="sort" class="fas fa-sort-up btn pr-0 mr-0" (click)="sortList()"></i>-->
-<!--      <i *ngIf="!sort" class="fas fa-sort-down btn pr-0 mr-0" (click)="sortList()"></i>-->
-<!--    </th>-->
-<!--    <th [width]="tableColumn4.offsetWidth">Окончание</th>-->
-<!--    <th [width]="tableColumn5.offsetWidth">-->
-<!--      <select class="custom-select custom-select-sm" [(ngModel)]="customerFilter">-->
-<!--        <option value="">Все контрагенты</option>-->
-<!--        <option *ngFor="let customer of customers | async"-->
-<!--                value="{{ customer.customerName }}">{{ customer.customerName }}</option>-->
-<!--      </select>-->
-<!--    </th>-->
-<!--    <th [width]="tableColumn6.offsetWidth">-->
-<!--        <select class="custom-select custom-select-sm" [(ngModel)]="cargoOperationFilter">-->
-<!--          <option value="">Все операции</option>-->
-<!--          <option *ngFor="let operation of cargoOperations | async"-->
-<!--                  value="{{ operation.operationName }}">{{ operation.operationName }}</option>-->
-<!--        </select>-->
-<!--    </th>-->
-<!--    <th [width]="tableColumn7.offsetWidth">Вес</th>-->
-<!--    <th [width]="tableColumn8.offsetWidth">-->
-<!--      <select class="small form-control form-control-sm ms-no_select_arrows" [(ngModel)]="loadUnloadWorkFilter">-->
-<!--        <option value="">ПРР</option>-->
-<!--        <option value="yes">Да</option>-->
-<!--        <option value="no">Нет</option>-->
-<!--      </select>-->
-<!--    </th>-->
-<!--    <th [width]="tableColumn9.offsetWidth" class="fas fa-cog" style="padding-top: 10px; padding-bottom: 0px"></th>-->
-<!--  </tr>-->
-<!--  </thead>-->
-<!--</table>-->
-
-
 <!--Template loading-->
 <ng-template #loading>
   <p class="text-center">Загрузка...</p>
 </ng-template>
-
-<!-- Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="deleteModalLabel">Удаление</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        Удалить общую подачу {{ deliveryIdToDelete }} с номером вагона {{ getWagonNumberById(deliveryIdToDelete) }} ?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="unsetDelete()">Отменить</button>
-        <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="delete()">Удалить</button>
-      </div>
-    </div>
-  </div>
-</div>
-

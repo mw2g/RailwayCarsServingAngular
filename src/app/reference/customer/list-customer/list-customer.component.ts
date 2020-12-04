@@ -35,7 +35,7 @@ export class ListCustomerComponent implements OnInit, OnDestroy{
 
   delete(): void {
     this.delSub = this.customerService.delete(this.customerIdToDelete).subscribe((data) => {
-      this.alert.success(data.message);
+      // this.alert.success(data.message);
       this.customers = this.customers.filter(customer => customer.customerId !== this.customerIdToDelete);
       this.unsetDelete();
     }, () => {

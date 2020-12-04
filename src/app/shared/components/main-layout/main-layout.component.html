@@ -1,6 +1,8 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-  <a class="fas fa-project-diagram btn btn-outline-secondary navbar-brand"
+  <a class="fas fa-project-diagram btn btn-outline-primary navbar-brand"
                                                 title="Главная" href="" [routerLink]="['/']"></a>
+  <i class="fas fa-arrow-left btn btn-outline-info navbar-brand mr-2" onclick="history.back()" title="Назад"></i>
+  <a class="fas fa-arrow-right btn btn-outline-info navbar-brand" onclick="history.forward()" title="Вперед"></a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
           aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -10,30 +12,39 @@
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
         <a class="nav-link" href="#" [routerLink]="['/delivery']"
-           [class.font-weight-bold]="router.isActive('/delivery', false)">Общая подача<span
+           [class.selected]="router.isActive('/delivery', false)">Общая подача<span
           class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item active">
         <a class="nav-link" href="#" [routerLink]="['/memo', 'delivery']"
-           [class.font-weight-bold]="router.isActive('/memo/delivery', false)">Памятки подачи<span
+           [class.selected]="router.isActive('/memo/delivery', false)">Памятки подачи<span
           class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item active">
         <a class="nav-link" href="#" [routerLink]="['/memo', 'dispatch']"
-           [class.font-weight-bold]="router.isActive('/memo/dispatch', false)">Памятки уборки<span
+           [class.selected]="router.isActive('/memo/dispatch', false)">Памятки уборки<span
           class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item active">
         <a class="nav-link" href="#" [routerLink]="['/statement']"
-           [class.font-weight-bold]="router.isActive('/statement', false)">
+           [class.selected]="router.isActive('/statement', false)">
           Ведомость <span class="sr-only">(current)</span></a>
       </li>
+<!--      <li class="nav-item dropdown">-->
+<!--        <a class="nav-link dropdown-toggle active" id="navbarDropdown" role="button" data-toggle="dropdown"-->
+<!--           aria-haspopup="true" aria-expanded="false"-->
+<!--           [class.selected]="router.isActive('/reference/customer', false) ||-->
+<!--                        router.isActive('/reference/cargo-type', false)">-->
+<!--          Справочники-->
+<!--        </a>-->
+<!--        -->
+<!--      </li>-->
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle active" id="navbarDropdown" role="button" data-toggle="dropdown"
+        <a class="nav-link dropdown-toggle active" id="configDropdown" role="button" data-toggle="dropdown"
            aria-haspopup="true" aria-expanded="false"
-           [class.font-weight-bold]="router.isActive('/reference/customer', false) ||
-                        router.isActive('/reference/cargo-type', false)">
-          Справочники
+           [class.selected]="router.isActive(
+           '/reference', false) || router.isActive('/admin/user', false)">
+          Настройки
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a class="dropdown-item" href="#" [routerLink]="['/reference', 'customer']"
@@ -44,18 +55,8 @@
              [class.font-weight-bold]="router.isActive('/reference/cargo-type', false)">
             Вид груза
           </a>
-<!--          <a class="dropdown-item" href="#">Another action</a>-->
+          <!--          <a class="dropdown-item" href="#">Another action</a>-->
           <div class="dropdown-divider"></div>
-        </div>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle active" id="configDropdown" role="button" data-toggle="dropdown"
-           aria-haspopup="true" aria-expanded="false"
-           [class.font-weight-bold]="router.isActive(
-           '/reference/config', false) || router.isActive('/admin/user', false)">
-          Конфигурация
-        </a>
-        <div class="dropdown-menu" aria-labelledby="configDropdown">
           <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'wagon-type']"
              [class.font-weight-bold]="router.isActive('/reference/config/wagon-type', false)">
             Тип вагона
