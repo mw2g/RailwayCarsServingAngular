@@ -25,101 +25,101 @@ import {SearchCargoTypePipe} from './cargo-type/pipe/searchCargoType.pipe';
 import {FilterBaseRatePipe} from './base-rate/pipe/filterBaseRate.pipe';
 
 @NgModule({
-  declarations: [
-    // ReferenceLayoutComponent,
-    ListCustomerComponent,
-    FormCustomerComponent,
-    ListSignerInCustomerComponent,
-    FormCargoTypeComponent,
-    ListCargoTypeComponent,
-    ListWagonGroupComponent,
-    ListBaseRateComponent,
-    ListWagonTypeComponent,
-    ListCargoOperationComponent,
-    ListIndexToBaseRateComponent,
-    ListTimeNormTypeComponent,
-    ListTimeNormComponent,
-    ListTariffTypeComponent,
-    ListTariffComponent,
-    ListPenaltyComponent,
-    SearchCargoTypePipe,
-    FilterBaseRatePipe
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    SharedModule,
-    RouterModule.forChild([
-      {
-        path: 'customer', component: MainLayoutComponent, children: [
-          // {path: '', redirectTo: '/delivery', pathMatch: 'full' },
-          {path: '', component: ListCustomerComponent, canActivate: [AuthGuard]},
-          {path: 'edit/:customerId', component: FormCustomerComponent, canActivate: [AuthGuard]},
-          {path: 'create', component: FormCustomerComponent, canActivate: [AuthGuard]},
-        ]
-      },
-      {
-        path: 'cargo-type', component: MainLayoutComponent, children: [
-          // {path: '', redirectTo: '/delivery', pathMatch: 'full' },
-          {path: '', component: ListCargoTypeComponent, canActivate: [AuthGuard]},
-          {path: 'edit/:typeId', component: FormCargoTypeComponent, canActivate: [AuthGuard]},
-          {path: 'create', component: FormCargoTypeComponent, canActivate: [AuthGuard]},
-        ]
-      },
-      {
-        path: 'config/wagon-group', component: MainLayoutComponent, children: [
-          {path: '', component: ListWagonGroupComponent, canActivate: [AuthGuard]}
-        ]
-      },
-      {
-        path: 'config/cargo-operation', component: MainLayoutComponent, children: [
-          {path: '', component: ListCargoOperationComponent, canActivate: [AuthGuard]}
-        ]
-      },
-      {
-        path: 'config/wagon-type', component: MainLayoutComponent, children: [
-          {path: '', component: ListWagonTypeComponent, canActivate: [AuthGuard]}
-        ]
-      },
-      {
-        path: 'config/base-rate', component: MainLayoutComponent, children: [
-          {path: '', component: ListBaseRateComponent, canActivate: [AuthGuard]}
-        ]
-      },
-      {
-        path: 'config/time-norm-type', component: MainLayoutComponent, children: [
-          {path: '', component: ListTimeNormTypeComponent, canActivate: [AuthGuard]}
-        ]
-      },
-      {
-        path: 'config/time-norm', component: MainLayoutComponent, children: [
-          {path: '', component: ListTimeNormComponent, canActivate: [AuthGuard]}
-        ]
-      },
-      {
-        path: 'config/tariff-type', component: MainLayoutComponent, children: [
-          {path: '', component: ListTariffTypeComponent, canActivate: [AuthGuard]}
-        ]
-      },
-      {
-        path: 'config/tariff', component: MainLayoutComponent, children: [
-          {path: '', component: ListTariffComponent, canActivate: [AuthGuard]}
-        ]
-      },
-      {
-        path: 'config/penalty', component: MainLayoutComponent, children: [
-          {path: '', component: ListPenaltyComponent, canActivate: [AuthGuard]}
-        ]
-      },
-      {
-        path: 'config/index-to-base-rate', component: MainLayoutComponent, children: [
-          {path: '', component: ListIndexToBaseRateComponent, canActivate: [AuthGuard]}
-        ]
-      }
-    ])
-  ],
-  exports: [RouterModule]
+    declarations: [
+        // ReferenceLayoutComponent,
+        ListCustomerComponent,
+        FormCustomerComponent,
+        ListSignerInCustomerComponent,
+        FormCargoTypeComponent,
+        ListCargoTypeComponent,
+        ListWagonGroupComponent,
+        ListBaseRateComponent,
+        ListWagonTypeComponent,
+        ListCargoOperationComponent,
+        ListIndexToBaseRateComponent,
+        ListTimeNormTypeComponent,
+        ListTimeNormComponent,
+        ListTariffTypeComponent,
+        ListTariffComponent,
+        ListPenaltyComponent,
+        SearchCargoTypePipe,
+        FilterBaseRatePipe
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        SharedModule,
+        RouterModule.forChild([
+            {
+                path: 'customer', component: MainLayoutComponent, children: [
+                    // {path: '', redirectTo: '/delivery', pathMatch: 'full' },
+                    {path: '', component: ListCustomerComponent, canActivate: [AuthGuard]},
+                    {path: 'edit/:customerId', component: FormCustomerComponent, canActivate: [AuthGuard]},
+                    {path: 'create', component: FormCustomerComponent, canActivate: [AuthGuard]},
+                ]
+            },
+            {
+                path: 'cargo-type', component: MainLayoutComponent, children: [
+                    // {path: '', redirectTo: '/delivery', pathMatch: 'full' },
+                    {path: '', component: ListCargoTypeComponent, canActivate: [AuthGuard]},
+                    {path: 'edit/:typeId', component: FormCargoTypeComponent, canActivate: [AuthGuard]},
+                    {path: 'create', component: FormCargoTypeComponent, canActivate: [AuthGuard]},
+                ]
+            },
+            {
+                path: 'config/wagon-group', component: MainLayoutComponent, children: [
+                    {path: '', component: ListWagonGroupComponent, canActivate: [AuthGuard]}
+                ]
+            },
+            {
+                path: 'config/cargo-operation', component: MainLayoutComponent, children: [
+                    {path: '', component: ListCargoOperationComponent, canActivate: [AuthGuard]}
+                ]
+            },
+            {
+                path: 'config/wagon-type', component: MainLayoutComponent, children: [
+                    {path: '', component: ListWagonTypeComponent, canActivate: [AuthGuard]}
+                ]
+            },
+            {
+                path: 'config/base-rate', component: MainLayoutComponent, children: [
+                    {path: '', component: ListBaseRateComponent, canActivate: [AuthGuard]}
+                ]
+            },
+            {
+                path: 'config/time-norm-type', component: MainLayoutComponent, children: [
+                    {path: '', component: ListTimeNormTypeComponent, canActivate: [AuthGuard]}
+                ]
+            },
+            {
+                path: 'config/time-norm', component: MainLayoutComponent, children: [
+                    {path: '', component: ListTimeNormComponent, canActivate: [AuthGuard]}
+                ]
+            },
+            {
+                path: 'config/tariff-type', component: MainLayoutComponent, children: [
+                    {path: '', component: ListTariffTypeComponent, canActivate: [AuthGuard]}
+                ]
+            },
+            {
+                path: 'config/tariff', component: MainLayoutComponent, children: [
+                    {path: '', component: ListTariffComponent, canActivate: [AuthGuard]}
+                ]
+            },
+            {
+                path: 'config/penalty', component: MainLayoutComponent, children: [
+                    {path: '', component: ListPenaltyComponent, canActivate: [AuthGuard]}
+                ]
+            },
+            {
+                path: 'config/index-to-base-rate', component: MainLayoutComponent, children: [
+                    {path: '', component: ListIndexToBaseRateComponent, canActivate: [AuthGuard]}
+                ]
+            }
+        ])
+    ],
+    exports: [RouterModule]
 })
 export class ReferenceModule {
 

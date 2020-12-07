@@ -1,99 +1,102 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white row">
-  <div class="navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active" *ngIf="form && !form.pristine">
-        <div *ngIf="memoOfDeliveryId">
-          <button type="button" (click)="update()" title="Сохранить" class="fas fa-check btn btn-outline-success mr-2"
-                  [disabled]="listDeliveryInMemoOfDeliveryComponent
+    <div class="navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active" *ngIf="form && !form.pristine">
+                <div *ngIf="memoOfDeliveryId">
+                    <button type="button" (click)="update()" title="Сохранить"
+                            class="fas fa-check btn btn-outline-success mr-2"
+                            [disabled]="listDeliveryInMemoOfDeliveryComponent
                   && listDeliveryInMemoOfDeliveryComponent.editedDelivery">
-          </button>
-          <button type="button" (click)="loadForm()" title="Отменить"
-                  class="fas fa-undo-alt btn btn-outline-warning mr-2"></button>
-        </div>
-        <div *ngIf="!memoOfDeliveryId">
-          <button type="button" (click)="create()" title="Создать"
-                  class="fas fa-check btn btn-outline-success mr-2"></button>
-        </div>
-      </li>
-      <li>
-        <a class="fas fa-align-justify btn btn-outline-info mr-2" title="В список" [routerLink]="['/memo', 'delivery']"></a>
-      </li>
-      <li *ngIf="memoOfDeliveryId">
-        <a class="fas fa-print btn btn-outline-info mr-2" title="Печать"
-           [routerLink]="['/memo', 'delivery', 'print-form', memoOfDeliveryId]">
-        </a>
-      </li>
-      <li *ngIf="!enableComment && memoOfDeliveryId">
-        <button type="button" class="far fa-comment-alt btn btn-outline-info" title="Коментарий"
-                (click)="enableComment=true">
-        </button>
-      </li>
-    </ul>
-    <span *ngIf="memoOfDelivery && memoOfDeliveryId" class="ml-5">
+                    </button>
+                    <button type="button" (click)="loadForm()" title="Отменить"
+                            class="fas fa-undo-alt btn btn-outline-warning mr-2"></button>
+                </div>
+                <div *ngIf="!memoOfDeliveryId">
+                    <button type="button" (click)="create()" title="Создать"
+                            class="fas fa-check btn btn-outline-success mr-2"></button>
+                </div>
+            </li>
+            <li>
+                <a class="fas fa-align-justify btn btn-outline-info mr-2" title="В список"
+                   [routerLink]="['/memo', 'delivery']"></a>
+            </li>
+            <li *ngIf="memoOfDeliveryId">
+                <a class="fas fa-print btn btn-outline-info mr-2" title="Печать"
+                   [routerLink]="['/memo', 'delivery', 'print-form', memoOfDeliveryId]">
+                </a>
+            </li>
+            <li *ngIf="!enableComment && memoOfDeliveryId">
+                <button type="button" class="far fa-comment-alt btn btn-outline-info" title="Коментарий"
+                        (click)="enableComment=true">
+                </button>
+            </li>
+        </ul>
+        <span *ngIf="memoOfDelivery && memoOfDeliveryId" class="ml-5">
         Памятка подачи {{ memoOfDelivery.memoOfDeliveryId }} от {{ form.value.created | date: 'dd.MM.yyyy'}}
-      <span *ngIf="memoOfDelivery.author">Автор: {{ memoOfDelivery.author }}</span>
-      <!-- Button trigger modal -->
+            <span *ngIf="memoOfDelivery.author">Автор: {{ memoOfDelivery.author }}</span>
+            <!-- Button trigger modal -->
                 <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm ml-2" title="Удалить"
                         data-toggle="modal" data-target="#deleteMemoModal">
                 </button>
       </span>
-  </div>
+    </div>
 </nav>
 
 <div *ngIf="form; else loading">
-  <form [formGroup]="form" (ngSubmit)="update()">
-    <div class="row">
-      <div class="form-group col-md-3 pl-0 mb-0"
-           [ngClass]="{invalid: form.get('startDate').touched && form.get('startDate').invalid}">
-        <label for="startDate" class="small">Начало</label>
-        <input type="datetime-local" class="form-control form-control-sm" id="startDate" formControlName="startDate"
-               [required]="form.get('startDate').hasError('required')">
-      </div>
-      <div class="form-group col-md-3 mb-0">
-        <label for="cargoOperation" class="small">Операция</label>
-        <div class="input-group mb-3">
-          <select class="custom-select custom-select-sm" id="cargoOperation" formControlName="cargoOperation"
-                  [required]="form.get('cargoOperation').hasError('required')">
-            <option *ngFor="let operation of cargoOperations | async"
-                    value="{{ operation.operationName }}">{{ operation.operationName }}</option>
-          </select>
+    <form [formGroup]="form" (ngSubmit)="update()">
+        <div class="row">
+            <div class="form-group col-md-3 pl-0 mb-0"
+                 [ngClass]="{invalid: form.get('startDate').touched && form.get('startDate').invalid}">
+                <label for="startDate" class="small">Начало</label>
+                <input type="datetime-local" class="form-control form-control-sm" id="startDate"
+                       formControlName="startDate"
+                       [required]="form.get('startDate').hasError('required')">
+            </div>
+            <div class="form-group col-md-3 mb-0">
+                <label for="cargoOperation" class="small">Операция</label>
+                <div class="input-group mb-3">
+                    <select class="custom-select custom-select-sm" id="cargoOperation" formControlName="cargoOperation"
+                            [required]="form.get('cargoOperation').hasError('required')">
+                        <option *ngFor="let operation of cargoOperations | async"
+                                value="{{ operation.operationName }}">{{ operation.operationName }}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group col-md-3 mb-0"
+                 [ngClass]="{invalid: form.get('customer').touched && form.get('customer').invalid}">
+                <label for="customer" class="small">Контрагент</label>
+                <div class="input-group">
+                    <select class="custom-select custom-select-sm" id="customer" formControlName="customer"
+                            [required]="form.get('customer').hasError('required')">
+                        <option *ngFor="let customer of customers | async"
+                                value="{{ customer.customerName }}">{{ customer.customerName }}</option>
+                    </select>
+                </div>
+            </div>
+            <div *ngIf="memoOfDeliveryId" class="form-group col-md-3 pr-0 mb-0">
+                <label for="signer" class="small">Подписант</label>
+                <div class="input-group">
+                    <select class="custom-select custom-select-sm" id="signer" formControlName="signer"
+                            [required]="form.get('signer').hasError('required')">
+                        <option value="">Не выбран</option>
+                        <option *ngFor="let signer of memoOfDelivery.customer.signerList"
+                                value="{{ signer.initials }}">{{ signer.initials }}</option>
+                    </select>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="form-group col-md-3 mb-0"
-           [ngClass]="{invalid: form.get('customer').touched && form.get('customer').invalid}">
-        <label for="customer" class="small">Контрагент</label>
-        <div class="input-group">
-          <select class="custom-select custom-select-sm" id="customer" formControlName="customer"
-                  [required]="form.get('customer').hasError('required')">
-            <option *ngFor="let customer of customers | async"
-                    value="{{ customer.customerName }}">{{ customer.customerName }}</option>
-          </select>
-        </div>
-      </div>
-      <div *ngIf="memoOfDeliveryId" class="form-group col-md-3 pr-0 mb-0">
-        <label for="signer" class="small">Подписант</label>
-        <div class="input-group">
-          <select class="custom-select custom-select-sm" id="signer" formControlName="signer"
-                  [required]="form.get('signer').hasError('required')">
-            <option value="">Не выбран</option>
-            <option *ngFor="let signer of memoOfDelivery.customer.signerList"
-                    value="{{ signer.initials }}">{{ signer.initials }}</option>
-          </select>
-        </div>
-      </div>
-    </div>
 
-    <div *ngIf="enableComment || (memoOfDelivery && memoOfDelivery.comment)" class="row">
-      <div class="input-group input-group-sm col pb-3 px-0 pt-0">
-        <input id="comment" type="text" formControlName="comment" class="form-control form-control-sm">
-        <div class="input-group-append">
-          <button class="fas fa-times btn btn-outline-secondary" type="button" title="Очистить"
-                  (click)="clearComment()">
-          </button>
+        <div *ngIf="enableComment || (memoOfDelivery && memoOfDelivery.comment)" class="row">
+            <div class="input-group input-group-sm col pb-3 px-0 pt-0">
+                <input id="comment" type="text" formControlName="comment" class="form-control form-control-sm">
+                <div class="input-group-append">
+                    <button class="fas fa-times btn btn-outline-secondary" type="button" title="Очистить"
+                            (click)="clearComment()">
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </form>
+    </form>
 </div>
 
 <app-list-delivery-in-memo-of-delivery class="container p-0" *ngIf="memoOfDeliveryId" [memoOfDelivery]="memoOfDelivery"
@@ -102,29 +105,30 @@
 </app-list-delivery-in-memo-of-delivery>
 
 <ng-template #loading>
-  <p class="text-center">Идёт загрузка...</p>
+    <p class="text-center">Идёт загрузка...</p>
 </ng-template>
 
 <!-- Modal -->
 <div class="modal fade" id="deleteMemoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="deleteModalLabel">Удаление</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        Удалить памятку {{ memoOfDeliveryId }} ?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
-        <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="delete(memoOfDeliveryId)">
-          Удалить
-        </button>
-      </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Удаление</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Удалить памятку {{ memoOfDeliveryId }} ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+                <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal"
+                        (click)="delete(memoOfDeliveryId)">
+                    Удалить
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>

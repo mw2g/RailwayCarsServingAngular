@@ -1,25 +1,25 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { FormCargoTypeComponent } from './form-cargo-type.component';
+import {FormCargoTypeComponent} from './form-cargo-type.component';
 
 describe('FormDeliveryOfWagonComponent', () => {
-  let component: FormCargoTypeComponent;
-  let fixture: ComponentFixture<FormCargoTypeComponent>;
+    let component: FormCargoTypeComponent;
+    let fixture: ComponentFixture<FormCargoTypeComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ FormCargoTypeComponent ]
-    })
-    .compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            declarations: [FormCargoTypeComponent]
+        })
+            .compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(FormCargoTypeComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(FormCargoTypeComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

@@ -1,95 +1,98 @@
 <table class="table table-sm table-bordered border-0 mx-auto" style="text-align: center; max-width: 850px">
-  <thead class="thead-light">
-  <tr class="row">
-    <strong>Тариф</strong>
-  </tr>
-  <tr class="row">
-    <th [width]="80" #tableColumn1>
-      <button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"
-              (click)="addNew()" [disabled]="!enableForm"></button>
-    </th>
-    <th [width]="200" #tableColumn2>Дата актуальности</th>
-    <th [width]="100" #tableColumn3>Тариф</th>
-    <th class="col" #tableColumn4>Тип тарифа</th>
-    <th [width]="100" #tableColumn5>Действия</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr class="row" *ngFor="let tariff of tariffList; let idx = index">
-    <ng-template [ngTemplateOutlet]="loadTemplate(tariff)"
-                 [ngTemplateOutletContext]="{ $implicit: tariff, idx: idx}">
-    </ng-template>
-  </tr>
-  </tbody>
+    <thead class="thead-light">
+    <tr class="row">
+        <strong>Тариф</strong>
+    </tr>
+    <tr class="row">
+        <th [width]="80" #tableColumn1>
+            <button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"
+                    (click)="addNew()" [disabled]="!enableForm"></button>
+        </th>
+        <th [width]="200" #tableColumn2>Дата актуальности</th>
+        <th [width]="100" #tableColumn3>Тариф</th>
+        <th class="col" #tableColumn4>Тип тарифа</th>
+        <th [width]="100" #tableColumn5>Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="row" *ngFor="let tariff of tariffList; let idx = index">
+        <ng-template [ngTemplateOutlet]="loadTemplate(tariff)"
+                     [ngTemplateOutletContext]="{ $implicit: tariff, idx: idx}">
+        </ng-template>
+    </tr>
+    </tbody>
 </table>
 
 <!--шаблон для чтения-->
 <ng-template #readOnlyTemplate let-tariff let-idx="idx">
-  <td [width]="tableColumn1.offsetWidth">{{ idx + 1 }}</td>
-  <!--  <td width="100">{{ baseRate.rateId }}</td>-->
-  <td [width]="tableColumn2.offsetWidth">{{ tariff.relevanceDate | date: 'dd.MM.yyyy HH:mm'}}</td>
-  <td [width]="tableColumn3.offsetWidth">{{ tariff.tariff | number:'0.2'}}</td>
-  <td [width]="tableColumn4.offsetWidth">{{ tariff.tariffType.typeName }}</td>
-  <td [width]="tableColumn5.offsetWidth">
-    <button type="button" class="far fa-edit btn btn-outline-info btn-sm mr-1 mt-1" title="Редактировать"
-            [disabled]="!enableForm" (click)="edit(tariff)"></button>
-    <!-- Button trigger modal -->
-    <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm mt-1" title="Удалить"
-            data-toggle="modal" data-target="#deleteModal"
-            [disabled]="!enableForm" (click)="setDelete(tariff.tariffId)"></button>
-  </td>
+    <td [width]="tableColumn1.offsetWidth">{{ idx + 1 }}</td>
+    <!--  <td width="100">{{ baseRate.rateId }}</td>-->
+    <td [width]="tableColumn2.offsetWidth">{{ tariff.relevanceDate | date: 'dd.MM.yyyy HH:mm'}}</td>
+    <td [width]="tableColumn3.offsetWidth">{{ tariff.tariff | number:'0.2'}}</td>
+    <td [width]="tableColumn4.offsetWidth">{{ tariff.tariffType.typeName }}</td>
+    <td [width]="tableColumn5.offsetWidth">
+        <button type="button" class="far fa-edit btn btn-outline-info btn-sm mr-1 mt-1" title="Редактировать"
+                [disabled]="!enableForm" (click)="edit(tariff)"></button>
+        <!-- Button trigger modal -->
+        <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm mt-1" title="Удалить"
+                data-toggle="modal" data-target="#deleteModal"
+                [disabled]="!enableForm" (click)="setDelete(tariff.tariffId)"></button>
+    </td>
 </ng-template>
 
 <!--шаблон для редактирования-->
 <ng-template #editTemplate let-tariff let-idx="idx">
-  <td [width]="tableColumn1.offsetWidth">{{ idx + 1 }}</td>
-  <!--  <td width="100">{{ baseRate.groupId }}</td>-->
-  <td [width]="tableColumn2.offsetWidth">
-    <input type="datetime-local" [ngModel]="editedTariff.relevanceDate | date: 'yyyy-MM-ddTHH:mm'"
-           (ngModelChange)="editedTariff.relevanceDate = $event" class="form-control form-control-sm ms-valid_input"
-           appMyAutofocus #relevanceDate="ngModel" required>
-  </td>
-  <td [width]="tableColumn3.offsetWidth">
-    <input type="text" [(ngModel)]="editedTariff.tariff" class="form-control form-control-sm ms-valid_input"
-           #norm="ngModel" required>
-  </td>
-  <td [width]="tableColumn4.offsetWidth">
-    <select class="custom-select form-control form-control-sm ms-valid_input"
-            [(ngModel)]="editedTariff.tariffType.typeName" #normType="ngModel" required>
-      <option *ngFor="let tariffType of tariffTypeList | async"
-              value="{{ tariffType.typeName }}">{{ tariffType.typeName }}</option>
-    </select>
-  </td>
-  <td [width]="tableColumn5.offsetWidth">
-    <button (click)="save()" class="fas fa-check btn btn-outline-success btn-sm mr-1 mt-1" title="Сохранить"
-            [disabled]="relevanceDate.invalid || norm.invalid || normType.invalid"></button>
-    <button (click)="cancel()" class="fas fa-undo-alt btn btn-outline-warning btn-sm mt-1" title="Отменить"></button>
-  </td>
+    <td [width]="tableColumn1.offsetWidth">{{ idx + 1 }}</td>
+    <!--  <td width="100">{{ baseRate.groupId }}</td>-->
+    <td [width]="tableColumn2.offsetWidth">
+        <input type="datetime-local" [ngModel]="editedTariff.relevanceDate | date: 'yyyy-MM-ddTHH:mm'"
+               (ngModelChange)="editedTariff.relevanceDate = $event" class="form-control form-control-sm ms-valid_input"
+               appMyAutofocus #relevanceDate="ngModel" required>
+    </td>
+    <td [width]="tableColumn3.offsetWidth">
+        <input type="text" [(ngModel)]="editedTariff.tariff" class="form-control form-control-sm ms-valid_input"
+               #norm="ngModel" required>
+    </td>
+    <td [width]="tableColumn4.offsetWidth">
+        <select class="custom-select form-control form-control-sm ms-valid_input"
+                [(ngModel)]="editedTariff.tariffType.typeName" #normType="ngModel" required>
+            <option *ngFor="let tariffType of tariffTypeList | async"
+                    value="{{ tariffType.typeName }}">{{ tariffType.typeName }}</option>
+        </select>
+    </td>
+    <td [width]="tableColumn5.offsetWidth">
+        <button (click)="save()" class="fas fa-check btn btn-outline-success btn-sm mr-1 mt-1" title="Сохранить"
+                [disabled]="relevanceDate.invalid || norm.invalid || normType.invalid"></button>
+        <button (click)="cancel()" class="fas fa-undo-alt btn btn-outline-warning btn-sm mt-1"
+                title="Отменить"></button>
+    </td>
 </ng-template>
 
 <!--Template loading-->
 <ng-template #loading>
-  <p class="text-center">Загрузка...</p>
+    <p class="text-center">Загрузка...</p>
 </ng-template>
 
 <!-- Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="deleteModalLabel">Удаление</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        Удалить тариф номер {{ tariffIdToDelete }} ?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="unsetDelete()">Отменить</button>
-        <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="delete()">Удалить</button>
-      </div>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Удаление</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Удалить тариф номер {{ tariffIdToDelete }} ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="unsetDelete()">Отменить
+                </button>
+                <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="delete()">Удалить
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>

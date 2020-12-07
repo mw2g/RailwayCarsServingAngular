@@ -7,9 +7,10 @@
 //}
 
 .container {
-  min-width: 900px;
-  max-width: 1000px;
+    min-width: 900px;
+    max-width: 1000px;
 }
+
 //
 //@media print {
 //  .container {
@@ -27,11 +28,12 @@
 //}
 
 ul:hover li:hover {
-  background-color: #c2eeff;
-  border-radius: 5px;
+    background-color: #c2eeff;
+    border-radius: 5px;
 }
+
 .selected {
-  background-color: #d7eaff;
-  border-radius: 5px;
-  font-weight: bold;
+    background-color: #d7eaff;
+    border-radius: 5px;
+    font-weight: bold;
 }

@@ -1,44 +1,44 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <div *ngIf="typeId">
-          <button (click)="update()" class="btn btn-outline-primary btn-sm mr-2">Сохранить</button>
-        </div>
-        <div *ngIf="!typeId">
-          <a (click)="create()" class="btn btn-outline-primary btn-sm mr-2">Создать</a>
-        </div>
-      </li>
-      <li>
-        <a class="btn btn-outline-info btn-sm" [routerLink]="['/reference/cargo-type']">Закрыть</a>
-      </li>
-    </ul>
-  </div>
+    <div class="navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <div *ngIf="typeId">
+                    <button (click)="update()" class="btn btn-outline-primary btn-sm mr-2">Сохранить</button>
+                </div>
+                <div *ngIf="!typeId">
+                    <a (click)="create()" class="btn btn-outline-primary btn-sm mr-2">Создать</a>
+                </div>
+            </li>
+            <li>
+                <a class="btn btn-outline-info btn-sm" [routerLink]="['/reference/cargo-type']">Закрыть</a>
+            </li>
+        </ul>
+    </div>
 </nav>
 
 <div *ngIf="form; else loading">
-  <form [formGroup]="form" (ngSubmit)="update()">
-    <div *ngIf="form.get('customerId');" class="form-row">
-      <div class="form-group col-md-4">
-        <label for="customerId">Номер</label>
-        <input type="text" class="form-control-plaintext font-weight-bold" disabled
-               id="customerId" value="{{ form.value.typeId }}">
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group col-md-6"
-           [ngClass]="{invalid: form.get('type').touched && form.get('type').invalid}">
-        <label for="name">Наименование вида груза</label>
-        <input type="text" class="form-control" id="name" formControlName="type">
-        <div class="invalid-feedback">
-          Введите наименование
+    <form [formGroup]="form" (ngSubmit)="update()">
+        <div *ngIf="form.get('customerId');" class="form-row">
+            <div class="form-group col-md-4">
+                <label for="customerId">Номер</label>
+                <input type="text" class="form-control-plaintext font-weight-bold" disabled
+                       id="customerId" value="{{ form.value.typeId }}">
+            </div>
         </div>
-      </div>
-    </div>
-  </form>
+
+        <div class="form-row">
+            <div class="form-group col-md-6"
+                 [ngClass]="{invalid: form.get('type').touched && form.get('type').invalid}">
+                <label for="name">Наименование вида груза</label>
+                <input type="text" class="form-control" id="name" formControlName="type">
+                <div class="invalid-feedback">
+                    Введите наименование
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 
 <ng-template #loading>
-  <p class="text-center">Идёт загрузка...</p>
+    <p class="text-center">Идёт загрузка...</p>
 </ng-template>

@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Statement, MemoOfDelivery, Customer, CargoOperation} from '../../shared/interfaces';
+import {CargoOperation, Customer, Statement} from '../../shared/interfaces';
 import {Observable, Subscription, throwError} from 'rxjs';
 import {Router} from '@angular/router';
 import {AlertService} from '../../shared/service/alert.service';
@@ -9,101 +9,112 @@ import {CargoOperationService} from '../../reference/service/cargo-operation.ser
 import {CustomerService} from '../../reference/service/customer.service';
 
 @Component({
-  selector: 'app-list-statement',
-  templateUrl: './list-statement.component.html',
-  styleUrls: ['./list-statement.component.scss']
+    selector: 'app-list-statement',
+    templateUrl: './list-statement.component.html',
+    styleUrls: ['./list-statement.component.scss']
 })
 export class ListStatementComponent implements OnInit, OnDestroy {
 
-  statements: Statement[] = [];
-  statementsSub: Subscription;
-  cargoOperations: Observable<Array<CargoOperation>>;
-  customers: Observable<Array<Customer>>;
+    statements: Statement[] = [];
+    statementsSub: Subscription;
+    cargoOperations: Observable<Array<CargoOperation>>;
+    customers: Observable<Array<Customer>>;
 
-  cargoOperationFilter = '';
-  customerFilter = '';
-  sortById = true;
-  sortByDate: boolean;
-  sortByMemoQuantity: boolean;
-  searchStr = '';
+    cargoOperationFilter = '';
+    customerFilter = '';
+    sortState = {statementId: null, created: true, memoQuantity: null};
+    searchStr = '';
 
-  beforeDate: Date = new Date();
-  afterDate: Date = new Date();
+    afterDate: Date;
+    beforeDate: Date;
 
-  constructor(private statementService: StatementService,
-              public router: Router,
-              private alert: AlertService,
-              private utils: UtilsService,
-              private cargoOperationService: CargoOperationService,
-              private customerService: CustomerService
-  ) {
-  }
-
-  ngOnInit(): void {
-    this.cargoOperations = this.cargoOperationService.getAll();
-    this.customers = this.customerService.getAll();
-    this.afterDate.setFullYear(this.afterDate.getFullYear() - 1);
-    this.afterDate.setDate(this.afterDate.getDay() - 5);
-    this.loadStatement();
-  }
-
-  sortListById(): void {
-    this.sortByMemoQuantity = null;
-    this.sortByDate = null;
-    if (this.sortById) {
-      this.statements = [...this.statements.sort((a, b) => a.statementId < b.statementId ? 1 : -1)];
-      this.sortById = false;
-    } else {
-      this.statements = [...this.statements.sort((a, b) => a.statementId > b.statementId ? 1 : -1)];
-      this.sortById = true;
+    constructor(private statementService: StatementService,
+                public router: Router,
+                private alert: AlertService,
+                public utils: UtilsService,
+                private cargoOperationService: CargoOperationService,
+                private customerService: CustomerService
+    ) {
     }
-  }
 
-  loadStatement(): void {
-    if (this.afterDate) {
-      this.afterDate = new Date(this.afterDate);
-    } else {
-      this.afterDate = new Date(2019, 0);
+    ngOnInit(): void {
+        const statementViewSettings = JSON.parse(localStorage.getItem('statementViewSettings'));
+        if (statementViewSettings) {
+            this.sortState = statementViewSettings.sortState ? statementViewSettings.sortState : this.sortState;
+            this.searchStr = statementViewSettings.searchStr ? statementViewSettings.searchStr : '';
+            this.customerFilter = statementViewSettings.customerFilter ? statementViewSettings.customerFilter : '';
+            this.cargoOperationFilter = statementViewSettings.cargoOperationFilter ? statementViewSettings.cargoOperationFilter : '';
+            this.afterDate = statementViewSettings.afterDate ? statementViewSettings.afterDate : this.afterDate;
+            this.beforeDate = statementViewSettings.beforeDate ? statementViewSettings.beforeDate : this.beforeDate;
+        }
+        this.cargoOperations = this.cargoOperationService.getAll();
+        this.customers = this.customerService.getAll();
+        this.loadStatement();
     }
-    if (this.beforeDate) {
-      this.beforeDate = new Date(this.beforeDate);
-    } else {
-      this.beforeDate = new Date();
-    }
-    this.statementsSub = this.statementService.getAllStatements(this.afterDate, this.beforeDate).subscribe(statements => {
-      this.statements = statements;
-    }, error => {
-      throwError(error);
-    });
-  }
 
-  sortListByDate(): void {
-    this.sortById = null;
-    this.sortByMemoQuantity = null;
-    if (this.sortByDate) {
-      this.statements = [...this.statements.sort((a, b) => a.created < b.created ? 1 : -1)];
-      this.sortByDate = false;
-    } else {
-      this.statements = [...this.statements.sort((a, b) => a.created > b.created ? 1 : -1)];
-      this.sortByDate = true;
+    sortList(field: string, primer?, fromMemo?): void {
+        if (!fromMemo) {
+            for (const key of Object.keys(this.sortState)) {
+                this.sortState[key] = key === field ? !this.sortState[key] : null;
+            }
+        }
+        const prep = primer ? (x) => primer(x) : (x) => x[field];
+        const reverse = this.sortState[field] ? 1 : -1;
+        this.statements = [...this.statements.sort((a, b) => {
+            return a = prep(a), b = prep(b), reverse * (a > b ? 1 : -1);
+        })];
     }
-  }
 
-  sortListByWagonQuantity(): void {
-    this.sortById = null;
-    this.sortByDate = null;
-    if (this.sortByMemoQuantity) {
-      this.statements = [...this.statements.sort((a, b) => a.memoOfDispatchList.length < b.memoOfDispatchList.length ? 1 : -1)];
-      this.sortByMemoQuantity = false;
-    } else {
-      this.statements = [...this.statements.sort((a, b) => a.memoOfDispatchList.length > b.memoOfDispatchList.length ? 1 : -1)];
-      this.sortByMemoQuantity = true;
+    public memoListLengthFunc = (statement: Statement): number => statement.memoOfDispatchList.length;
+
+    clearViewSettings(): void {
+        localStorage.removeItem('statementViewSettings');
+        this.sortState = {statementId: null, created: true, memoQuantity: null};
+        this.searchStr = '';
+        this.customerFilter = '';
+        this.cargoOperationFilter = '';
+        this.afterDate = new Date();
+        this.afterDate.setFullYear(this.afterDate.getFullYear() - 1);
+        this.beforeDate = new Date();
+
+        this.loadStatement();
     }
-  }
 
-  ngOnDestroy(): void {
-    this.utils.unsubscribe([
-      this.statementsSub
-    ]);
-  }
+    loadStatement(): void {
+        this.afterDate = this.utils.prepareDate(this.afterDate, new Date(new Date().getFullYear() - 1, new Date().getMonth() - 1));
+        this.beforeDate = this.utils.prepareDate(this.beforeDate, new Date());
+
+        this.statementsSub = this.statementService.getAllStatements(this.afterDate, this.beforeDate).subscribe(statements => {
+            this.statements = statements;
+            for (const key of Object.keys(this.sortState)) {
+                if (this.sortState[key] != null) {
+                    this.sortList(key, key === 'memoQuantity' ? this.memoListLengthFunc : null, true);
+                    return;
+                }
+            }
+        }, error => {
+            throwError(error);
+        });
+        this.saveViewSettings();
+    }
+
+    ngOnDestroy(): void {
+        this.saveViewSettings();
+
+        this.utils.unsubscribe([
+            this.statementsSub
+        ]);
+    }
+
+    private saveViewSettings(): void {
+        const statementViewSettings = {
+            sortState: this.sortState,
+            searchStr: this.searchStr,
+            customerFilter: this.customerFilter,
+            cargoOperationFilter: this.cargoOperationFilter,
+            afterDate: this.afterDate,
+            beforeDate: this.beforeDate
+        };
+        localStorage.setItem('statementViewSettings', JSON.stringify(statementViewSettings));
+    }
 }

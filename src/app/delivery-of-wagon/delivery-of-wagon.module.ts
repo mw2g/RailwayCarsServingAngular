@@ -10,27 +10,27 @@ import {FormDeliveryOfWagonComponent} from './edit-delivery/form-delivery-of-wag
 import {MainLayoutComponent} from '../shared/components/main-layout/main-layout.component';
 
 @NgModule({
-  declarations: [
-    DeliveryOfWagonLayoutComponent,
-    ListDeliveryOfWagonComponent,
-    FormDeliveryOfWagonComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    SharedModule,
-    RouterModule.forChild([
-      {
-        path: '', component: MainLayoutComponent, children: [
-          // {path: '', redirectTo: '/delivery', pathMatch: 'full' },
-          {path: '', component: ListDeliveryOfWagonComponent, canActivate: [AuthGuard]},
-          {path: 'edit/:deliveryId', component: FormDeliveryOfWagonComponent, canActivate: [AuthGuard]},
-          {path: 'create', component: FormDeliveryOfWagonComponent, canActivate: [AuthGuard]},
-        ]
-      }
-    ])
-  ],
+    declarations: [
+        DeliveryOfWagonLayoutComponent,
+        ListDeliveryOfWagonComponent,
+        FormDeliveryOfWagonComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        SharedModule,
+        RouterModule.forChild([
+            {
+                path: '', component: MainLayoutComponent, children: [
+                    // {path: '', redirectTo: '/delivery', pathMatch: 'full' },
+                    {path: '', component: ListDeliveryOfWagonComponent, canActivate: [AuthGuard]},
+                    {path: 'edit/:deliveryId', component: FormDeliveryOfWagonComponent, canActivate: [AuthGuard]},
+                    {path: 'create', component: FormDeliveryOfWagonComponent, canActivate: [AuthGuard]},
+                ]
+            }
+        ])
+    ],
     exports: [RouterModule]
 })
 export class DeliveryOfWagonModule {

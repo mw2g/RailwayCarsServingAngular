@@ -1,0 +1,112 @@
+<nav class="navbar navbar-expand navbar-light bg-light row doNotPrint">
+    <ul class="navbar-nav mr-auto">
+        <li>
+            <i class="fas fa-print btn btn-outline-info mr-2" type="button" title="Печать" (click)="print()"></i>
+        </li>
+        <li>
+            <i class="fas fa-align-justify btn btn-outline-info mr-1" type="button" title="Показать все"></i>
+        </li>
+        <li class="nav-item active mr-1 py-0 my-0">
+            <input type="datetime-local" [ngModel]="afterDate | date: 'yyyy-MM-ddTHH:mm'" title="Начало периода"
+                   (ngModelChange)="afterDate = $event" class="form-control form-control-sm">
+        </li>
+        <li>
+            <i class="fas fa-arrows-alt-h btn btn-outline-info mr-1" (click)="loadReport()"></i>
+        </li>
+        <li>
+            <input type="datetime-local" [ngModel]="beforeDate | date: 'yyyy-MM-ddTHH:mm'" title="Конец периода"
+                   (ngModelChange)="beforeDate = $event" class="form-control form-control-sm">
+        </li>
+        <li>
+            <select class="custom-select custom-select-sm ml-3" [(ngModel)]="customer">
+                <option value="">Все контрагенты</option>
+                <option *ngFor="let customer of customers | async"
+                        value="{{ customer.customerName }}">{{ customer.customerName }}</option>
+            </select>
+        </li>
+    </ul>
+</nav>
+
+<div class="smallBody" *ngIf="staticReportRows.length" id="toPrint">
+    <p style="text-align: center; margin-bottom: 8px; margin-top: 10px"><strong>АО "ППЖТ Юбилейное"</strong></p>
+    <p style="text-align: center; margin-bottom: 5px">Краткий статистический отчет по погрузке, выгрузке и переработке грузов</p>
+    <p style="text-align: center; margin-bottom: 0">за период с
+        {{ afterDate | date : 'dd.MM.yyyy HH:mm' }} по {{ beforeDate | date : 'dd.MM.yyyy HH:mm' }}</p>
+    <!--  <div [class.page-breaker]="numberOfPage > 0 && false" *ngFor="let numberOfPage of pages">-->
+    <!--    <i style="text-align: right;" class="align-content-end">{{ numberOfPage + 1 }} / {{ pages.length }}</i>-->
+    <br>
+    <table style="text-align: center; font-size: 12px" cellpadding="2,2,0,0" border="1" align="center">
+        <thead class="tableHead" style="background-color: beige; font-weight: bold">
+        <tr>
+            <td style="width: 200px">Контрагент</td>
+            <td style="width: 600px" colspan="4">Перевозки за период</td>
+            <td style="width: 300px" colspan="2" rowspan="2">ПРР ППЖТ Юбилейное</td>
+            <td style="width: 200px" colspan="2" rowspan="2">ПРР силами контрагента</td>
+            <td style="width: 150px" rowspan="4">Неубр. ваг.</td>
+            <td style="width: 150px" rowspan="4">Тех. + БО ваг.</td>
+        </tr>
+        <tr>
+            <td style="width: 200px">Груз. операция</td>
+            <td style="width: 300px" colspan="2">Подано</td>
+            <td style="width: 300px" colspan="2">Убрано</td>
+        </tr>
+        <tr>
+            <td style="width: 200px">Вид груза</td>
+            <td style="width: 150px" rowspan="2">Кол-во ваг.</td>
+            <td style="width: 150px" rowspan="2">Масса т.</td>
+            <td style="width: 150px" rowspan="2">Кол-во ваг.</td>
+            <td style="width: 150px" rowspan="2">Масса т.</td>
+            <td style="width: 150px" rowspan="2">Кол-во ваг.</td>
+            <td style="width: 150px" rowspan="2">Масса т.</td>
+            <td style="width: 150px" rowspan="2">Кол-во ваг.</td>
+            <td style="width: 150px" rowspan="2">Масса т.</td>
+        </tr>
+        <tr>
+            <td style="width: 200px">Тип вагона</td>
+        </tr>
+        </thead>
+
+        <tbody class="tableBody">
+        <tr *ngFor="let row of staticReportRows.slice(1)">
+<!--            <td style="width: 200px;">-->
+            <td style="width: 200px; font-weight: bold" *ngIf="row.customer != 'all' && row.operation == 'all'">{{ row.customer }}</td>
+            <td style="width: 200px; text-align: left" *ngIf="row.operation != 'all' && row.cargoType == 'all'">{{ row.operation }}</td>
+            <td style="width: 200px; text-align: center" *ngIf="row.cargoType != 'all' && row.wagonType == 'all'">{{ row.cargoType }}</td>
+            <td style="width: 200px; text-align: right" *ngIf="row.wagonType != 'all'">{{ row.wagonType }}</td>
+
+            <td style="width: 150px">{{ row.deliveryWagonQuantity }}</td>
+            <td style="width: 150px">{{ row.deliveryWeightSum }}</td>
+            <td style="width: 150px">{{ row.dispatchWagonQuantity }}</td>
+            <td style="width: 150px">{{ row.dispatchWeightSum }}</td>
+            <td style="width: 150px">{{ row.loadUnloadWorkQuantity }}</td>
+            <td style="width: 150px">{{ row.loadUnloadWorkWeightSum }}</td>
+            <td style="width: 150px">{{ row.customerLoadUnloadWorkQuantity }}</td>
+            <td style="width: 150px">{{ row.customerLoadUnloadWorkWeightSum }}</td>
+            <td style="width: 150px">{{ row.notEndDelivery }}</td>
+            <td style="width: 150px">{{ row.withoutOperation }}</td>
+        </tr>
+        <tr style="font-weight: bold">
+            <td style="width: 200px">Итого:</td>
+
+            <td style="width: 150px">{{ staticReportRows[0].deliveryWagonQuantity }}</td>
+            <td style="width: 150px">{{ staticReportRows[0].deliveryWeightSum }}</td>
+            <td style="width: 150px">{{ staticReportRows[0].dispatchWagonQuantity }}</td>
+            <td style="width: 150px">{{ staticReportRows[0].dispatchWeightSum }}</td>
+            <td style="width: 150px">{{ staticReportRows[0].loadUnloadWorkQuantity }}</td>
+            <td style="width: 150px">{{ staticReportRows[0].loadUnloadWorkWeightSum }}</td>
+            <td style="width: 150px">{{ staticReportRows[0].customerLoadUnloadWorkQuantity }}</td>
+            <td style="width: 150px">{{ staticReportRows[0].customerLoadUnloadWorkWeightSum }}</td>
+            <td style="width: 150px">{{ staticReportRows[0].notEndDelivery }}</td>
+            <td style="width: 150px">{{ staticReportRows[0].withoutOperation }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<br>
+<div style="page-break-inside: avoid" *ngIf="staticReportRows.length">
+<!--    <p style="text-align: left;">Отчет сформировал {{ statement.author }}</p>-->
+    <p style="text-align: center; margin-bottom: 0">Генеральный директор АО "ППЖТ Юбилейное"________________________________/Д.А. Растяженко/</p>
+</div>
+<!--</div>-->
+
+

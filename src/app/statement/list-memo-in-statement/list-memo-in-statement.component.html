@@ -1,231 +1,236 @@
 <nav class="navbar navbar-expand navbar-light bg-light row" #navPanel>
-  <div class="nav nav-tabs" id="nav-tab" role="tablist">
-    <a class="nav-item nav-link active" id="nav-memos-tab" data-toggle="tab" href="#nav-memos" role="tab"
-       aria-controls="nav-home" aria-selected="true" (click)="addMemoBar = true">Памятки</a>
-    <a class="nav-item nav-link mr-2" id="nav-wagons-tab" data-toggle="tab" href="#nav-wagons" role="tab"
-       aria-controls="nav-profile" aria-selected="false" (click)="loadDeliveryList(); addMemoBar = false">Вагоны</a>
-  </div>
-  <div class="navbar-collapse" id="navbarSupportedContent" *ngIf="addMemoBar">
-    <ul class="navbar-nav mr-auto">
-      <li>
-        <div class="input-group input-group-sm">
-          <div class="input-group-prepend">
-            <button class="btn btn-outline-info btn-sm" type="button" (click)="addMemoById()"
-                    [disabled]="!memoIdToAdd || !enableForm">Добавить памятку по номеру
-            </button>
-          </div>
-          <input type="number" list=deliveryList class="input-text text" [(ngModel)]="memoIdToAdd"
-                 style="width: 100px" (keydown.escape)="memoIdToAdd = null">
-          <div class="input-group-append">
-            <button class="fas fa-times btn btn-outline-info btn-sm mr-2"
-                    type="button" (click)="memoIdToAdd = null"></button>
-          </div>
-          <datalist id=deliveryList *ngIf="suitableMemos">
-            <option *ngFor="let memo of suitableMemos" value="{{memo.memoOfDispatchId}}"
-                    label="{{memo.created | date : 'dd.MM.yyyy HH:mm' }}"></option>
-          </datalist>
-        </div>
-      </li>
-      <li>
-        <input type="button" value="Добавить все подходящие" class="btn btn-outline-info btn-sm mr-2"
-               [disabled]="!enableForm" (click)="addAllSuitableMemos()">
-      </li>
-      <li>
-        <input type="button" value="Убрать все" class="btn btn-outline-info btn-sm mr-2"
-               [disabled]="!enableForm" data-toggle="modal" data-target="#removeAllMemosModal">
-      </li>
-    </ul>
-  </div>
-  <div class="navbar-collapse" id="navbarWagons" *ngIf="!addMemoBar">
-    <ul class="navbar-nav mr-auto">
-      <li>
-        <div class="input-group">
-          <input type="text" class="form-control form-control-sm ml-3" placeholder="Найти по номеру"
-                 [(ngModel)]="searchStr"
-                 autocomplete="off">
-          <div class="input-group-append">
-            <button class="fas fa-times btn btn-outline-secondary btn-sm" title="Очистить" (click)="searchStr = ''"
-                    style="color: grey"></button>
-          </div>
-        </div>
-      </li>
-      <li>
-        <i class="form-control form-control-sm form-control-plaintext ml-2">
-          Вагонов:&nbsp;{{ deliveryList.length }}
-        </i>
-      </li>
-      <li>
-        <i class="form-control form-control-sm form-control-plaintext ml-2">
-          Сумма:&nbsp;{{ getTotalCost() | number:'0.2' }}
-        </i>
-      </li>
-<!--      <li>-->
-<!--          <input type="number" class="form-control form-control-sm ml-3" placeholder="Найти по номеру"-->
-<!--                 [value]="getTotalCost()"-->
-<!--                 autocomplete="off">-->
-<!--      </li>-->
-    </ul>
-  </div>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link active" id="nav-memos-tab" data-toggle="tab" href="#nav-memos" role="tab"
+           aria-controls="nav-home" aria-selected="true" (click)="addMemoBar = true">Памятки</a>
+        <a class="nav-item nav-link mr-2" id="nav-wagons-tab" data-toggle="tab" href="#nav-wagons" role="tab"
+           aria-controls="nav-profile" aria-selected="false" (click)="loadDeliveryList(); addMemoBar = false">Вагоны</a>
+    </div>
+    <div class="navbar-collapse" id="navbarSupportedContent" *ngIf="addMemoBar">
+        <ul class="navbar-nav mr-auto">
+            <li>
+                <div class="input-group input-group-sm">
+                    <div class="input-group-prepend">
+                        <button class="btn btn-outline-info btn-sm" type="button" (click)="addMemoById()"
+                                [disabled]="!memoIdToAdd || !enableForm">Добавить памятку по номеру
+                        </button>
+                    </div>
+                    <input type="number" list=deliveryList class="input-text text" [(ngModel)]="memoIdToAdd"
+                           style="width: 100px" (keydown.escape)="memoIdToAdd = null">
+                    <div class="input-group-append">
+                        <button class="fas fa-times btn btn-outline-info btn-sm mr-2"
+                                type="button" (click)="memoIdToAdd = null"></button>
+                    </div>
+                    <datalist id=deliveryList *ngIf="suitableMemos">
+                        <option *ngFor="let memo of suitableMemos" value="{{memo.memoOfDispatchId}}"
+                                label="{{memo.created | date : 'dd.MM.yyyy HH:mm' }}"></option>
+                    </datalist>
+                </div>
+            </li>
+            <li>
+                <input type="button" value="Добавить все подходящие" class="btn btn-outline-info btn-sm mr-2"
+                       [disabled]="!enableForm" (click)="addAllSuitableMemos()">
+            </li>
+            <li>
+                <input type="button" value="Убрать все" class="btn btn-outline-info btn-sm mr-2"
+                       [disabled]="!enableForm" data-toggle="modal" data-target="#removeAllMemosModal">
+            </li>
+        </ul>
+    </div>
+    <div class="navbar-collapse" id="navbarWagons" *ngIf="!addMemoBar">
+        <ul class="navbar-nav mr-auto">
+            <li>
+                <div class="input-group">
+                    <input type="text" class="form-control form-control-sm ml-3" placeholder="Найти по номеру"
+                           [(ngModel)]="searchStr"
+                           autocomplete="off">
+                    <div class="input-group-append">
+                        <button class="fas fa-times btn btn-outline-secondary btn-sm" title="Очистить"
+                                (click)="searchStr = ''"
+                                style="color: grey"></button>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <i class="form-control form-control-sm form-control-plaintext ml-2">
+                    Вагонов:&nbsp;{{ deliveryList.length }}
+                </i>
+            </li>
+            <li>
+                <i class="form-control form-control-sm form-control-plaintext ml-2">
+                    Сумма:&nbsp;{{ getTotalCost() | number:'0.2' }}
+                </i>
+            </li>
+            <!--      <li>-->
+            <!--          <input type="number" class="form-control form-control-sm ml-3" placeholder="Найти по номеру"-->
+            <!--                 [value]="getTotalCost()"-->
+            <!--                 autocomplete="off">-->
+            <!--      </li>-->
+        </ul>
+    </div>
 </nav>
 
 <div class="tab-content" id="nav-tabContent">
 
-  <div class="tab-pane fade show active" id="nav-memos" role="tabpanel" aria-labelledby="nav-memos-tab">
-    <table class="table table-sm table-bordered border-0" style="text-align: center">
-      <thead class="thead-light">
-      <tr class="row">
-        <th [width]="70">П/Н</th>
-        <th [width]="100">Номер</th>
-        <th [width]="150">Дата окончания</th>
-        <th [width]="100">Вагонов</th>
-        <th class="col">Коментарий</th>
-        <th [width]="100" class="fas fa-cog" style="padding-top: 10px; padding-bottom: 0px"></th>
-      </tr>
-      </thead>
-      <tbody *ngIf="memoList.length; else loading">
-      <tr class="row" *ngFor="let memo of memoList; let idx = index">
-        <td [width]="70">{{ idx + 1 }}</td>
-        <td [width]="100">
-          <a [routerLink]="['/memo', 'dispatch', 'edit', memo.memoOfDispatchId]" title="Открыть памятку уборки">
-            {{ memo.memoOfDispatchId }}
-          </a>
-        </td>
-        <td [width]="150">
-          {{ memo.endDate | date : 'dd.MM.yyyy HH:mm' }}
-        </td>
-        <td [width]="100">{{ memo.deliveryOfWagonList.length }}</td>
-        <td class="col">{{ memo.comment }}</td>
-        <td [width]="100">
-          <button type="button" class="fas fa-unlink btn btn-outline-warning btn-sm mr-1 mt-1" title="Открепить"
-                  [disabled]="!enableForm" (click)="removeStatementFromMemo(memo.memoOfDispatchId)"></button>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
+    <div class="tab-pane fade show active" id="nav-memos" role="tabpanel" aria-labelledby="nav-memos-tab">
+        <table class="table table-sm table-bordered border-0" style="text-align: center">
+            <thead class="thead-light">
+            <tr class="row">
+                <th [width]="70">П/Н</th>
+                <th [width]="100">Номер</th>
+                <th [width]="150">Дата окончания</th>
+                <th [width]="100">Вагонов</th>
+                <th class="col">Коментарий</th>
+                <th [width]="100" class="fas fa-cog" style="padding-top: 10px; padding-bottom: 0px"></th>
+            </tr>
+            </thead>
+            <tbody *ngIf="memoList.length; else loading">
+            <tr class="row" *ngFor="let memo of memoList; let idx = index">
+                <td [width]="70">{{ idx + 1 }}</td>
+                <td [width]="100">
+                    <a [routerLink]="['/memo', 'dispatch', 'edit', memo.memoOfDispatchId]"
+                       title="Открыть памятку уборки">
+                        {{ memo.memoOfDispatchId }}
+                    </a>
+                </td>
+                <td [width]="150">
+                    {{ memo.endDate | date : 'dd.MM.yyyy HH:mm' }}
+                </td>
+                <td [width]="100">{{ memo.deliveryOfWagonList.length }}</td>
+                <td class="col">{{ memo.comment }}</td>
+                <td [width]="100">
+                    <button type="button" class="fas fa-unlink btn btn-outline-warning btn-sm mr-1 mt-1"
+                            title="Открепить"
+                            [disabled]="!enableForm" (click)="removeStatementFromMemo(memo.memoOfDispatchId)"></button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
-  <div class="tab-pane fade" id="nav-wagons" role="tabpanel" aria-labelledby="nav-wagons-tab">
-    <table class="table table-sm table-bordered border-0" style="text-align: center">
-      <thead class="thead-light small font-weight-bold">
-      <tr class="row">
-        <th [width]="30" #deliveryColumn1 rowspan="2" class="align-middle"></th>
-        <!--        <th width="100">И</th>-->
-        <th [width]="120" #deliveryColumn2>№ вагона</th>
-        <th class="col" #deliveryColumn3>Собственник</th>
-        <th [width]="50" #deliveryColumn4>ПРР</th>
-        <th [width]="120" #deliveryColumn5>Дата подачи</th>
-        <th [width]="80" #deliveryColumn6>Общ. вр.</th>
-        <th [width]="80" #deliveryColumn7>Вр. платы</th>
-        <th [width]="80" #deliveryColumn8>Вр. штрафа</th>
-        <th [width]="80" #deliveryColumn9>Вр. м.р.</th>
-        <th [width]="80" #deliveryColumn10>Подач/Убор</th>
-        <th [width]="18" #deliveryColumn11></th>
-      </tr>
-      <tr class="row">
-        <th [width]="30" rowspan="2" class="align-middle">ПН</th>
-        <th [width]="120">Тип вагона</th>
-        <th class="col">Вид груза</th>
-        <th [width]="50">Вес</th>
-        <th [width]="120">Дата уборки</th>
-        <th [width]="80">Расч. вр.</th>
-        <th [width]="80">Сумма пл.</th>
-        <th [width]="80">Сумма шт.</th>
-        <th [width]="80">Сумма м.р.</th>
-        <th [width]="80">Всего</th>
-        <th [width]="18"></th>
-      </tr>
-      </thead>
-        <tbody>
-      <cdk-virtual-scroll-viewport itemSize="1" class="main-viewport row">
-        <div *cdkVirtualFor="let delivery of deliveryList | filterDelivery:searchStr;let idx = index" class="main-item">
-          <tr *ngIf="delivery.calculation; else loading">
-            <td [width]="deliveryColumn1.offsetWidth || 30" rowspan="2" class="align-middle small">{{ idx + 1 }}</td>
-            <td [width]="deliveryColumn2.offsetWidth || 120">
-              <a [routerLink]="['/delivery', 'edit', delivery.deliveryId]" title="Открыть общую подачу">
-                {{ delivery.wagon }}
-              </a>
-            </td>
-            <td [width]="deliveryColumn3.offsetWidth || navPanel.offsetWidth - 738">{{ delivery.owner }}</td>
-            <td [width]="deliveryColumn4.offsetWidth || 50">
-              <i class="fas fa-check" [hidden]="!delivery.loadUnloadWork" style="color: grey"></i>
-            </td>
-<!--            <td [width]="deliveryColumn4.offsetWidth" style="padding-top: 10px; padding-bottom: 0px" align="center">-->
-<!--              <input class="form-check" disabled type="checkbox" [checked]="delivery.loadUnloadWork">-->
-<!--            </td>-->
-            <td [width]="deliveryColumn5.offsetWidth || 120">
-              <a *ngIf="delivery.memoOfDelivery; else justStartDate" title="Открыть памятку подачи"
-                 [routerLink]="['/memo', 'delivery', 'edit', delivery.memoOfDelivery]">
-                {{ delivery["startDate"] | date : 'dd.MM.yy HH:mm' }}
-              </a>
-              <ng-template #justStartDate>
-                {{ delivery["startDate"] | date : 'dd.MM.yy HH:mm' }}
-              </ng-template>
-            </td>
-            <td [width]="deliveryColumn6.offsetWidth || 80">{{ delivery.calculation.totalTime | number:'0.2-2'}}</td>
-            <td [width]="deliveryColumn7.offsetWidth || 80">{{ delivery.calculation.payTime | number:'0.2-2'}}</td>
-            <td [width]="deliveryColumn8.offsetWidth || 80">{{ delivery.calculation.penaltyTime | number:'0.2-2'}}
-            </td>
-            <td [width]="deliveryColumn9.offsetWidth || 80">{{ delivery.calculation.shuntingWorkTime | number:'0.2-2'}}
-            </td>
-            <td
-              [width]="deliveryColumn10.offsetWidth || 80">{{ statementRate.deliveryDispatchTariff.tariff | number:'0.2-2'}}
-            </td>
-          </tr>
-          <tr *ngIf="delivery.calculation; else loading">
-            <!--        <td width="100">-->
-            <!--          <a [routerLink]="['/delivery', 'edit', delivery.deliveryId]">{{ delivery.deliveryId }}</a></td>-->
-            <!--  <a [routerLink]="['/delivery', 'edit', delivery.deliveryId]">-->
-            <td [width]="deliveryColumn2.offsetWidth || 120">{{ delivery.wagonType }}</td>
-            <td [width]="deliveryColumn3.offsetWidth || navPanel.offsetWidth - 738">{{ delivery.cargoType }}</td>
-            <td [width]="deliveryColumn4.offsetWidth || 50">{{ delivery.cargoWeight | number:'0.2'}}</td>
-            <td [width]="deliveryColumn5.offsetWidth || 120">
-              <a *ngIf="delivery.memoOfDispatch; else justEndDate" title="Открыть памятку уборки"
-                 [routerLink]="['/memo', 'dispatch', 'edit', delivery.memoOfDispatch]">
-                {{ delivery["endDate"] | date : 'dd.MM.yy HH:mm' }}
-              </a>
-              <ng-template #justEndDate>
-                {{ delivery["endDate"] | date : 'dd.MM.yy HH:mm' }}
-              </ng-template>
-            </td>
-            <td [width]="deliveryColumn6.offsetWidth || 80">{{ delivery.calculation.calculationTime | number:'0.2-2'}}</td>
-            <td [width]="deliveryColumn7.offsetWidth || 80">{{ delivery.calculation.paySum | number:'0.2-2'}}</td>
-            <td [width]="deliveryColumn8.offsetWidth || 80">{{ delivery.calculation.penaltySum | number:'0.2-2'}}</td>
-            <td [width]="deliveryColumn9.offsetWidth || 80">{{ delivery.calculation.shuntingWorkSum | number:'0.2-2'}}</td>
-            <td [width]="deliveryColumn10.offsetWidth || 80">{{ delivery.calculation.totalSum | number:'0.2-2'}}</td>
-          </tr>
-        </div>
-      </cdk-virtual-scroll-viewport>
-        </tbody>
-    </table>
-  </div>
+    <div class="tab-pane fade" id="nav-wagons" role="tabpanel" aria-labelledby="nav-wagons-tab">
+        <table class="table table-sm table-bordered border-0" style="text-align: center">
+            <thead class="thead-light small font-weight-bold">
+            <tr class="row">
+                <th [width]="30" #deliveryColumn1 rowspan="2" class="align-middle"></th>
+                <!--        <th width="100">И</th>-->
+                <th [width]="120" #deliveryColumn2>№ вагона</th>
+                <th class="col" #deliveryColumn3>Собственник</th>
+                <th [width]="50" #deliveryColumn4>ПРР</th>
+                <th [width]="120" #deliveryColumn5>Дата подачи</th>
+                <th [width]="80" #deliveryColumn6>Общ. вр.</th>
+                <th [width]="80" #deliveryColumn7>Вр. платы</th>
+                <th [width]="80" #deliveryColumn8>Вр. штрафа</th>
+                <th [width]="80" #deliveryColumn9>Вр. м.р.</th>
+                <th [width]="80" #deliveryColumn10>Подач/Убор</th>
+                <th [width]="18" #deliveryColumn11></th>
+            </tr>
+            <tr class="row">
+                <th [width]="30" rowspan="2" class="align-middle">ПН</th>
+                <th [width]="120">Тип вагона</th>
+                <th class="col">Вид груза</th>
+                <th [width]="50">Вес</th>
+                <th [width]="120">Дата уборки</th>
+                <th [width]="80">Расч. вр.</th>
+                <th [width]="80">Сумма пл.</th>
+                <th [width]="80">Сумма шт.</th>
+                <th [width]="80">Сумма м.р.</th>
+                <th [width]="80">Всего</th>
+                <th [width]="18"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <cdk-virtual-scroll-viewport itemSize="1" class="main-viewport row">
+                <div *cdkVirtualFor="let delivery of deliveryList | filterDelivery:searchStr;let idx = index"
+                     class="main-item">
+                    <tr *ngIf="delivery.calculation; else loading">
+                        <td [width]="deliveryColumn1.offsetWidth || 30" rowspan="2"
+                            class="align-middle small">{{ idx + 1 }}</td>
+                        <td [width]="deliveryColumn2.offsetWidth || 120">
+                            <a [routerLink]="['/delivery', 'edit', delivery.deliveryId]" title="Открыть общую подачу">
+                                {{ delivery.wagon }}
+                            </a>
+                        </td>
+                        <td [width]="deliveryColumn3.offsetWidth || navPanel.offsetWidth - 738">{{ delivery.owner }}</td>
+                        <td [width]="deliveryColumn4.offsetWidth || 50">
+                            <i class="fas fa-check" [hidden]="!delivery.loadUnloadWork" style="color: grey"></i>
+                        </td>
+                        <!--            <td [width]="deliveryColumn4.offsetWidth" style="padding-top: 10px; padding-bottom: 0px" align="center">-->
+                        <!--              <input class="form-check" disabled type="checkbox" [checked]="delivery.loadUnloadWork">-->
+                        <!--            </td>-->
+                        <td [width]="deliveryColumn5.offsetWidth || 120">
+                            <a *ngIf="delivery.memoOfDelivery; else justStartDate" title="Открыть памятку подачи"
+                               [routerLink]="['/memo', 'delivery', 'edit', delivery.memoOfDelivery]">
+                                {{ delivery["startDate"] | date : 'dd.MM.yy HH:mm' }}
+                            </a>
+                            <ng-template #justStartDate>
+                                {{ delivery["startDate"] | date : 'dd.MM.yy HH:mm' }}
+                            </ng-template>
+                        </td>
+                        <td [width]="deliveryColumn6.offsetWidth || 80">{{ delivery.calculation.totalTime | number:'0.2-2'}}</td>
+                        <td [width]="deliveryColumn7.offsetWidth || 80">{{ delivery.calculation.payTime | number:'0.2-2'}}</td>
+                        <td [width]="deliveryColumn8.offsetWidth || 80">{{ delivery.calculation.penaltyTime | number:'0.2-2'}}
+                        </td>
+                        <td [width]="deliveryColumn9.offsetWidth || 80">{{ delivery.calculation.shuntingWorkTime | number:'0.2-2'}}
+                        </td>
+                        <td
+                            [width]="deliveryColumn10.offsetWidth || 80">{{ statementRate.deliveryDispatchTariff.tariff | number:'0.2-2'}}
+                        </td>
+                    </tr>
+                    <tr *ngIf="delivery.calculation; else loading">
+                        <!--        <td width="100">-->
+                        <!--          <a [routerLink]="['/delivery', 'edit', delivery.deliveryId]">{{ delivery.deliveryId }}</a></td>-->
+                        <!--  <a [routerLink]="['/delivery', 'edit', delivery.deliveryId]">-->
+                        <td [width]="deliveryColumn2.offsetWidth || 120">{{ delivery.wagonType }}</td>
+                        <td [width]="deliveryColumn3.offsetWidth || navPanel.offsetWidth - 738">{{ delivery.cargoType }}</td>
+                        <td [width]="deliveryColumn4.offsetWidth || 50">{{ delivery.cargoWeight | number:'0.2'}}</td>
+                        <td [width]="deliveryColumn5.offsetWidth || 120">
+                            <a *ngIf="delivery.memoOfDispatch; else justEndDate" title="Открыть памятку уборки"
+                               [routerLink]="['/memo', 'dispatch', 'edit', delivery.memoOfDispatch]">
+                                {{ delivery["endDate"] | date : 'dd.MM.yy HH:mm' }}
+                            </a>
+                            <ng-template #justEndDate>
+                                {{ delivery["endDate"] | date : 'dd.MM.yy HH:mm' }}
+                            </ng-template>
+                        </td>
+                        <td [width]="deliveryColumn6.offsetWidth || 80">{{ delivery.calculation.calculationTime | number:'0.2-2'}}</td>
+                        <td [width]="deliveryColumn7.offsetWidth || 80">{{ delivery.calculation.paySum | number:'0.2-2'}}</td>
+                        <td [width]="deliveryColumn8.offsetWidth || 80">{{ delivery.calculation.penaltySum | number:'0.2-2'}}</td>
+                        <td [width]="deliveryColumn9.offsetWidth || 80">{{ delivery.calculation.shuntingWorkSum | number:'0.2-2'}}</td>
+                        <td [width]="deliveryColumn10.offsetWidth || 80">{{ delivery.calculation.totalSum | number:'0.2-2'}}</td>
+                    </tr>
+                </div>
+            </cdk-virtual-scroll-viewport>
+            </tbody>
+        </table>
+    </div>
 
 </div>
 <!--Template loading-->
 <ng-template #loading>
-  <p class="text-center">Загрузка...</p>
+    <p class="text-center">Загрузка...</p>
 </ng-template>
 
 <!-- Modal remove all deliveries -->
 <div class="modal fade" id="removeAllMemosModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="removeAllDeliveriesModalLabel">Отсоединение</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        Убрать все памятки из ведомости?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
-        <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal"
-                (click)="removeAllMemoFromStatement()">Убрать
-        </button>
-      </div>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="removeAllDeliveriesModalLabel">Отсоединение</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Убрать все памятки из ведомости?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+                <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal"
+                        (click)="removeAllMemoFromStatement()">Убрать
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 

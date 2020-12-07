@@ -1,120 +1,137 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-  <a class="fas fa-project-diagram btn btn-outline-primary navbar-brand"
-                                                title="Главная" href="" [routerLink]="['/']"></a>
-  <i class="fas fa-arrow-left btn btn-outline-info navbar-brand mr-2" onclick="history.back()" title="Назад"></i>
-  <a class="fas fa-arrow-right btn btn-outline-info navbar-brand" onclick="history.forward()" title="Вперед"></a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+    <a class="fas fa-project-diagram btn btn-outline-primary navbar-brand"
+       title="Главная" href="" [routerLink]="['/']"></a>
+    <i class="fas fa-arrow-left btn btn-outline-info navbar-brand mr-2" onclick="history.back()" title="Назад"></i>
+    <a class="fas fa-arrow-right btn btn-outline-info navbar-brand" onclick="history.forward()" title="Вперед"></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="#" [routerLink]="['/delivery']"
-           [class.selected]="router.isActive('/delivery', false)">Общая подача<span
-          class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="#" [routerLink]="['/memo', 'delivery']"
-           [class.selected]="router.isActive('/memo/delivery', false)">Памятки подачи<span
-          class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="#" [routerLink]="['/memo', 'dispatch']"
-           [class.selected]="router.isActive('/memo/dispatch', false)">Памятки уборки<span
-          class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="#" [routerLink]="['/statement']"
-           [class.selected]="router.isActive('/statement', false)">
-          Ведомость <span class="sr-only">(current)</span></a>
-      </li>
-<!--      <li class="nav-item dropdown">-->
-<!--        <a class="nav-link dropdown-toggle active" id="navbarDropdown" role="button" data-toggle="dropdown"-->
-<!--           aria-haspopup="true" aria-expanded="false"-->
-<!--           [class.selected]="router.isActive('/reference/customer', false) ||-->
-<!--                        router.isActive('/reference/cargo-type', false)">-->
-<!--          Справочники-->
-<!--        </a>-->
-<!--        -->
-<!--      </li>-->
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle active" id="configDropdown" role="button" data-toggle="dropdown"
-           aria-haspopup="true" aria-expanded="false"
-           [class.selected]="router.isActive(
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="#" [routerLink]="['/delivery']"
+                   [class.selected]="router.isActive('/delivery', false)">Общая подача<span
+                    class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="#" [routerLink]="['/memo', 'delivery']"
+                   [class.selected]="router.isActive('/memo/delivery', false)">Памятки подачи<span
+                    class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="#" [routerLink]="['/memo', 'dispatch']"
+                   [class.selected]="router.isActive('/memo/dispatch', false)">Памятки уборки<span
+                    class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="#" [routerLink]="['/statement']"
+                   [class.selected]="router.isActive('/statement', false)">
+                    Ведомость <span class="sr-only">(current)</span></a>
+            </li>
+            <!--      <li class="nav-item dropdown">-->
+            <!--        <a class="nav-link dropdown-toggle active" id="navbarDropdown" role="button" data-toggle="dropdown"-->
+            <!--           aria-haspopup="true" aria-expanded="false"-->
+            <!--           [class.selected]="router.isActive('/reference/customer', false) ||-->
+            <!--                        router.isActive('/reference/cargo-type', false)">-->
+            <!--          Справочники-->
+            <!--        </a>-->
+            <!--        -->
+            <!--      </li>-->
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle active" id="reportDropdown" role="button" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false"
+                   [class.selected]="router.isActive('/report', false)">
+                    Отчет
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="#" [routerLink]="['/report', 'brief-statistical-report']"
+                       [class.font-weight-bold]="router.isActive('/report/brief-statistical-report', false)">
+                        Краткий стат отчет
+                    </a>
+                    <a class="dropdown-item" href="#" [routerLink]="['/report', 'general-set-of-rail-services']"
+                       [class.font-weight-bold]="router.isActive('/report/general-set-of-rail-services', false)">
+                        Общий свод Ж/Д услуг
+                    </a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle active" id="configDropdown" role="button" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false"
+                   [class.selected]="router.isActive(
            '/reference', false) || router.isActive('/admin/user', false)">
-          Настройки
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'customer']"
-             [class.font-weight-bold]="router.isActive('/reference/customer', false)">
-            Контрагенты
-          </a>
-          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'cargo-type']"
-             [class.font-weight-bold]="router.isActive('/reference/cargo-type', false)">
-            Вид груза
-          </a>
-          <!--          <a class="dropdown-item" href="#">Another action</a>-->
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'wagon-type']"
-             [class.font-weight-bold]="router.isActive('/reference/config/wagon-type', false)">
-            Тип вагона
-          </a>
-          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'wagon-group']"
-             [class.font-weight-bold]="router.isActive('/reference/config/wagon-group', false)">
-            Группа вагона
-          </a>
-          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'base-rate']"
-             [class.font-weight-bold]="router.isActive('/reference/config/base-rate', false)">
-            Базовая ставка
-          </a>
-          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'index-to-base-rate']"
-             [class.font-weight-bold]="router.isActive('/reference/config/index-to-base-rate', false)">
-            Индекс к базовой ставке
-          </a>
-          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'cargo-operation']"
-             [class.font-weight-bold]="router.isActive('/reference/config/cargo-operation', false)">
-            Грузовая операция
-          </a>
-          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'time-norm-type']"
-             [class.font-weight-bold]="router.isActive('/reference/config/time-norm-type', false)">
-            Тип нормы времени
-          </a>
-          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'time-norm']"
-             [class.font-weight-bold]="router.isActive('/reference/config/time-norm', false)">
-            Норма времени
-          </a>
-          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'tariff-type']"
-             [class.font-weight-bold]="router.isActive('/reference/config/tariff-type', false)">
-            Тип тарифа
-          </a>
-          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'tariff']"
-             [class.font-weight-bold]="router.isActive('/reference/config/tariff', false)">
-            Тариф
-          </a>
-          <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'penalty']"
-             [class.font-weight-bold]="router.isActive('/reference/config/penalty', false)">
-            Штраф
-          </a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#" [routerLink]="['/admin', 'user']"
-             [class.font-weight-bold]="router.isActive('/admin/user', false)">Пользователи
-          </a>
-        </div>
-      </li>
-    </ul>
-    <!--    <form class="form-inline my-2 my-lg-0">-->
-    <!--      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">-->
-    <!--      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>-->
-    <!--    </form>-->
-    <a href="logout" (click)="logout($event)"
-       class="fas fa-sign-out-alt btn btn-outline-dark my-2 my-sm-0" title="Выход"></a>
-  </div>
+                    Настройки
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="#" [routerLink]="['/reference', 'customer']"
+                       [class.font-weight-bold]="router.isActive('/reference/customer', false)">
+                        Контрагенты
+                    </a>
+                    <a class="dropdown-item" href="#" [routerLink]="['/reference', 'cargo-type']"
+                       [class.font-weight-bold]="router.isActive('/reference/cargo-type', false)">
+                        Вид груза
+                    </a>
+                    <!--          <a class="dropdown-item" href="#">Another action</a>-->
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'wagon-type']"
+                       [class.font-weight-bold]="router.isActive('/reference/config/wagon-type', false)">
+                        Тип вагона
+                    </a>
+                    <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'wagon-group']"
+                       [class.font-weight-bold]="router.isActive('/reference/config/wagon-group', false)">
+                        Группа вагона
+                    </a>
+                    <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'base-rate']"
+                       [class.font-weight-bold]="router.isActive('/reference/config/base-rate', false)">
+                        Базовая ставка
+                    </a>
+                    <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'index-to-base-rate']"
+                       [class.font-weight-bold]="router.isActive('/reference/config/index-to-base-rate', false)">
+                        Индекс к базовой ставке
+                    </a>
+                    <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'cargo-operation']"
+                       [class.font-weight-bold]="router.isActive('/reference/config/cargo-operation', false)">
+                        Грузовая операция
+                    </a>
+                    <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'time-norm-type']"
+                       [class.font-weight-bold]="router.isActive('/reference/config/time-norm-type', false)">
+                        Тип нормы времени
+                    </a>
+                    <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'time-norm']"
+                       [class.font-weight-bold]="router.isActive('/reference/config/time-norm', false)">
+                        Норма времени
+                    </a>
+                    <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'tariff-type']"
+                       [class.font-weight-bold]="router.isActive('/reference/config/tariff-type', false)">
+                        Тип тарифа
+                    </a>
+                    <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'tariff']"
+                       [class.font-weight-bold]="router.isActive('/reference/config/tariff', false)">
+                        Тариф
+                    </a>
+                    <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'penalty']"
+                       [class.font-weight-bold]="router.isActive('/reference/config/penalty', false)">
+                        Штраф
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#" [routerLink]="['/admin', 'user']"
+                       [class.font-weight-bold]="router.isActive('/admin/user', false)">Пользователи
+                    </a>
+                </div>
+            </li>
+        </ul>
+        <!--    <form class="form-inline my-2 my-lg-0">-->
+        <!--      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">-->
+        <!--      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>-->
+        <!--    </form>-->
+        <a href="logout" (click)="logout($event)"
+           class="fas fa-sign-out-alt btn btn-outline-dark my-2 my-sm-0" title="Выход"></a>
+    </div>
 </nav>
 
 <app-alert></app-alert>
 <!--<div class="spacer"></div>-->
 <div id="mainContainer" class="container">
-  <router-outlet></router-outlet>
+    <router-outlet></router-outlet>
 </div>

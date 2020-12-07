@@ -11,31 +11,31 @@ import {FormUserComponent} from './user/edit-user/form-user.component';
 import {MainLayoutComponent} from '../shared/components/main-layout/main-layout.component';
 
 @NgModule({
-  declarations: [
-    AdminLayoutComponent,
-    LoginPageComponent,
-    ListUserComponent,
-    FormUserComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    SharedModule,
-    RouterModule.forChild([
-      {
-        path: '', component: MainLayoutComponent, children: [
-          {path: '', redirectTo: '/admin/user', pathMatch: 'full' },
-          {path: 'login', component: LoginPageComponent},
-          {path: 'logout', component: LoginPageComponent},
-          {path: 'user', component: ListUserComponent, canActivate: [AuthGuard]},
-          {path: 'user/edit/:userId', component: FormUserComponent, canActivate: [AuthGuard]},
-          {path: 'user/create', component: FormUserComponent, canActivate: [AuthGuard]}
-        ]
-      }
-    ])
-  ],
-  exports: [RouterModule]
+    declarations: [
+        AdminLayoutComponent,
+        LoginPageComponent,
+        ListUserComponent,
+        FormUserComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        SharedModule,
+        RouterModule.forChild([
+            {
+                path: '', component: MainLayoutComponent, children: [
+                    {path: '', redirectTo: '/admin/user', pathMatch: 'full'},
+                    {path: 'login', component: LoginPageComponent},
+                    {path: 'logout', component: LoginPageComponent},
+                    {path: 'user', component: ListUserComponent, canActivate: [AuthGuard]},
+                    {path: 'user/edit/:userId', component: FormUserComponent, canActivate: [AuthGuard]},
+                    {path: 'user/create', component: FormUserComponent, canActivate: [AuthGuard]}
+                ]
+            }
+        ])
+    ],
+    exports: [RouterModule]
 })
 export class AdminModule {
 

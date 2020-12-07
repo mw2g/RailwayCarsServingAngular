@@ -12,42 +12,43 @@
 <!--<div-->
 <!--  class="posts col"-->
 <!--&gt;-->
-  <!--  *ngIf="deliveries.length; else loading"-->
-  <table class="table table-sm table-bordered border-0 mx-auto"  style="text-align: center; max-width: 700px" (keydown.escape)="cancel()">
+<!--  *ngIf="deliveries.length; else loading"-->
+<table class="table table-sm table-bordered border-0 mx-auto" style="text-align: center; max-width: 700px"
+       (keydown.escape)="cancel()">
     <thead class="thead-light">
     <tr class="row">
-      <strong>Базовая ставка</strong>
+        <strong>Базовая ставка</strong>
     </tr>
     <tr class="row">
-      <th [width]="100" #tableColumn1>
-        <button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"
-                (click)="addNew()" [disabled]="!enableForm"></button>
-      </th>
-<!--      <th width="100">Номер</th>-->
-      <th class="col" #tableColumn2>Дата актуальности</th>
-      <th [width]="100" #tableColumn3>Часы</th>
-      <th [width]="150" #tableColumn4>
-        <select class="custom-select custom-select-sm" [(ngModel)]="wagonGroupFilter">
-          <option value="">Группа</option>
-          <option *ngFor="let group of wagonGroupList | async"
-                  value="{{ group.groupName }}">{{ group.groupName }}</option>
-        </select>
-      </th>
-      <th [width]="100" #tableColumn5>Ставка</th>
-      <th [width]="100" #tableColumn6>Действия</th>
-      <th [width]="18" #tableColumn7></th>
+        <th [width]="100" #tableColumn1>
+            <button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"
+                    (click)="addNew()" [disabled]="!enableForm"></button>
+        </th>
+        <!--      <th width="100">Номер</th>-->
+        <th class="col" #tableColumn2>Дата актуальности</th>
+        <th [width]="100" #tableColumn3>Часы</th>
+        <th [width]="150" #tableColumn4>
+            <select class="custom-select custom-select-sm" [(ngModel)]="wagonGroupFilter">
+                <option value="">Группа</option>
+                <option *ngFor="let group of wagonGroupList | async"
+                        value="{{ group.groupName }}">{{ group.groupName }}</option>
+            </select>
+        </th>
+        <th [width]="100" #tableColumn5>Ставка</th>
+        <th [width]="100" #tableColumn6>Действия</th>
+        <th [width]="18" #tableColumn7></th>
     </tr>
     </thead>
     <tbody>
     <cdk-virtual-scroll-viewport itemSize="37" class="main-viewport row">
-    <tr *cdkVirtualFor="let baseRate of baseRateList | filterBaseRate:wagonGroupFilter; let idx = index">
-      <ng-template [ngTemplateOutlet]="loadTemplate(baseRate)"
-                   [ngTemplateOutletContext]="{ $implicit: baseRate, idx: idx}">
-      </ng-template>
-    </tr>
+        <tr *cdkVirtualFor="let baseRate of baseRateList | filterBaseRate:wagonGroupFilter; let idx = index">
+            <ng-template [ngTemplateOutlet]="loadTemplate(baseRate)"
+                         [ngTemplateOutletContext]="{ $implicit: baseRate, idx: idx}">
+            </ng-template>
+        </tr>
     </cdk-virtual-scroll-viewport>
     </tbody>
-  </table>
+</table>
 
 <!--<table class="table table-sm table-bordered border-0" style="text-align: center" [class.d-none]="!showFixedTableHeader">-->
 <!--  <thead class="thead-light">-->
@@ -66,78 +67,83 @@
 
 <!--шаблон для чтения-->
 <ng-template #readOnlyTemplate let-baseRate let-idx="idx">
-  <td [width]="tableColumn1.offsetWidth">{{ idx + 1 }}</td>
-<!--  <td width="100">{{ baseRate.rateId }}</td>-->
-  <td [width]="tableColumn2.offsetWidth">{{ baseRate.relevanceDate | date: 'dd.MM.yyyy HH:mm'}}</td>
-  <td [width]="tableColumn3.offsetWidth">{{ baseRate.hours }}</td>
-  <td [width]="tableColumn4.offsetWidth">{{ baseRate.wagonGroup.groupName }}</td>
-  <td [width]="tableColumn5.offsetWidth">{{ baseRate.rate }}</td>
-  <td [width]="tableColumn6.offsetWidth">
-    <button type="button" class="far fa-edit btn btn-outline-info btn-sm mr-1 mt-1" title="Редактировать"
-            [disabled]="!enableForm" (click)="editWagonGroup(baseRate)"></button>
-    <!-- Button trigger modal -->
-    <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm mt-1" title="Удалить"
-            data-toggle="modal" data-target="#deleteModal"
-            [disabled]="!enableForm" (click)="setDelete(baseRate.rateId)"></button>
-  </td>
+    <td [width]="tableColumn1.offsetWidth">{{ idx + 1 }}</td>
+    <!--  <td width="100">{{ baseRate.rateId }}</td>-->
+    <td [width]="tableColumn2.offsetWidth">{{ baseRate.relevanceDate | date: 'dd.MM.yyyy HH:mm'}}</td>
+    <td [width]="tableColumn3.offsetWidth">{{ baseRate.hours }}</td>
+    <td [width]="tableColumn4.offsetWidth">{{ baseRate.wagonGroup.groupName }}</td>
+    <td [width]="tableColumn5.offsetWidth">{{ baseRate.rate }}</td>
+    <td [width]="tableColumn6.offsetWidth">
+        <button type="button" class="far fa-edit btn btn-outline-info btn-sm mr-1 mt-1" title="Редактировать"
+                [disabled]="!enableForm" (click)="editWagonGroup(baseRate)"></button>
+        <!-- Button trigger modal -->
+        <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm mt-1" title="Удалить"
+                data-toggle="modal" data-target="#deleteModal"
+                [disabled]="!enableForm" (click)="setDelete(baseRate.rateId)"></button>
+    </td>
 </ng-template>
 
 <!--шаблон для редактирования-->
 <ng-template #editTemplate let-baseRate let-idx="idx">
-  <td [width]="tableColumn1.offsetWidth">{{ idx + 1 }}</td>
-<!--  <td width="100">{{ baseRate.groupId }}</td>-->
-  <td [width]="tableColumn2.offsetWidth">
-    <input type="datetime-local" [ngModel]="editedBaseRate.relevanceDate | date: 'yyyy-MM-ddTHH:mm'"
-           (ngModelChange)="editedBaseRate.relevanceDate = $event" class="form-control form-control-sm ms-valid_input"
-           appMyAutofocus #relevanceDate="ngModel" required>
-  </td>
-  <td [width]="tableColumn3.offsetWidth">
-    <input type="text" [(ngModel)]="editedBaseRate.hours" class="form-control form-control-sm ms-valid_input"
-           #hours="ngModel" required>
-  </td>
-  <td [width]="tableColumn4.offsetWidth">
-    <select class="custom-select custom-select-sm form-control form-control-sm ms-valid_input"
-            [(ngModel)]="editedBaseRate.wagonGroup.groupName" #wagonGroup="ngModel" required>
-      <option *ngFor="let wagonGroup of wagonGroupList | async" value="{{ wagonGroup.groupName }}">{{ wagonGroup.groupName }}</option>
-    </select>
+    <td [width]="tableColumn1.offsetWidth">{{ idx + 1 }}</td>
+    <!--  <td width="100">{{ baseRate.groupId }}</td>-->
+    <td [width]="tableColumn2.offsetWidth">
+        <input type="datetime-local" [ngModel]="editedBaseRate.relevanceDate | date: 'yyyy-MM-ddTHH:mm'"
+               (ngModelChange)="editedBaseRate.relevanceDate = $event"
+               class="form-control form-control-sm ms-valid_input"
+               appMyAutofocus #relevanceDate="ngModel" required>
+    </td>
+    <td [width]="tableColumn3.offsetWidth">
+        <input type="text" [(ngModel)]="editedBaseRate.hours" class="form-control form-control-sm ms-valid_input"
+               #hours="ngModel" required>
+    </td>
+    <td [width]="tableColumn4.offsetWidth">
+        <select class="custom-select custom-select-sm form-control form-control-sm ms-valid_input"
+                [(ngModel)]="editedBaseRate.wagonGroup.groupName" #wagonGroup="ngModel" required>
+            <option *ngFor="let wagonGroup of wagonGroupList | async"
+                    value="{{ wagonGroup.groupName }}">{{ wagonGroup.groupName }}</option>
+        </select>
 
-<!--    <input type="text" [(ngModel)]="editedBaseRate.wagonGroup.groupName" class="form-control ms-valid_input"-->
-<!--           #wagonGroup="ngModel" required>-->
-  </td>
-  <td [width]="tableColumn5.offsetWidth">
-    <input type="text" [(ngModel)]="editedBaseRate.rate" class="form-control form-control-sm ms-valid_input"
-           #rate="ngModel" required>
-  </td>
-  <td [width]="tableColumn6.offsetWidth">
-    <button (click)="save()" class="fas fa-check btn btn-outline-success btn-sm mr-1 mt-1" title="Сохранить"
-            [disabled]="relevanceDate.invalid || hours.invalid || rate.invalid || wagonGroup.invalid"></button>
-    <button (click)="cancel()" class="fas fa-undo-alt btn btn-outline-warning btn-sm mt-1" title="Отменить"></button>
-  </td>
+        <!--    <input type="text" [(ngModel)]="editedBaseRate.wagonGroup.groupName" class="form-control ms-valid_input"-->
+        <!--           #wagonGroup="ngModel" required>-->
+    </td>
+    <td [width]="tableColumn5.offsetWidth">
+        <input type="text" [(ngModel)]="editedBaseRate.rate" class="form-control form-control-sm ms-valid_input"
+               #rate="ngModel" required>
+    </td>
+    <td [width]="tableColumn6.offsetWidth">
+        <button (click)="save()" class="fas fa-check btn btn-outline-success btn-sm mr-1 mt-1" title="Сохранить"
+                [disabled]="relevanceDate.invalid || hours.invalid || rate.invalid || wagonGroup.invalid"></button>
+        <button (click)="cancel()" class="fas fa-undo-alt btn btn-outline-warning btn-sm mt-1"
+                title="Отменить"></button>
+    </td>
 </ng-template>
 
 <!--Template loading-->
 <ng-template #loading>
-  <p class="text-center">Загрузка...</p>
+    <p class="text-center">Загрузка...</p>
 </ng-template>
 
 <!-- Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="deleteModalLabel">Удаление</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        Удалить базовую ставку номер {{ baseRateIdToDelete }} ?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="unsetDelete()">Отменить</button>
-        <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="delete()">Удалить</button>
-      </div>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Удаление</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Удалить базовую ставку номер {{ baseRateIdToDelete }} ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="unsetDelete()">Отменить
+                </button>
+                <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="delete()">Удалить
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>

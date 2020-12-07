@@ -1,93 +1,95 @@
 <nav class="navbar navbar-expand navbar-light bg-light row">
-  <ul class="navbar-nav mr-auto">
-    <li>
-      <button class="fas fa-plus btn btn-outline-info mr-3" title="Добавить"
-              [routerLink]="['/memo/delivery', 'create']"></button>
-    </li>
-    <li>
-      <i class="fas fa-align-justify btn btn-outline-info mr-1" type="button" (click)="clearViewSettings()"></i>
-    </li>
-    <li class="nav-item active mr-1 py-0 my-0">
-      <input type="datetime-local" [ngModel]="afterDate | date: 'yyyy-MM-ddTHH:mm'"
-             (ngModelChange)="afterDate = $event" class="form-control form-control-sm">
-    </li>
-    <li>
-      <i class="fas fa-arrows-alt-h btn btn-outline-info mr-1" (click)="loadMemos()"></i>
-    </li>
-    <li>
-      <input type="datetime-local" [ngModel]="beforeDate | date: 'yyyy-MM-ddTHH:mm'"
-             (ngModelChange)="beforeDate = $event" class="form-control form-control-sm">
-    </li>
-    <li>
-      <i class="form-control form-control-sm form-control-plaintext ml-3">В отборе:&nbsp;
-        {{ (memos | filterMemoOfDelivery:searchStr:cargoOperationFilter:customerFilter).length }}</i>
-    </li>
-    <li>
-      <div class="input-group">
-        <input type="text" class="form-control form-control-sm ml-3" placeholder="Найти по номеру"
-               [(ngModel)]="searchStr" autocomplete="off">
-        <div class="input-group-append">
-          <button class="fas fa-times btn btn-outline-secondary btn-sm" title="Очистить" (click)="searchStr = ''"
-                  style="color: grey"></button>
-        </div>
-      </div>
-    </li>
-  </ul>
+    <ul class="navbar-nav mr-auto">
+        <li>
+            <button class="fas fa-plus btn btn-outline-info mr-3" title="Добавить"
+                    [routerLink]="['/memo/delivery', 'create']"></button>
+        </li>
+        <li>
+            <i class="fas fa-align-justify btn btn-outline-info mr-1" type="button" title="Показать все"
+               (click)="clearViewSettings()"></i>
+        </li>
+        <li class="nav-item active mr-1 py-0 my-0">
+            <input type="datetime-local" [ngModel]="afterDate | date: 'yyyy-MM-ddTHH:mm'" title="Начало периода"
+                   (ngModelChange)="afterDate = $event" class="form-control form-control-sm">
+        </li>
+        <li>
+            <i class="fas fa-arrows-alt-h btn btn-outline-info mr-1" title="Применить период" (click)="loadMemos()"></i>
+        </li>
+        <li>
+            <input type="datetime-local" [ngModel]="beforeDate | date: 'yyyy-MM-ddTHH:mm'" title="Конец периода"
+                   (ngModelChange)="beforeDate = $event" class="form-control form-control-sm">
+        </li>
+        <li>
+            <i class="form-control form-control-sm form-control-plaintext ml-3">В отборе:&nbsp;
+                {{ (memos | filterMemoOfDelivery:searchStr:cargoOperationFilter:customerFilter).length }}</i>
+        </li>
+        <li>
+            <div class="input-group">
+                <input type="text" class="form-control form-control-sm ml-3" placeholder="Найти по номеру"
+                       [(ngModel)]="searchStr" autocomplete="off">
+                <div class="input-group-append">
+                    <button class="fas fa-times btn btn-outline-secondary btn-sm" title="Очистить"
+                            (click)="searchStr = ''"
+                            style="color: grey"></button>
+                </div>
+            </div>
+        </li>
+    </ul>
 </nav>
 
 <table class="table table-sm table-bordered border-0" style="text-align: center">
-  <thead class="thead-light">
-  <tr class="row">
-    <th [width]="120" #tableColumn2 type="button" (click)="sortList('memoOfDeliveryId')">
-      Н
-      <i [ngClass]="{'fa-sort-up': sortState['memoOfDeliveryId'] === true,
+    <thead class="thead-light">
+    <tr class="row">
+        <th [width]="120" #tableColumn2 type="button" (click)="sortList('memoOfDeliveryId')">
+            Н
+            <i [ngClass]="{'fa-sort-up': sortState['memoOfDeliveryId'] === true,
                      'fa-sort-down': sortState['memoOfDeliveryId'] === false}" class="fas"></i>
-    </th>
-    <th [width]="190" #tableColumn3 type="button" (click)="sortList('startDate')">
-      Начало
-      <i [ngClass]="{'fa-sort-up': sortState['startDate'] === true,
+        </th>
+        <th [width]="190" #tableColumn3 type="button" (click)="sortList('startDate')">
+            Начало
+            <i [ngClass]="{'fa-sort-up': sortState['startDate'] === true,
                      'fa-sort-down': sortState['startDate'] === false}" class="fas"></i>
-    </th>
-    <th class="col" #tableColumn4>
-      <select class="custom-select custom-select-sm" [(ngModel)]="customerFilter">
-        <option value="">Все контрагенты</option>
-        <option *ngFor="let customer of customers | async"
-                value="{{ customer.customerName }}">{{ customer.customerName }}</option>
-      </select>
-    </th>
-    <th [width]="200" #tableColumn5>
-      <select class="custom-select custom-select-sm" [(ngModel)]="cargoOperationFilter">
-        <option value="">Все операции</option>
-        <option *ngFor="let operation of cargoOperations | async"
-                value="{{ operation.operationName }}">{{ operation.operationName }}</option>
-      </select>
-    </th>
-    <th [width]="80" #tableColumn6 type="button" (click)="sortList('wagonQuantity', deliveryListLengthFunc)">Ваг.
-      <i [ngClass]="{'fa-sort-up': sortState['wagonQuantity'] === true,
+        </th>
+        <th class="col" #tableColumn4>
+            <select class="custom-select custom-select-sm" [(ngModel)]="customerFilter">
+                <option value="">Все контрагенты</option>
+                <option *ngFor="let customer of customers | async"
+                        value="{{ customer.customerName }}">{{ customer.customerName }}</option>
+            </select>
+        </th>
+        <th [width]="200" #tableColumn5>
+            <select class="custom-select custom-select-sm" [(ngModel)]="cargoOperationFilter">
+                <option value="">Все операции</option>
+                <option *ngFor="let operation of cargoOperations | async"
+                        value="{{ operation.operationName }}">{{ operation.operationName }}</option>
+            </select>
+        </th>
+        <th [width]="80" #tableColumn6 type="button" (click)="sortList('wagonQuantity', deliveryListLengthFunc)">Ваг.
+            <i [ngClass]="{'fa-sort-up': sortState['wagonQuantity'] === true,
                      'fa-sort-down': sortState['wagonQuantity'] === false}" class="fas"></i>
-    </th>
-    <th [width]="18"></th>
-  </tr>
-  </thead>
-  <tbody *ngIf="memos.length; else loading">
-  <cdk-virtual-scroll-viewport itemSize="37" class="main-viewport row">
-    <tr *cdkVirtualFor="let memo of memos|
-        filterMemoOfDelivery:searchStr:cargoOperationFilter:customerFilter">
-      <td [width]="tableColumn2.offsetWidth">
-        <a [routerLink]="['/memo', 'delivery', 'edit', memo.memoOfDeliveryId]" title="Открыть памятку">
-          {{ memo.memoOfDeliveryId }}
-        </a>
-      </td>
-      <td [width]="tableColumn3.offsetWidth">{{ memo.startDate | date : 'dd.MM.yyyy HH:mm' }}</td>
-      <td [width]="tableColumn4.offsetWidth">{{ memo.customer.customerName }}</td>
-      <td [width]="tableColumn5.offsetWidth">{{ memo.cargoOperation }}</td>
-      <td [width]="tableColumn6.offsetWidth">{{ memo.deliveryOfWagonList.length }}</td>
+        </th>
+        <th [width]="18"></th>
     </tr>
-  </cdk-virtual-scroll-viewport>
-  </tbody>
+    </thead>
+    <tbody *ngIf="memos.length; else loading">
+    <cdk-virtual-scroll-viewport itemSize="37" class="main-viewport row">
+        <tr *cdkVirtualFor="let memo of memos|
+        filterMemoOfDelivery:searchStr:cargoOperationFilter:customerFilter">
+            <td [width]="tableColumn2.offsetWidth">
+                <a [routerLink]="['/memo', 'delivery', 'edit', memo.memoOfDeliveryId]" title="Открыть памятку">
+                    {{ memo.memoOfDeliveryId }}
+                </a>
+            </td>
+            <td [width]="tableColumn3.offsetWidth">{{ memo.startDate | date : 'dd.MM.yyyy HH:mm' }}</td>
+            <td [width]="tableColumn4.offsetWidth">{{ memo.customer.customerName }}</td>
+            <td [width]="tableColumn5.offsetWidth">{{ memo.cargoOperation }}</td>
+            <td [width]="tableColumn6.offsetWidth">{{ memo.deliveryOfWagonList.length }}</td>
+        </tr>
+    </cdk-virtual-scroll-viewport>
+    </tbody>
 </table>
 
 <!--Template loading-->
 <ng-template #loading>
-  <p class="text-center">Загрузка...</p>
+    <p class="text-center">Загрузка...</p>
 </ng-template>

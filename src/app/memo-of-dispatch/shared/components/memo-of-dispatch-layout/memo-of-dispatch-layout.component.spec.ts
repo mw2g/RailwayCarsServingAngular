@@ -1,25 +1,25 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { MemoOfDispatchLayoutComponent } from './memo-of-dispatch-layout.component';
+import {MemoOfDispatchLayoutComponent} from './memo-of-dispatch-layout.component';
 
 describe('AdminLayoutComponent', () => {
-  let component: MemoOfDispatchLayoutComponent;
-  let fixture: ComponentFixture<MemoOfDispatchLayoutComponent>;
+    let component: MemoOfDispatchLayoutComponent;
+    let fixture: ComponentFixture<MemoOfDispatchLayoutComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ MemoOfDispatchLayoutComponent ]
-    })
-    .compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            declarations: [MemoOfDispatchLayoutComponent]
+        })
+            .compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(MemoOfDispatchLayoutComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(MemoOfDispatchLayoutComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

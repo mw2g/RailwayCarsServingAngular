@@ -1,25 +1,25 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { DeliveryOfWagonLayoutComponent } from './delivery-of-wagon-layout.component';
+import {DeliveryOfWagonLayoutComponent} from './delivery-of-wagon-layout.component';
 
 describe('AdminLayoutComponent', () => {
-  let component: DeliveryOfWagonLayoutComponent;
-  let fixture: ComponentFixture<DeliveryOfWagonLayoutComponent>;
+    let component: DeliveryOfWagonLayoutComponent;
+    let fixture: ComponentFixture<DeliveryOfWagonLayoutComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ DeliveryOfWagonLayoutComponent ]
-    })
-    .compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            declarations: [DeliveryOfWagonLayoutComponent]
+        })
+            .compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DeliveryOfWagonLayoutComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(DeliveryOfWagonLayoutComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

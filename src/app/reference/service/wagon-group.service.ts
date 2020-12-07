@@ -6,26 +6,26 @@ import {WagonGroup} from '../../shared/interfaces';
 
 @Injectable({providedIn: 'root'})
 export class WagonGroupService {
-  constructor(private httpClient: HttpClient) {
-  }
+    constructor(private httpClient: HttpClient) {
+    }
 
-  getAll(): Observable<Array<WagonGroup>> {
-    return this.httpClient.get<Array<WagonGroup>>(`${environment.dbUrl}/api/wagon-group`);
-  }
+    getAll(): Observable<Array<WagonGroup>> {
+        return this.httpClient.get<Array<WagonGroup>>(`${environment.dbUrl}/api/wagon-group`);
+    }
 
-  getById(groupId: string): Observable<WagonGroup> {
-    return this.httpClient.get<WagonGroup>(`${environment.dbUrl}/api/wagon-group/${groupId}`);
-  }
+    getById(groupId: string): Observable<WagonGroup> {
+        return this.httpClient.get<WagonGroup>(`${environment.dbUrl}/api/wagon-group/${groupId}`);
+    }
 
-  update(wagonGroup: WagonGroup): Observable<{ response: any }> {
-    return this.httpClient.put<{ response: any }>(`${environment.dbUrl}/api/wagon-group`, wagonGroup);
-  }
+    update(wagonGroup: WagonGroup): Observable<{ response: any }> {
+        return this.httpClient.put<{ response: any }>(`${environment.dbUrl}/api/wagon-group`, wagonGroup);
+    }
 
-  create(wagonGroup: WagonGroup): Observable<WagonGroup> {
-    return this.httpClient.post<WagonGroup>(`${environment.dbUrl}/api/wagon-group`, wagonGroup);
-  }
+    create(wagonGroup: WagonGroup): Observable<WagonGroup> {
+        return this.httpClient.post<WagonGroup>(`${environment.dbUrl}/api/wagon-group`, wagonGroup);
+    }
 
-  delete(groupId: number): Observable<{ response: any }> {
-    return this.httpClient.delete<{ response: any }>(`${environment.dbUrl}/api/wagon-group/${groupId}`);
-  }
+    delete(groupId: number): Observable<{ response: any }> {
+        return this.httpClient.delete<{ response: any }>(`${environment.dbUrl}/api/wagon-group/${groupId}`);
+    }
 }

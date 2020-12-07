@@ -10,112 +10,114 @@ import {CustomerService} from '../../reference/service/customer.service';
 import {LocalStorageService} from 'ngx-webstorage';
 
 @Component({
-  selector: 'app-delivery-of-wagon',
-  templateUrl: './list-delivery-of-wagon.component.html',
-  styleUrls: ['./list-delivery-of-wagon.component.scss']
+    selector: 'app-delivery-of-wagon',
+    templateUrl: './list-delivery-of-wagon.component.html',
+    styleUrls: ['./list-delivery-of-wagon.component.scss']
 })
 export class ListDeliveryOfWagonComponent implements OnInit, OnDestroy {
 
-  deliveries: DeliveryOfWagon[] = [];
-  deliveriesSub: Subscription;
-  delSub: Subscription;
-  cargoOperations: Observable<Array<CargoOperation>>;
-  customers: Observable<Array<Customer>>;
-  sortState = {deliveryId: null, wagon: null, startDate: true, endDate: null, cargoWeight: null};
-  searchStr = '';
-  customerFilter = '';
-  cargoOperationFilter = '';
-  loadUnloadWorkFilter = '';
+    deliveries: DeliveryOfWagon[] = [];
+    deliveriesSub: Subscription;
+    cargoOperations: Observable<Array<CargoOperation>>;
+    customers: Observable<Array<Customer>>;
+    sortState = {deliveryId: null, wagon: null, startDate: true, endDate: null, cargoWeight: null};
+    searchStr = '';
+    customerFilter = '';
+    cargoOperationFilter = '';
+    loadUnloadWorkFilter = '';
 
-  beforeDate: Date;
-  afterDate: Date;
+    beforeDate: Date;
+    afterDate: Date;
 
-  constructor(private deliveryService: DeliveryOfWagonService,
-              public router: Router,
-              private alert: AlertService,
-              private utils: UtilsService,
-              private cargoOperationService: CargoOperationService,
-              private localStorage: LocalStorageService,
-              private customerService: CustomerService
-  ) {
-  }
-
-  ngOnInit(): void {
-    const deliveryListViewSettings = JSON.parse(localStorage.getItem('deliveryListViewSettings'));
-    if (deliveryListViewSettings) {
-      this.sortState = deliveryListViewSettings.sortState ? deliveryListViewSettings.sortState : this.sortState;
-      this.searchStr = deliveryListViewSettings.searchStr ? deliveryListViewSettings.searchStr : '';
-      this.customerFilter = deliveryListViewSettings.customerFilter ? deliveryListViewSettings.customerFilter : '';
-      this.cargoOperationFilter = deliveryListViewSettings.cargoOperationFilter ? deliveryListViewSettings.cargoOperationFilter : '';
-      this.loadUnloadWorkFilter = deliveryListViewSettings.loadUnloadWorkFilter ? deliveryListViewSettings.loadUnloadWorkFilter : '';
-      this.beforeDate = deliveryListViewSettings.beforeDate ? deliveryListViewSettings.beforeDate : this.beforeDate;
-      this.afterDate = deliveryListViewSettings.afterDate ? deliveryListViewSettings.afterDate : this.afterDate;
+    constructor(private deliveryService: DeliveryOfWagonService,
+                public router: Router,
+                private alert: AlertService,
+                private utils: UtilsService,
+                private cargoOperationService: CargoOperationService,
+                private localStorage: LocalStorageService,
+                private customerService: CustomerService
+    ) {
     }
 
-    this.customers = this.customerService.getAll();
-    this.cargoOperations = this.cargoOperationService.getAll();
-    this.loadDeliveries();
-  }
-
-  loadDeliveries(): void {
-    this.afterDate = this.utils.prepareDate(this.afterDate, new Date(new Date().getFullYear() - 1, new Date().getMonth() - 1));
-    this.beforeDate = this.utils.prepareDate(this.beforeDate, new Date());
-
-    this.deliveriesSub = this.deliveryService.getAllDeliveries(this.afterDate, this.beforeDate).subscribe(deliveries => {
-      this.deliveries = deliveries;
-      for (const key of Object.keys(this.sortState)) {
-        if (this.sortState[key] != null) {
-          this.sortList(key, true);
-          return;
+    ngOnInit(): void {
+        const deliveryListViewSettings = JSON.parse(localStorage.getItem('deliveryListViewSettings'));
+        if (deliveryListViewSettings) {
+            this.sortState = deliveryListViewSettings.sortState ? deliveryListViewSettings.sortState : this.sortState;
+            this.searchStr = deliveryListViewSettings.searchStr ? deliveryListViewSettings.searchStr : '';
+            this.customerFilter = deliveryListViewSettings.customerFilter ? deliveryListViewSettings.customerFilter : '';
+            this.cargoOperationFilter = deliveryListViewSettings.cargoOperationFilter ? deliveryListViewSettings.cargoOperationFilter : '';
+            this.loadUnloadWorkFilter = deliveryListViewSettings.loadUnloadWorkFilter ? deliveryListViewSettings.loadUnloadWorkFilter : '';
+            this.beforeDate = deliveryListViewSettings.beforeDate ? deliveryListViewSettings.beforeDate : this.beforeDate;
+            this.afterDate = deliveryListViewSettings.afterDate ? deliveryListViewSettings.afterDate : this.afterDate;
         }
-      }
-    }, error => {
-      throwError(error);
-    });
-  }
 
-  sortList(field: string, fromMemory?): void {
-    if (!fromMemory) {
-      for (const key of Object.keys(this.sortState)) {
-        this.sortState[key] = key === field ? !this.sortState[key] : null;
-      }
+        this.customers = this.customerService.getAll();
+        this.cargoOperations = this.cargoOperationService.getAll();
+        this.loadDeliveries();
     }
-    const reverse = this.sortState[field] ? 1 : -1;
-    this.deliveries = [...this.deliveries.sort((a, b) => {
-      return a = a[field], b = b[field], reverse * (a > b ? 1 : -1);
-    })];
-  }
 
-  clearViewSettings(): void {
-    localStorage.removeItem('deliveryListViewSettings');
-    this.sortState = {deliveryId: null, wagon: null, startDate: true, endDate: null, cargoWeight: null};
-    this.searchStr = '';
-    this.customerFilter = '';
-    this.cargoOperationFilter = '';
-    this.loadUnloadWorkFilter = '';
-    this.afterDate = new Date();
-    this.afterDate.setFullYear(this.afterDate.getFullYear() - 1);
-    this.beforeDate = new Date();
+    loadDeliveries(): void {
+        this.afterDate = this.utils.prepareDate(this.afterDate, new Date(new Date().getFullYear() - 1, new Date().getMonth() - 1));
+        this.beforeDate = this.utils.prepareDate(this.beforeDate, new Date());
 
-    this.loadDeliveries();
-  }
+        this.deliveriesSub = this.deliveryService.getAllDeliveries(this.afterDate, this.beforeDate).subscribe(deliveries => {
+            this.deliveries = deliveries;
+            for (const key of Object.keys(this.sortState)) {
+                if (this.sortState[key] != null) {
+                    this.sortList(key, true);
+                    return;
+                }
+            }
+        }, error => {
+            throwError(error);
+        });
+        this.saveViewSettings();
+    }
 
-  ngOnDestroy(): void {
-    const deliveryListViewSettings = {
-      sortState: this.sortState,
-      searchStr: this.searchStr,
-      customerFilter: this.customerFilter,
-      cargoOperationFilter: this.cargoOperationFilter,
-      loadUnloadWorkFilter: this.loadUnloadWorkFilter,
-      beforeDate: this.beforeDate,
-      afterDate: this.afterDate
-    };
-    localStorage.setItem('deliveryListViewSettings', JSON.stringify(deliveryListViewSettings));
+    sortList(field: string, fromMemory?): void {
+        if (!fromMemory) {
+            for (const key of Object.keys(this.sortState)) {
+                this.sortState[key] = key === field ? !this.sortState[key] : null;
+            }
+        }
+        const reverse = this.sortState[field] ? 1 : -1;
+        this.deliveries = [...this.deliveries.sort((a, b) => {
+            return a = a[field], b = b[field], reverse * (a > b ? 1 : -1);
+        })];
+    }
 
-    this.utils.unsubscribe([
-      this.deliveriesSub,
-      this.delSub
-    ]);
-  }
+    clearViewSettings(): void {
+        localStorage.removeItem('deliveryListViewSettings');
+        this.sortState = {deliveryId: null, wagon: null, startDate: true, endDate: null, cargoWeight: null};
+        this.searchStr = '';
+        this.customerFilter = '';
+        this.cargoOperationFilter = '';
+        this.loadUnloadWorkFilter = '';
+        this.afterDate = new Date();
+        this.afterDate.setFullYear(this.afterDate.getFullYear() - 1);
+        this.beforeDate = new Date();
 
+        this.loadDeliveries();
+    }
+
+    ngOnDestroy(): void {
+        this.saveViewSettings();
+
+        this.utils.unsubscribe([
+            this.deliveriesSub
+        ]);
+    }
+
+    private saveViewSettings(): void {
+        const deliveryListViewSettings = {
+            sortState: this.sortState,
+            searchStr: this.searchStr,
+            customerFilter: this.customerFilter,
+            cargoOperationFilter: this.cargoOperationFilter,
+            loadUnloadWorkFilter: this.loadUnloadWorkFilter,
+            beforeDate: this.beforeDate,
+            afterDate: this.afterDate
+        };
+        localStorage.setItem('deliveryListViewSettings', JSON.stringify(deliveryListViewSettings));
+    }
 }

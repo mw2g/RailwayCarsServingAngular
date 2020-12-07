@@ -8,99 +8,108 @@
 <!--</nav>-->
 
 <div *ngIf="users.length; else loading">
-  <table class="table table-sm table-bordered border-0" style="text-align: center">
-    <thead class="thead-light">
-    <tr class="row">
-      <strong>Пользователи</strong>
-    </tr>
-    <tr class="row">
-      <th width="100">
-        <button class="fas fa-plus btn btn-sm btn-outline-info" [routerLink]="['/admin', 'user', 'create']"></button>
-      </th>
-<!--      <th scope="col">Номер</th>-->
-      <th width="150">Логин</th>
-      <th class="col">ФИО</th>
-      <th width="120">Доступ</th>
-      <th width="160">Сеансы</th>
-      <th width="50">...</th>
-    </tr>
-    </thead>
-    <tbody>
+    <table class="table table-sm table-bordered border-0" style="text-align: center">
+        <thead class="thead-light">
+        <tr class="row">
+            <strong>Пользователи</strong>
+        </tr>
+        <tr class="row">
+            <th width="100">
+                <button class="fas fa-plus btn btn-sm btn-outline-info"
+                        [routerLink]="['/admin', 'user', 'create']"></button>
+            </th>
+            <!--      <th scope="col">Номер</th>-->
+            <th width="150">Логин</th>
+            <th class="col">ФИО</th>
+            <th width="120">Доступ</th>
+            <th width="160">Сеансы</th>
+            <th width="50">...</th>
+        </tr>
+        </thead>
+        <tbody>
 
-    <tr class="row" *ngFor="let user of users; let idx = index">
-      <td width="100">{{ idx + 1 }}</td>
-<!--      <td>{{ user.userId }}</td>-->
-      <td width="150"><a [routerLink]="['/admin', 'user', 'edit', user.userId]"><strong>{{ user.username }}</strong></a></td>
-      <td class="col"><p *ngIf="user.lastName">{{ user.lastName + ' ' + user.firstName + ' ' + user.middleName }}</p></td>
-      <td width="120"><span *ngFor="let role of user.roles">{{ role }}<br></span></td>
-      <td width="160">
+        <tr class="row" *ngFor="let user of users; let idx = index">
+            <td width="100">{{ idx + 1 }}</td>
+            <!--      <td>{{ user.userId }}</td>-->
+            <td width="150"><a
+                [routerLink]="['/admin', 'user', 'edit', user.userId]"><strong>{{ user.username }}</strong></a></td>
+            <td class="col"><p
+                *ngIf="user.lastName">{{ user.lastName + ' ' + user.firstName + ' ' + user.middleName }}</p></td>
+            <td width="120"><span *ngFor="let role of user.roles">{{ role }}<br></span></td>
+            <td width="160">
         <span *ngIf="user.auths.length">
           <span *ngFor="let auth of user.auths">
             <strong>{{ auth.refreshTokenId }}</strong> {{ auth.createdDate | date : 'dd.MM.yyy' }}
-            <button type="button" class="fas fa-times btn btn-outline-secondary btn-sm" (click)="setTokenToKickOut(auth.refreshTokenId)" data-toggle="modal"
-                    data-target="#deleteRefreshTokenModal">
+              <button type="button" class="fas fa-times btn btn-outline-secondary btn-sm"
+                      (click)="setTokenToKickOut(auth.refreshTokenId)" data-toggle="modal"
+                      data-target="#deleteRefreshTokenModal">
             </button>
           <br></span>
         </span>
-      </td>
-      <td width="50">
-        <!-- Button trigger modal -->
-        <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm"
-                data-toggle="modal" data-target="#deleteModal" (click)="setDelete(user.userId)">
-        </button>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+            </td>
+            <td width="50">
+                <!-- Button trigger modal -->
+                <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm"
+                        data-toggle="modal" data-target="#deleteModal" (click)="setDelete(user.userId)">
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 
 <ng-template #loading>
-  <p class="text-center">Загрузка...</p>
+    <p class="text-center">Загрузка...</p>
 </ng-template>
 
 <!-- Modal delete user -->
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="deleteModalLabel">Удаление</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="unsetDelete()">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        Удалить пользователя {{ getById(userIdToDelete) }} c номером {{ userIdToDelete }} ?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="unsetDelete()">Отменить</button>
-        <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="delete()">Удалить</button>
-      </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Удаление</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="unsetDelete()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Удалить пользователя {{ getById(userIdToDelete) }} c номером {{ userIdToDelete }} ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="unsetDelete()">Отменить
+                </button>
+                <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="delete()">Удалить
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <!-- Modal delete refresh token-->
 <div class="modal fade" id="deleteRefreshTokenModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="deleteRefreshTokenModalLabel">Удаление</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="unSetTokenToKickOut()">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        Удалить сеанс номер {{ refreshTokenIdToKickOut }} ?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="unSetTokenToKickOut()">Отменить
-        </button>
-        <button id="btn-ok" type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="kickOut()">
-          Удалить
-        </button>
-      </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteRefreshTokenModalLabel">Удаление</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                        (click)="unSetTokenToKickOut()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Удалить сеанс номер {{ refreshTokenIdToKickOut }} ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="unSetTokenToKickOut()">
+                    Отменить
+                </button>
+                <button id="btn-ok" type="button" class="btn btn-primary btn-ok" data-dismiss="modal"
+                        (click)="kickOut()">
+                    Удалить
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>

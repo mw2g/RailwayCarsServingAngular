@@ -15,20 +15,21 @@ import {AccessDeniedComponent} from './shared/components/access-denied/access-de
 registerLocaleData(ruLocale, 'ru');
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    MainLayoutComponent,
-    HomePageComponent,
-    AccessDeniedComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    SharedModule,
-    BsDropdownModule.forRoot(),
-    NgxPopper
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        MainLayoutComponent,
+        HomePageComponent,
+        AccessDeniedComponent
+    ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        SharedModule,
+        BsDropdownModule.forRoot(),
+        NgxPopper
+    ],
+    providers: [],
+    bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

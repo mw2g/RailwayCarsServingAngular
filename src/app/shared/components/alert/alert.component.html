@@ -1,14 +1,14 @@
-  <div *ngFor="let a of al; let idx = index">
+<div *ngFor="let a of al; let idx = index">
     <div class="alert-wrap" *ngIf="a.text" [ngStyle]="{'top': 60 + idx * 70+'px'}">
-      <div role="alert"
-           class="alert"
-           [ngClass]="{
+        <div role="alert"
+             class="alert"
+             [ngClass]="{
       'alert-success': a.type === 'success',
       'alert-warning': a.type === 'warning',
       'alert-danger': a.type === 'danger'
     }"
-      >
-        <div>{{ a.text }}</div>
-      </div>
+        >
+            <div>{{ a.text }}</div>
+        </div>
     </div>
-  </div>
+</div>

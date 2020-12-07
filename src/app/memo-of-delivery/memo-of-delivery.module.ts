@@ -9,36 +9,36 @@ import {FormMemoOfDeliveryComponent} from './edit-memo/form-memo-of-delivery.com
 import {AuthGuard} from '../admin/shared/services/auth.guard';
 import {ListDeliveryInMemoOfDeliveryComponent} from './list-delivery-in-memo-of-delivery/list-delivery-in-memo-of-delivery.component';
 import {MainLayoutComponent} from '../shared/components/main-layout/main-layout.component';
-import { PrintFormMemoOfDeliveryComponent } from './print-form-memo/print-form-memo-of-delivery.component';
+import {PrintFormMemoOfDeliveryComponent} from './print-form-memo/print-form-memo-of-delivery.component';
 import {FilterMemoOfDeliveryPipe} from './pipe/filterMemoOfDelivery.pipe';
 
 @NgModule({
-  declarations: [
-    MemoOfDeliveryLayoutComponent,
-    ListMemoOfDeliveryComponent,
-    FormMemoOfDeliveryComponent,
-    ListDeliveryInMemoOfDeliveryComponent,
-    PrintFormMemoOfDeliveryComponent,
-    FilterMemoOfDeliveryPipe,
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    SharedModule,
-    RouterModule.forChild([
-      {
-        path: '', component: MainLayoutComponent, children: [
-          // {path: '', redirectTo: '/memo/delivery', pathMatch: 'full' },
-          {path: '', component: ListMemoOfDeliveryComponent, canActivate: [AuthGuard]},
-          {path: 'edit/:memoOfDeliveryId', component: FormMemoOfDeliveryComponent, canActivate: [AuthGuard]},
-          {path: 'create', component: FormMemoOfDeliveryComponent, canActivate: [AuthGuard]},
-          {path: 'print-form/:memoOfDeliveryId', component: PrintFormMemoOfDeliveryComponent, canActivate: [AuthGuard]},
-        ]
-      }
-    ])
-  ],
-  exports: [RouterModule]
+    declarations: [
+        MemoOfDeliveryLayoutComponent,
+        ListMemoOfDeliveryComponent,
+        FormMemoOfDeliveryComponent,
+        ListDeliveryInMemoOfDeliveryComponent,
+        PrintFormMemoOfDeliveryComponent,
+        FilterMemoOfDeliveryPipe,
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        SharedModule,
+        RouterModule.forChild([
+            {
+                path: '', component: MainLayoutComponent, children: [
+                    // {path: '', redirectTo: '/memo/delivery', pathMatch: 'full' },
+                    {path: '', component: ListMemoOfDeliveryComponent, canActivate: [AuthGuard]},
+                    {path: 'edit/:memoOfDeliveryId', component: FormMemoOfDeliveryComponent, canActivate: [AuthGuard]},
+                    {path: 'create', component: FormMemoOfDeliveryComponent, canActivate: [AuthGuard]},
+                    {path: 'print-form/:memoOfDeliveryId', component: PrintFormMemoOfDeliveryComponent, canActivate: [AuthGuard]},
+                ]
+            }
+        ])
+    ],
+    exports: [RouterModule]
 })
 export class MemoOfDeliveryModule {
 
