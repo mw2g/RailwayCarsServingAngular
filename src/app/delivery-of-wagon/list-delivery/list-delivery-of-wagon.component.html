@@ -105,7 +105,7 @@
             <td [width]="tableColumn4.offsetWidth">{{ delivery.endDate | date : 'dd.MM.yyyy HH:mm' }}</td>
             <td [width]="tableColumn5.offsetWidth">{{ delivery.customer }}</td>
             <td [width]="tableColumn6.offsetWidth">{{ delivery.cargoOperation }}</td>
-            <td [width]="tableColumn7.offsetWidth" class="hide-less-945">{{ delivery.cargoWeight }}</td>
+            <td [width]="tableColumn7.offsetWidth" class="hide-less-945">{{ delivery.cargoWeight | number:'0.2-2' }}</td>
             <td [width]="tableColumn8.offsetWidth">
                 <i class="fas fa-check" [hidden]="!delivery.loadUnloadWork" style="color: grey"></i>
             </td>

@@ -13,7 +13,7 @@ export class MainLayoutComponent implements OnInit {
     constructor(
         public router: Router,
         public authService: AuthService,
-        private localStorage: LocalStorageService
+        public localStorage: LocalStorageService
     ) {
     }
 

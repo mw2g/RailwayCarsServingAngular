@@ -50,8 +50,8 @@
                        [class.font-weight-bold]="router.isActive('/report/brief-statistical-report', false)">
                         Краткий стат отчет
                     </a>
-                    <a class="dropdown-item" href="#" [routerLink]="['/report', 'general-set-of-rail-services']"
-                       [class.font-weight-bold]="router.isActive('/report/general-set-of-rail-services', false)">
+                    <a class="dropdown-item" href="#" [routerLink]="['/report', 'general-set-of-rail-services-report']"
+                       [class.font-weight-bold]="router.isActive('/report/general-set-of-rail-services-report', false)">
                         Общий свод Ж/Д услуг
                     </a>
                 </div>
@@ -125,6 +125,7 @@
         <!--      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">-->
         <!--      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>-->
         <!--    </form>-->
+        <i class="mr-3">{{ localStorage.retrieve('userInitials')}}</i>
         <a href="logout" (click)="logout($event)"
            class="fas fa-sign-out-alt btn btn-outline-dark my-2 my-sm-0" title="Выход"></a>
     </div>

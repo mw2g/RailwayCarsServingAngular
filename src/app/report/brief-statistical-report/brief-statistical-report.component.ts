@@ -14,8 +14,6 @@ import {ReportService} from '../report.service';
 })
 export class BriefStatisticalReportComponent implements OnInit, OnDestroy {
 
-    sumWeight = 0;
-    sumShuntingWork = 0;
     staticReportRows: StaticReportRow[] = [];
     private reportSub: Subscription;
     afterDate: Date;
@@ -32,34 +30,44 @@ export class BriefStatisticalReportComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        const staticReportViewSettings = JSON.parse(localStorage.getItem('staticReportViewSettings'));
+        if (staticReportViewSettings) {
+            this.afterDate = staticReportViewSettings.afterDate ? staticReportViewSettings.afterDate : this.afterDate;
+            this.beforeDate = staticReportViewSettings.beforeDate ? staticReportViewSettings.beforeDate : this.beforeDate;
+            this.customer = staticReportViewSettings.customer ? staticReportViewSettings.customer : this.customer;
+        }
         this.customers = this.customerService.getAll();
+        this.loadReport();
     }
 
     print(): void {
         window.print();
     }
 
-    calcMemoWeight(memo: MemoOfDispatch): number {
-        let sumWeight = 0;
-        for (const delivery of memo.deliveryOfWagonList) {
-            sumWeight += delivery.cargoWeight ? delivery.cargoWeight : 0;
-        }
-        return sumWeight;
-    }
-
     loadReport(): void {
         this.afterDate = this.utils.prepareDate(this.afterDate, new Date(new Date().getFullYear() - 1, new Date().getMonth() - 1));
         this.beforeDate = this.utils.prepareDate(this.beforeDate, new Date());
 
-        this.reportSub = this.reportService.getStaticReport(this.afterDate, this.beforeDate).subscribe(reportRows => {
+        this.reportSub = this.reportService.getStaticReport(this.afterDate, this.beforeDate, this.customer).subscribe(reportRows => {
             this.staticReportRows = reportRows;
 
         }, error => {
             throwError(error);
         });
+        this.saveViewSettings();
+    }
+
+    private saveViewSettings(): void {
+        const staticReportViewSettings = {
+            afterDate: this.afterDate,
+            beforeDate: this.beforeDate,
+            customer: this.customer
+        };
+        localStorage.setItem('staticReportViewSettings', JSON.stringify(staticReportViewSettings));
     }
 
     ngOnDestroy(): void {
+        this.saveViewSettings();
         this.utils.unsubscribe([
             this.reportSub
         ]);

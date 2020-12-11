@@ -29,6 +29,7 @@ export class AuthService {
             loginRequestPayload).pipe(map(data => {
             this.localStorage.store('authenticationToken', data.authenticationToken);
             this.localStorage.store('username', data.username);
+            this.localStorage.store('userInitials', data.userInitials);
             this.localStorage.store('refreshToken', data.refreshToken);
             this.localStorage.store('expiresAt', data.expiresAt);
             this.loggedIn.emit(true);
@@ -66,6 +67,7 @@ export class AuthService {
             .subscribe(data => {
                 this.localStorage.clear('authenticationToken');
                 this.localStorage.clear('username');
+                this.localStorage.clear('userInitials');
                 this.localStorage.clear('refreshToken');
                 this.localStorage.clear('expiresAt');
                 console.log(data);
@@ -78,6 +80,10 @@ export class AuthService {
 
     getUsername(): any {
         return this.localStorage.retrieve('username');
+    }
+
+    getUserInitials(): any {
+        return this.localStorage.retrieve('userInitials');
     }
 
     getRefreshToken(): any {

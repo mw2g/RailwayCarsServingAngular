@@ -211,4 +211,29 @@ export interface StaticReportRow {
     withoutOperation: string;
 }
 
+export interface GeneralSetReportRow {
+    customer: string;
+    operation: string;
+    cargoType: string;
+    dispatchWeightSum: number;
+    dispatchWagonQuantity: number;
+    deliveryDispatchSum: number;
+    totalTime: number;
+    exactCalcTime: number;
+    calcTime: number;
+    maxPayTime: number;
+    exactPayTime: number;
+    payTime: number;
+    draftPaySum: number;
+    paySum: number;
+    penaltyTime: number;
+    penaltySum: number;
+    shuntingWork: number;
+    shuntingWorkSum: number;
+    totalSum: number;
+    loadUnloadWorkQuantity: number;
+    loadUnloadWorkWeightSum: number;
+    loadUnloadWorkSum: number;
+}
+
 
