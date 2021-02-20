@@ -1,14 +1,14 @@
 <nav class="navbar navbar-expand navbar-light bg-light row doNotPrint">
     <ul class="navbar-nav mr-auto">
         <li>
-            <i class="fas fa-print btn btn-outline-info mr-2" type="button" title="Печать" (click)="print()"></i>
+            <i class="fas fa-print btn btn-outline-primary mr-2" type="button" title="Печать" (click)="print()"></i>
         </li>
         <li class="nav-item active mr-1 py-0 my-0">
             <input type="datetime-local" [ngModel]="afterDate | date: 'yyyy-MM-ddTHH:mm'" title="Начало периода"
                    (ngModelChange)="afterDate = $event" class="form-control form-control-sm">
         </li>
         <li>
-            <i class="fas fa-arrows-alt-h btn btn-outline-info mr-1" (click)="loadReport()"></i>
+            <i class="fas fa-arrows-alt-h btn btn-outline-primary mr-1" (click)="loadReport()"></i>
         </li>
         <li>
             <input type="datetime-local" [ngModel]="beforeDate | date: 'yyyy-MM-ddTHH:mm'" title="Конец периода"
@@ -32,7 +32,7 @@
     <!--  <div [class.page-breaker]="numberOfPage > 0 && false" *ngFor="let numberOfPage of pages">-->
     <!--    <i style="text-align: right;" class="align-content-end">{{ numberOfPage + 1 }} / {{ pages.length }}</i>-->
     <br>
-    <table style="text-align: center; font-size: 12px" border="1" align="center">
+    <table style="text-align: center" class="print-font-size" border="1" align="center">
         <thead class="tableHead" style="background-color: #E9DD9B; font-weight: bold">
         <tr>
             <td style="width: 200px">Контрагент</td>
@@ -43,7 +43,7 @@
             <td style="width: 150px" rowspan="4">Тех. + БО ваг.</td>
         </tr>
         <tr>
-            <td style="width: 200px">Груз. операция</td>
+            <td style="width: 200px; text-align: left">Груз. операция</td>
             <td style="width: 300px" colspan="2">Подано</td>
             <td style="width: 300px" colspan="2">Убрано</td>
         </tr>
@@ -59,7 +59,7 @@
             <td style="width: 150px" rowspan="2">Масса т.</td>
         </tr>
         <tr>
-            <td style="width: 200px">Тип вагона</td>
+            <td style="width: 200px; text-align: right">Тип вагона</td>
         </tr>
         </thead>
 

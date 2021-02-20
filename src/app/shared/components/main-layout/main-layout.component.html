@@ -1,8 +1,8 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
     <a class="fas fa-project-diagram btn btn-outline-primary navbar-brand"
        title="Главная" href="" [routerLink]="['/']"></a>
-    <i class="fas fa-arrow-left btn btn-outline-info navbar-brand mr-2" onclick="history.back()" title="Назад"></i>
-    <a class="fas fa-arrow-right btn btn-outline-info navbar-brand" onclick="history.forward()" title="Вперед"></a>
+    <i class="fas fa-arrow-left btn btn-outline-primary navbar-brand mr-2" onclick="history.back()" title="Назад"></i>
+    <a class="fas fa-arrow-right btn btn-outline-primary navbar-brand" onclick="history.forward()" title="Вперед"></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -115,6 +115,9 @@
                         Штраф
                     </a>
                     <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#" [routerLink]="['/reference', 'config', 'setting']"
+                       [class.font-weight-bold]="router.isActive('/reference/config/setting', false)">Реквизиты
+                    </a>
                     <a class="dropdown-item" href="#" [routerLink]="['/admin', 'user']"
                        [class.font-weight-bold]="router.isActive('/admin/user', false)">Пользователи
                     </a>

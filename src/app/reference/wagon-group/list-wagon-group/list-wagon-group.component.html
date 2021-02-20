@@ -2,7 +2,7 @@
 <!--  <div class="navbar-collapse" id="navbarSupportedContent">-->
 <!--    <ul class="navbar-nav mr-auto">-->
 <!--      <li>-->
-<!--        <input type="button" value="Создать" class="btn btn-outline-info btn-sm mr-2" (click)="addNew()"-->
+<!--        <input type="button" value="Создать" class="btn btn-outline-primary btn-sm mr-2" (click)="addNew()"-->
 <!--        [disabled]="!enableForm">-->
 <!--      </li>-->
 <!--    </ul>-->
@@ -18,7 +18,7 @@
     </tr>
     <tr class="row">
         <th [width]="100" #tableColumn1>
-            <button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"
+            <button class="fas fa-plus btn btn-sm btn-outline-primary" title="Добавить"
                     (click)="addNew()" [disabled]="!enableForm"></button>
         </th>
         <!--      <th width="100">Номер</th>-->
@@ -45,7 +45,7 @@
     <!--  <td width="100">{{ wagonGroup.groupId }}</td>-->
     <td [width]="tableColumn2.offsetWidth">{{ wagonGroup.groupName }}</td>
     <td [width]="tableColumn3.offsetWidth">
-        <button type="button" class="far fa-edit btn btn-outline-info btn-sm mr-1 mt-1" title="Редактировать"
+        <button type="button" class="far fa-edit btn btn-outline-primary btn-sm mr-1 mt-1" title="Редактировать"
                 [disabled]="!enableForm" (click)="editWagonGroup(wagonGroup)"></button>
         <!-- Button trigger modal -->
         <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm mt-1" title="Удалить"
@@ -60,7 +60,7 @@
     <!--  <td width="100">{{ wagonGroup.groupId }}</td>-->
     <td [width]="tableColumn2.offsetWidth">
         <input type="text" [(ngModel)]="editedWagonGroup.groupName" class="form-control form-control-sm ms-valid_input"
-               appMyAutofocus
+               [appMyAutofocus]
                #groupName="ngModel" required>
     </td>
     <td [width]="tableColumn3.offsetWidth">

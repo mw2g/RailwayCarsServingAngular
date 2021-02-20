@@ -10,14 +10,14 @@
             <li>
                 <div class="input-group input-group-sm">
                     <div class="input-group-prepend">
-                        <button class="btn btn-outline-info btn-sm" type="button" (click)="addMemoById()"
+                        <button class="btn btn-outline-primary btn-sm" type="button" (click)="addMemoById()"
                                 [disabled]="!memoIdToAdd || !enableForm">Добавить памятку по номеру
                         </button>
                     </div>
                     <input type="number" list=deliveryList class="input-text text" [(ngModel)]="memoIdToAdd"
                            style="width: 100px" (keydown.escape)="memoIdToAdd = null">
                     <div class="input-group-append">
-                        <button class="fas fa-times btn btn-outline-info btn-sm mr-2"
+                        <button class="fas fa-times btn btn-outline-primary btn-sm mr-2"
                                 type="button" (click)="memoIdToAdd = null"></button>
                     </div>
                     <datalist id=deliveryList *ngIf="suitableMemos">
@@ -27,11 +27,11 @@
                 </div>
             </li>
             <li>
-                <input type="button" value="Добавить все подходящие" class="btn btn-outline-info btn-sm mr-2"
+                <input type="button" value="Добавить все подходящие" class="btn btn-outline-primary btn-sm mr-2"
                        [disabled]="!enableForm" (click)="addAllSuitableMemos()">
             </li>
             <li>
-                <input type="button" value="Убрать все" class="btn btn-outline-info btn-sm mr-2"
+                <input type="button" value="Убрать все" class="btn btn-outline-primary btn-sm mr-2"
                        [disabled]="!enableForm" data-toggle="modal" data-target="#removeAllMemosModal">
             </li>
         </ul>
@@ -83,8 +83,8 @@
                 <th [width]="100" class="fas fa-cog" style="padding-top: 10px; padding-bottom: 0px"></th>
             </tr>
             </thead>
-            <tbody *ngIf="memoList.length; else loading">
-            <tr class="row" *ngFor="let memo of memoList; let idx = index">
+            <tbody *ngIf="statement && statement.memoOfDispatchList.length; else loading">
+            <tr class="row" *ngFor="let memo of statement.memoOfDispatchList; let idx = index">
                 <td [width]="70">{{ idx + 1 }}</td>
                 <td [width]="100">
                     <a [routerLink]="['/memo', 'dispatch', 'edit', memo.memoOfDispatchId]"
@@ -98,9 +98,12 @@
                 <td [width]="100">{{ memo.deliveryOfWagonList.length }}</td>
                 <td class="col">{{ memo.comment }}</td>
                 <td [width]="100">
-                    <button type="button" class="fas fa-unlink btn btn-outline-warning btn-sm mr-1 mt-1"
-                            title="Открепить"
-                            [disabled]="!enableForm" (click)="removeStatementFromMemo(memo.memoOfDispatchId)"></button>
+<!--                    <button type="button" class="fas fa-unlink btn btn-outline-warning btn-sm mr-1 mt-1"-->
+<!--                            title="Открепить"-->
+<!--                            [disabled]="!enableForm" (click)="removeStatementFromMemo(memo.memoOfDispatchId)"></button>-->
+                    <button type="button" class="fas fa-unlink btn btn-outline-warning btn-sm mr-1 mt-1" data-toggle="modal"
+                            data-target="#removeModal" title="Открепить"
+                            [disabled]="!enableForm" (click)="setRemove(memo.memoOfDispatchId)"></button>
                 </td>
             </tr>
             </tbody>
@@ -152,7 +155,7 @@
                         </td>
                         <td [width]="deliveryColumn3.offsetWidth || navPanel.offsetWidth - 738">{{ delivery.owner }}</td>
                         <td [width]="deliveryColumn4.offsetWidth || 50">
-                            <i class="fas fa-check" [hidden]="!delivery.loadUnloadWork" style="color: grey"></i>
+                            <i class="fas fa-check" [hidden]="!delivery.loadUnloadWork"></i>
                         </td>
                         <!--            <td [width]="deliveryColumn4.offsetWidth" style="padding-top: 10px; padding-bottom: 0px" align="center">-->
                         <!--              <input class="form-check" disabled type="checkbox" [checked]="delivery.loadUnloadWork">-->
@@ -209,6 +212,30 @@
 <ng-template #loading>
     <p class="text-center">Загрузка...</p>
 </ng-template>
+
+<!-- Remove Modal -->
+<div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="removeModalLabel">Открепление</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Открепить памятку номер {{ memoIdToRemove }} ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="unsetRemove()">Отменить
+                </button>
+                <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="removeStatementFromMemo(memoIdToRemove)">Да
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Modal remove all deliveries -->
 <div class="modal fade" id="removeAllMemosModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"

@@ -2,7 +2,7 @@
 <!--  <div class="navbar-collapse" id="navbarSupportedContent">-->
 <!--    <ul class="navbar-nav mr-auto">-->
 <!--      <li>-->
-<!--        <input type="button" value="Создать" class="btn btn-outline-info btn-sm mr-2" (click)="addNew()"-->
+<!--        <input type="button" value="Создать" class="btn btn-outline-primary btn-sm mr-2" (click)="addNew()"-->
 <!--        [disabled]="!enableForm">-->
 <!--      </li>-->
 <!--    </ul>-->
@@ -20,13 +20,13 @@
     </tr>
     <tr class="row">
         <th [width]="100" #tableColumn1>
-            <button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"
+            <button class="fas fa-plus btn btn-sm btn-outline-primary" title="Добавить"
                     (click)="addNew()" [disabled]="!enableForm"></button>
         </th>
         <!--      <th width="100">Номер</th>-->
         <th class="col" #tableColumn2>Тип</th>
         <th [width]="120" #tableColumn3>Группа</th>
-        <th [width]="100" #tableColumn4>Действия</th>
+        <th [width]="100" #tableColumn4 class="fas fa-cog" style="padding-top: 10px; padding-bottom: 0px"></th>
     </tr>
     </thead>
     <tbody>
@@ -47,7 +47,7 @@
     <td [width]="tableColumn2.offsetWidth">{{ wagonType.typeName }}</td>
     <td [width]="tableColumn3.offsetWidth">{{ wagonType.wagonGroup.groupName }}</td>
     <td [width]="tableColumn4.offsetWidth">
-        <button type="button" class="far fa-edit btn btn-outline-info btn-sm mr-1 mt-1" title="Редактировать"
+        <button type="button" class="far fa-edit btn btn-outline-primary btn-sm mr-1 mt-1" title="Редактировать"
                 [disabled]="!enableForm" (click)="edit(wagonType)"></button>
         <!-- Button trigger modal -->
         <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm mt-1" title="Удалить"

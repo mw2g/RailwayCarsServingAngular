@@ -3,13 +3,11 @@ import {CommonModule} from '@angular/common';
 import {RouterModule} from '@angular/router';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SharedModule} from '../shared/shared.module';
-// import {ReferenceLayoutComponent} from './shared/components/reference-layout/reference-layout.component';
 import {AuthGuard} from '../admin/shared/services/auth.guard';
 import {ListCustomerComponent} from './customer/list-customer/list-customer.component';
 import {FormCustomerComponent} from './customer/edit-customer/form-customer.component';
 import {MainLayoutComponent} from '../shared/components/main-layout/main-layout.component';
 import {ListSignerInCustomerComponent} from './customer/list-signer-in-customer/list-signer-in-customer.component';
-import {FormCargoTypeComponent} from './cargo-type/edit-cargo-type-NOT-USING/form-cargo-type.component';
 import {ListCargoTypeComponent} from './cargo-type/list-cargo-type/list-cargo-type.component';
 import {ListWagonGroupComponent} from './wagon-group/list-wagon-group/list-wagon-group.component';
 import {ListBaseRateComponent} from './base-rate/list-base-rate/list-base-rate.component';
@@ -23,14 +21,13 @@ import {ListTariffComponent} from './tariff/list-tariff/list-tariff.component';
 import {ListPenaltyComponent} from './penalty/list-penalty/list-penalty.component';
 import {SearchCargoTypePipe} from './cargo-type/pipe/searchCargoType.pipe';
 import {FilterBaseRatePipe} from './base-rate/pipe/filterBaseRate.pipe';
+import {ListSettingComponent} from './setting/list-setting/list-setting.component';
 
 @NgModule({
     declarations: [
-        // ReferenceLayoutComponent,
         ListCustomerComponent,
         FormCustomerComponent,
         ListSignerInCustomerComponent,
-        FormCargoTypeComponent,
         ListCargoTypeComponent,
         ListWagonGroupComponent,
         ListBaseRateComponent,
@@ -42,6 +39,7 @@ import {FilterBaseRatePipe} from './base-rate/pipe/filterBaseRate.pipe';
         ListTariffTypeComponent,
         ListTariffComponent,
         ListPenaltyComponent,
+        ListSettingComponent,
         SearchCargoTypePipe,
         FilterBaseRatePipe
     ],
@@ -62,9 +60,7 @@ import {FilterBaseRatePipe} from './base-rate/pipe/filterBaseRate.pipe';
             {
                 path: 'cargo-type', component: MainLayoutComponent, children: [
                     // {path: '', redirectTo: '/delivery', pathMatch: 'full' },
-                    {path: '', component: ListCargoTypeComponent, canActivate: [AuthGuard]},
-                    {path: 'edit/:typeId', component: FormCargoTypeComponent, canActivate: [AuthGuard]},
-                    {path: 'create', component: FormCargoTypeComponent, canActivate: [AuthGuard]},
+                    {path: '', component: ListCargoTypeComponent, canActivate: [AuthGuard]}
                 ]
             },
             {
@@ -115,6 +111,11 @@ import {FilterBaseRatePipe} from './base-rate/pipe/filterBaseRate.pipe';
             {
                 path: 'config/index-to-base-rate', component: MainLayoutComponent, children: [
                     {path: '', component: ListIndexToBaseRateComponent, canActivate: [AuthGuard]}
+                ]
+            },
+            {
+                path: 'config/setting', component: MainLayoutComponent, children: [
+                    {path: '', component: ListSettingComponent, canActivate: [AuthGuard]}
                 ]
             }
         ])

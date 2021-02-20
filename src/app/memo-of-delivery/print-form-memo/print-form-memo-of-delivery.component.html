@@ -1,6 +1,6 @@
 <button class="btn btn-outline-success doNotPrint" (click)="print()">Печать</button>
 <div class="smallBody" *ngIf="memoOfDelivery && pages" id="toPrint">
-    <p style="text-align: center; margin-bottom: 8px; margin-top: 10px"><strong>АО "ППЖТ Юбилейное"</strong></p>
+    <p style="text-align: center; margin-bottom: 8px; margin-top: 10px"><strong>{{ companyFullName }}</strong></p>
     <p style="text-align: center; margin-bottom: 5px">Памятка приемосдатчика на подачу вагонов
         № {{ memoOfDelivery.memoOfDeliveryId }}</p>
     <p style="text-align: center; margin-bottom: 0">
@@ -9,7 +9,7 @@
     <div class="page-number" style="text-align: right" [class.page-breaker]="numberOfPage > 0"
          *ngFor="let numberOfPage of pages">
         <i style="text-align: right;" class="align-content-end">{{ numberOfPage + 1 }} / {{ pages.length }}</i>
-        <table style="text-align: center; font-size: 12px" cellpadding="0" border="1" align="center">
+        <table style="text-align: center" class="print-font-size" cellpadding="0" border="1" align="center">
             <thead class="tableHead" style="background-color: beige; font-weight: bold">
             <tr>
                 <td style="width: 50px" rowspan="2">ПН</td>
@@ -43,9 +43,9 @@
     </div>
 
     <p>&nbsp;</p>
-    <p style="text-align: center;">Вагоны сдал представитель АО "ППЖТ Юбилейное"
-        ________________/ {{ memoOfDelivery.author }}</p>
-    <p style="text-align: center; margin-bottom: 0">Вагоны принял представитель ОАО "ИСКИТИМИЗВЕСТЬ"
+    <p style="text-align: center;">Вагоны сдал представитель {{ companyFullName }}
+        ________________/ {{ authService.getUserInitials() }}</p>
+    <p style="text-align: center; margin-bottom: 0">Вагоны принял представитель {{ memoOfDelivery.customer.customerFullName }}
         ________________/ {{ memoOfDelivery.signer }}</p>
 
 </div>

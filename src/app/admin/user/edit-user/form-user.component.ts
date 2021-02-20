@@ -88,7 +88,7 @@ export class FormUserComponent implements OnInit, OnDestroy {
             enabled: new FormControl(true),
             adminRole: new FormControl(false),
             userRole: new FormControl(true),
-            watchRole: new FormControl(false)
+            watchRole: new FormControl(true)
         });
     }
 

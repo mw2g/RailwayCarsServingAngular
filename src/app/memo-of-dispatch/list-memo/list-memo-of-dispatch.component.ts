@@ -19,7 +19,7 @@ export class ListMemoOfDispatchComponent implements OnInit, OnDestroy {
     memosSub: Subscription;
     cargoOperations: Observable<Array<CargoOperation>>;
     customers: Observable<Array<Customer>>;
-    sortState = {memoOfDispatchId: null, endDate: true, wagonQuantity: null};
+    sortState = {memoOfDispatchId: null, endDate: false, wagonQuantity: null};
     searchStr = '';
     cargoOperationFilter = '';
     customerFilter = '';
@@ -44,7 +44,7 @@ export class ListMemoOfDispatchComponent implements OnInit, OnDestroy {
             this.customerFilter = memoOfDispatchViewSettings.customerFilter ? memoOfDispatchViewSettings.customerFilter : '';
             this.cargoOperationFilter = memoOfDispatchViewSettings.cargoOperationFilter ? memoOfDispatchViewSettings.cargoOperationFilter : '';
             this.afterDate = memoOfDispatchViewSettings.afterDate ? memoOfDispatchViewSettings.afterDate : this.afterDate;
-            this.beforeDate = memoOfDispatchViewSettings.beforeDate ? memoOfDispatchViewSettings.beforeDate : this.beforeDate;
+            // this.beforeDate = memoOfDispatchViewSettings.beforeDate ? memoOfDispatchViewSettings.beforeDate : this.beforeDate;
         }
         this.customers = this.customerService.getAll();
         this.cargoOperations = this.cargoOperationService.getAll();
@@ -68,12 +68,12 @@ export class ListMemoOfDispatchComponent implements OnInit, OnDestroy {
 
     clearViewSettings(): void {
         localStorage.removeItem('memoOfDispatchViewSettings');
-        this.sortState = {memoOfDispatchId: null, endDate: true, wagonQuantity: null};
+        this.sortState = {memoOfDispatchId: null, endDate: false, wagonQuantity: null};
         this.searchStr = '';
         this.customerFilter = '';
         this.cargoOperationFilter = '';
         this.afterDate = new Date();
-        this.afterDate.setFullYear(this.afterDate.getFullYear() - 1);
+        this.afterDate.setFullYear(this.afterDate.getFullYear(), new Date().getMonth() - 1);
         this.beforeDate = new Date();
 
         this.loadMemos();

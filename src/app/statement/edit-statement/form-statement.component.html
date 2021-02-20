@@ -12,40 +12,40 @@
                             class="fas fa-undo-alt btn btn-outline-warning mr-2"></button>
                 </div>
                 <div *ngIf="!statementId">
-                    <button type="button" (click)="create()" title="Сохранить"
+                    <button type="button" (click)="create()" title="Создать"
                             class="fas fa-check btn btn-outline-success mr-2"></button>
                 </div>
             </li>
             <li>
-                <a class="fas fa-align-justify btn btn-outline-info mr-2" title="В список"
+                <a class="fas fa-align-justify btn btn-outline-primary mr-2" title="В список"
                    [routerLink]="['/statement']"></a>
             </li>
 
             <li *ngIf="!enableComment && statementId">
-                <button type="button" class="far fa-comment-alt btn btn-outline-info" title="Коментарий"
-                        (click)="enableComment=true">
+                <button type="button" class="far fa-comment-alt btn btn-outline-primary" title="Коментарий"
+                        (click)="addProcessedComment()">
                 </button>
             </li>
         </ul>
         <ul class="navbar-nav">
             <li *ngIf="statementId">
-                <a class="fas fa-print btn btn-outline-info mr-2" title="Ведомость приемосдатчика"
+                <a class="fas fa-print btn btn-outline-primary mr-2" title="Ведомость приемосдатчика"
                    [routerLink]="['/statement', 'print-form', statementId]">
                 </a>
             </li>
             <li *ngIf="statementId">
-                <a class="fas fa-print btn btn-outline-info mr-2" title="Заказ-наряд"
+                <a class="fas fa-print btn btn-outline-primary mr-2" title="Заказ-наряд"
                    [routerLink]="['/statement', 'print-form-work-order', statementId]"><i
                     class="ml-2 fas fa-snowplow"></i>
                 </a>
             </li>
             <li *ngIf="statementId">
-                <a class="fas fa-ruble-sign btn btn-outline-info mr-2" title="Расчетная ведомость"
+                <a class="fas fa-ruble-sign btn btn-outline-primary mr-2" title="Расчетная ведомость"
                    [routerLink]="['/statement', 'print-form-payment-statement', statementId]">
                 </a>
             </li>
             <li *ngIf="statementId">
-                <a class="fas fa-ruble-sign btn btn-outline-info mr-2" title="Рачет заказ-наряда"
+                <a class="fas fa-ruble-sign btn btn-outline-primary mr-2" title="Рачет заказ-наряда"
                    [routerLink]="['/statement', 'print-form-work-order-calculation', statementId]"><i
                     class="ml-2 fas fa-snowplow"></i>
                 </a>
@@ -65,12 +65,12 @@
 </nav>
 
 <div *ngIf="form; else loading">
-    <form [formGroup]="form" (ngSubmit)="update()">
+    <form [formGroup]="form">
         <div class="row">
             <div class="form-group col-3 pl-0 mb-0">
                 <label class="small" for="created">Дата</label>
                 <input type="datetime-local" class="form-control form-control-sm" id="created" formControlName="created"
-                       [required]="form.get('created').hasError('required')">
+                       [required]="form.get('created').hasError('required')" [appMyAutofocus]="!statement">
             </div>
 
             <div class="form-group col-3 mb-0">
@@ -154,7 +154,8 @@
         <div *ngIf="enableComment || (statement && statement.comment)" class="row">
             <!--      <label for="comment" class="col-sm-3.5 col-form-label col-form-label-sm">Коментарий</label>-->
             <div class="input-group input-group-sm col pb-3 px-0 pt-0">
-                <input id="comment" type="text" formControlName="comment" class="form-control form-control-sm">
+                <input id="comment" type="text" formControlName="comment" class="form-control form-control-sm"
+                       (keydown.enter)="statementId ? update() : create()">
                 <div class="input-group-append">
                     <button class="fas fa-times btn btn-outline-secondary" type="button" title="Очистить"
                             (click)="clearComment()">
@@ -168,7 +169,7 @@
 
 <app-memo-in-statement class="container p-0" *ngIf="statementId" [statement]="statement"
                        [enableForm]="form && form.pristine" [statementId]="statementId"
-                       [memoList]="memoList" [statementRate]="statementRate">
+                       [statementRate]="statementRate">
 </app-memo-in-statement>
 
 <ng-template #loading>

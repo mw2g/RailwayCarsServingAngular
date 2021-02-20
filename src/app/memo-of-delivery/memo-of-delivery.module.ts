@@ -3,7 +3,6 @@ import {CommonModule} from '@angular/common';
 import {RouterModule} from '@angular/router';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SharedModule} from '../shared/shared.module';
-import {MemoOfDeliveryLayoutComponent} from './shared/components/memo-of-delivery-layout/memo-of-delivery-layout.component';
 import {ListMemoOfDeliveryComponent} from './list-memo/list-memo-of-delivery.component';
 import {FormMemoOfDeliveryComponent} from './edit-memo/form-memo-of-delivery.component';
 import {AuthGuard} from '../admin/shared/services/auth.guard';
@@ -14,7 +13,6 @@ import {FilterMemoOfDeliveryPipe} from './pipe/filterMemoOfDelivery.pipe';
 
 @NgModule({
     declarations: [
-        MemoOfDeliveryLayoutComponent,
         ListMemoOfDeliveryComponent,
         FormMemoOfDeliveryComponent,
         ListDeliveryInMemoOfDeliveryComponent,

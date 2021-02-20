@@ -20,7 +20,7 @@ export class ListDeliveryOfWagonComponent implements OnInit, OnDestroy {
     deliveriesSub: Subscription;
     cargoOperations: Observable<Array<CargoOperation>>;
     customers: Observable<Array<Customer>>;
-    sortState = {deliveryId: null, wagon: null, startDate: true, endDate: null, cargoWeight: null};
+    sortState = {deliveryId: null, wagon: null, startDate: false, endDate: null, cargoWeight: null};
     searchStr = '';
     customerFilter = '';
     cargoOperationFilter = '';
@@ -47,8 +47,8 @@ export class ListDeliveryOfWagonComponent implements OnInit, OnDestroy {
             this.customerFilter = deliveryListViewSettings.customerFilter ? deliveryListViewSettings.customerFilter : '';
             this.cargoOperationFilter = deliveryListViewSettings.cargoOperationFilter ? deliveryListViewSettings.cargoOperationFilter : '';
             this.loadUnloadWorkFilter = deliveryListViewSettings.loadUnloadWorkFilter ? deliveryListViewSettings.loadUnloadWorkFilter : '';
-            this.beforeDate = deliveryListViewSettings.beforeDate ? deliveryListViewSettings.beforeDate : this.beforeDate;
             this.afterDate = deliveryListViewSettings.afterDate ? deliveryListViewSettings.afterDate : this.afterDate;
+            // this.beforeDate = deliveryListViewSettings.beforeDate ? deliveryListViewSettings.beforeDate : this.beforeDate;
         }
 
         this.customers = this.customerService.getAll();
@@ -57,10 +57,10 @@ export class ListDeliveryOfWagonComponent implements OnInit, OnDestroy {
     }
 
     loadDeliveries(): void {
-        this.afterDate = this.utils.prepareDate(this.afterDate, new Date(new Date().getFullYear() - 1, new Date().getMonth() - 1));
+        this.afterDate = this.utils.prepareDate(this.afterDate, new Date(new Date().getFullYear(), new Date().getMonth() - 1));
         this.beforeDate = this.utils.prepareDate(this.beforeDate, new Date());
 
-        this.deliveriesSub = this.deliveryService.getAllDeliveries(this.afterDate, this.beforeDate).subscribe(deliveries => {
+        this.deliveriesSub = this.deliveryService.getAll(this.afterDate, this.beforeDate).subscribe(deliveries => {
             this.deliveries = deliveries;
             for (const key of Object.keys(this.sortState)) {
                 if (this.sortState[key] != null) {
@@ -88,13 +88,13 @@ export class ListDeliveryOfWagonComponent implements OnInit, OnDestroy {
 
     clearViewSettings(): void {
         localStorage.removeItem('deliveryListViewSettings');
-        this.sortState = {deliveryId: null, wagon: null, startDate: true, endDate: null, cargoWeight: null};
+        this.sortState = {deliveryId: null, wagon: null, startDate: false, endDate: null, cargoWeight: null};
         this.searchStr = '';
         this.customerFilter = '';
         this.cargoOperationFilter = '';
         this.loadUnloadWorkFilter = '';
         this.afterDate = new Date();
-        this.afterDate.setFullYear(this.afterDate.getFullYear() - 1);
+        this.afterDate.setFullYear(this.afterDate.getFullYear(), new Date().getMonth() - 1);
         this.beforeDate = new Date();
 
         this.loadDeliveries();
@@ -115,8 +115,8 @@ export class ListDeliveryOfWagonComponent implements OnInit, OnDestroy {
             customerFilter: this.customerFilter,
             cargoOperationFilter: this.cargoOperationFilter,
             loadUnloadWorkFilter: this.loadUnloadWorkFilter,
-            beforeDate: this.beforeDate,
-            afterDate: this.afterDate
+            afterDate: this.afterDate,
+            beforeDate: this.beforeDate
         };
         localStorage.setItem('deliveryListViewSettings', JSON.stringify(deliveryListViewSettings));
     }

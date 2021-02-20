@@ -17,16 +17,16 @@
                 </div>
             </li>
             <li>
-                <a class="fas fa-align-justify btn btn-outline-info mr-2" title="В список"
+                <a class="fas fa-align-justify btn btn-outline-primary mr-2" title="В список"
                    [routerLink]="['/memo', 'delivery']"></a>
             </li>
             <li *ngIf="memoOfDeliveryId">
-                <a class="fas fa-print btn btn-outline-info mr-2" title="Печать"
+                <a class="fas fa-print btn btn-outline-primary mr-2" title="Печать"
                    [routerLink]="['/memo', 'delivery', 'print-form', memoOfDeliveryId]">
                 </a>
             </li>
             <li *ngIf="!enableComment && memoOfDeliveryId">
-                <button type="button" class="far fa-comment-alt btn btn-outline-info" title="Коментарий"
+                <button type="button" class="far fa-comment-alt btn btn-outline-primary" title="Коментарий"
                         (click)="enableComment=true">
                 </button>
             </li>
@@ -43,13 +43,13 @@
 </nav>
 
 <div *ngIf="form; else loading">
-    <form [formGroup]="form" (ngSubmit)="update()">
+    <form [formGroup]="form">
         <div class="row">
             <div class="form-group col-md-3 pl-0 mb-0"
                  [ngClass]="{invalid: form.get('startDate').touched && form.get('startDate').invalid}">
                 <label for="startDate" class="small">Начало</label>
                 <input type="datetime-local" class="form-control form-control-sm" id="startDate"
-                       formControlName="startDate"
+                       formControlName="startDate" [appMyAutofocus]="!memoOfDelivery"
                        [required]="form.get('startDate').hasError('required')">
             </div>
             <div class="form-group col-md-3 mb-0">
@@ -88,7 +88,8 @@
 
         <div *ngIf="enableComment || (memoOfDelivery && memoOfDelivery.comment)" class="row">
             <div class="input-group input-group-sm col pb-3 px-0 pt-0">
-                <input id="comment" type="text" formControlName="comment" class="form-control form-control-sm">
+                <input id="comment" type="text" formControlName="comment" class="form-control form-control-sm"
+                       (keydown.enter)="create(!!memoOfDeliveryId)">
                 <div class="input-group-append">
                     <button class="fas fa-times btn btn-outline-secondary" type="button" title="Очистить"
                             (click)="clearComment()">
@@ -100,8 +101,7 @@
 </div>
 
 <app-list-delivery-in-memo-of-delivery class="container p-0" *ngIf="memoOfDeliveryId" [memoOfDelivery]="memoOfDelivery"
-                                       [enableForm]="form && form.pristine" [memoOfDeliveryId]="memoOfDeliveryId"
-                                       [deliveryList]="deliveryList">
+                                       [enableForm]="form && form.pristine" [memoOfDeliveryId]="memoOfDeliveryId">
 </app-list-delivery-in-memo-of-delivery>
 
 <ng-template #loading>

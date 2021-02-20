@@ -22,7 +22,7 @@ export class ListStatementComponent implements OnInit, OnDestroy {
 
     cargoOperationFilter = '';
     customerFilter = '';
-    sortState = {statementId: null, created: true, memoQuantity: null};
+    sortState = {statementId: null, created: false, memoQuantity: null};
     searchStr = '';
 
     afterDate: Date;
@@ -45,7 +45,7 @@ export class ListStatementComponent implements OnInit, OnDestroy {
             this.customerFilter = statementViewSettings.customerFilter ? statementViewSettings.customerFilter : '';
             this.cargoOperationFilter = statementViewSettings.cargoOperationFilter ? statementViewSettings.cargoOperationFilter : '';
             this.afterDate = statementViewSettings.afterDate ? statementViewSettings.afterDate : this.afterDate;
-            this.beforeDate = statementViewSettings.beforeDate ? statementViewSettings.beforeDate : this.beforeDate;
+            // this.beforeDate = statementViewSettings.beforeDate ? statementViewSettings.beforeDate : this.beforeDate;
         }
         this.cargoOperations = this.cargoOperationService.getAll();
         this.customers = this.customerService.getAll();
@@ -69,12 +69,12 @@ export class ListStatementComponent implements OnInit, OnDestroy {
 
     clearViewSettings(): void {
         localStorage.removeItem('statementViewSettings');
-        this.sortState = {statementId: null, created: true, memoQuantity: null};
+        this.sortState = {statementId: null, created: false, memoQuantity: null};
         this.searchStr = '';
         this.customerFilter = '';
         this.cargoOperationFilter = '';
         this.afterDate = new Date();
-        this.afterDate.setFullYear(this.afterDate.getFullYear() - 1);
+        this.afterDate.setFullYear(this.afterDate.getFullYear(), new Date().getMonth() - 1);
         this.beforeDate = new Date();
 
         this.loadStatement();

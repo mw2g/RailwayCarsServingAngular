@@ -5,13 +5,13 @@
     </tr>
     <tr class="row">
         <th [width]="80" #tableColumn1>
-            <button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"
+            <button class="fas fa-plus btn btn-sm btn-outline-primary" title="Добавить"
                     (click)="addNew()" [disabled]="!enableForm"></button>
         </th>
         <th [width]="200" #tableColumn2>Дата актуальности</th>
         <th [width]="100" #tableColumn3>Штраф</th>
         <th class="col" #tableColumn4>Тип вагона</th>
-        <th [width]="120" #tableColumn5>Действия</th>
+        <th [width]="120" #tableColumn5 class="fas fa-cog" style="padding-top: 10px; padding-bottom: 0px"></th>
     </tr>
     </thead>
     <tbody>
@@ -30,7 +30,7 @@
     <td [width]="tableColumn3.offsetWidth">{{ penalty.penalty }}</td>
     <td [width]="tableColumn4.offsetWidth">{{ penalty.wagonType.typeName }}</td>
     <td [width]="tableColumn5.offsetWidth">
-        <button type="button" class="far fa-edit btn btn-outline-info btn-sm mr-1 mt-1" title="Редактировать"
+        <button type="button" class="far fa-edit btn btn-outline-primary btn-sm mr-1 mt-1" title="Редактировать"
                 [disabled]="!enableForm" (click)="edit(penalty)"></button>
         <!-- Button trigger modal -->
         <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm mt-1" title="Удалить"
@@ -47,7 +47,7 @@
         <input type="datetime-local" [ngModel]="editedPenalty.relevanceDate | date: 'yyyy-MM-ddTHH:mm'"
                (ngModelChange)="editedPenalty.relevanceDate = $event"
                class="form-control form-control-sm ms-valid_input"
-               appMyAutofocus #relevanceDate="ngModel" required>
+               [appMyAutofocus] #relevanceDate="ngModel" required>
     </td>
     <td [width]="tableColumn3.offsetWidth">
         <input type="text" [(ngModel)]="editedPenalty.penalty" class="form-control form-control-sm ms-valid_input"
@@ -55,14 +55,14 @@
     </td>
     <td [width]="tableColumn4.offsetWidth">
         <select class="custom-select form-control form-control-sm ms-valid_input"
-                [(ngModel)]="editedPenalty.wagonType.typeName" #normType="ngModel" required>
+                [(ngModel)]="editedPenalty.wagonType.typeName" #wagonType="ngModel" [required]="wagonType.value==null">
             <option *ngFor="let wagonType of wagonTypeList | async"
                     value="{{ wagonType.typeName }}">{{ wagonType.typeName }}</option>
         </select>
     </td>
     <td [width]="tableColumn5.offsetWidth">
         <button (click)="save()" class="fas fa-check btn btn-outline-success btn-sm mr-1 mt-1" title="Сохранить"
-                [disabled]="relevanceDate.invalid || norm.invalid || normType.invalid"></button>
+                [disabled]="relevanceDate.invalid || norm.invalid || wagonType.invalid"></button>
         <button (click)="cancel()" class="fas fa-undo-alt btn btn-outline-warning btn-sm mt-1"
                 title="Отменить"></button>
     </td>

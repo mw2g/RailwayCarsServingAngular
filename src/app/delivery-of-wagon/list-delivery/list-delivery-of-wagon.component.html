@@ -1,24 +1,24 @@
 <nav class="navbar navbar-expand navbar-light bg-light row">
     <ul class="navbar-nav mr-auto">
         <li class="nav-item active mr-3 py-0 my-0">
-            <button class="fas fa-plus btn btn-outline-info" title="Добавить"
+            <button class="fas fa-plus btn btn-outline-primary" title="Добавить"
                     [routerLink]="['/delivery', 'create']"></button>
         </li>
         <li>
-            <i class="fas fa-align-justify btn btn-outline-info mr-1" type="button" title="Показать все"
+            <i class="fas fa-align-justify btn btn-outline-primary mr-1" type="button" title="Сбросить фильтры"
                (click)="clearViewSettings()"></i>
         </li>
         <li class="nav-item active mr-1 py-0 my-0">
             <input type="datetime-local" [ngModel]="afterDate | date: 'yyyy-MM-ddTHH:mm'" title="Начало периода"
-                   (ngModelChange)="afterDate = $event" class="form-control form-control-sm">
+                   (ngModelChange)="afterDate = $event" class="form-control form-control-sm" (keydown.enter)="loadDeliveries()">
         </li>
         <li>
-            <i class="fas fa-arrows-alt-h btn btn-outline-info mr-1" (click)="loadDeliveries()"
+            <i class="fas fa-arrows-alt-h btn btn-outline-primary mr-1" (click)="loadDeliveries()"
                title="Применить период"></i>
         </li>
         <li>
             <input type="datetime-local" [ngModel]="beforeDate | date: 'yyyy-MM-ddTHH:mm'" title="Конец периода"
-                   (ngModelChange)="beforeDate = $event" class="form-control form-control-sm">
+                   (ngModelChange)="beforeDate = $event" class="form-control form-control-sm" (keydown.enter)="loadDeliveries()">
         </li>
         <li>
             <i class="form-control form-control-sm form-control-plaintext ml-3">В отборе:&nbsp;
@@ -101,13 +101,29 @@
                     {{ delivery.wagon }}
                 </a>
             </td>
-            <td [width]="tableColumn3.offsetWidth">{{ delivery.startDate | date : 'dd.MM.yyyy HH:mm' }}</td>
-            <td [width]="tableColumn4.offsetWidth">{{ delivery.endDate | date : 'dd.MM.yyyy HH:mm' }}</td>
+            <td [width]="tableColumn3.offsetWidth">
+                <a *ngIf="delivery.memoOfDelivery; else justStartDate" title="Открыть памятку уборки"
+                   [routerLink]="['/memo', 'delivery', 'edit', delivery.memoOfDelivery]">
+                    {{ delivery.startDate | date : 'dd.MM.yyyy HH:mm' }}
+                </a>
+                <ng-template #justStartDate>
+                    {{ delivery.startDate | date : 'dd.MM.yyyy HH:mm' }}
+                </ng-template>
+            </td>
+            <td [width]="tableColumn4.offsetWidth">
+                <a *ngIf="delivery.memoOfDispatch; else justEndDate" title="Открыть памятку уборки"
+                   [routerLink]="['/memo', 'dispatch', 'edit', delivery.memoOfDispatch]">
+                    {{ delivery.endDate | date : 'dd.MM.yyyy HH:mm' }}
+                </a>
+                <ng-template #justEndDate>
+                    {{ delivery.endDate | date : 'dd.MM.yyyy HH:mm' }}
+                </ng-template>
+            </td>
             <td [width]="tableColumn5.offsetWidth">{{ delivery.customer }}</td>
             <td [width]="tableColumn6.offsetWidth">{{ delivery.cargoOperation }}</td>
             <td [width]="tableColumn7.offsetWidth" class="hide-less-945">{{ delivery.cargoWeight | number:'0.2-2' }}</td>
             <td [width]="tableColumn8.offsetWidth">
-                <i class="fas fa-check" [hidden]="!delivery.loadUnloadWork" style="color: grey"></i>
+                <i class="fas fa-check" [hidden]="!delivery.loadUnloadWork"></i>
             </td>
         </tr>
     </cdk-virtual-scroll-viewport>

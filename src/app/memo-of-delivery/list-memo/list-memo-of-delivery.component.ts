@@ -19,7 +19,7 @@ export class ListMemoOfDeliveryComponent implements OnInit, OnDestroy {
     memosSub: Subscription;
     cargoOperations: Observable<Array<CargoOperation>>;
     customers: Observable<Array<Customer>>;
-    sortState = {memoOfDeliveryId: null, startDate: true, wagonQuantity: null};
+    sortState = {memoOfDeliveryId: null, startDate: false, wagonQuantity: null};
     searchStr = '';
     cargoOperationFilter = '';
     customerFilter = '';
@@ -44,7 +44,7 @@ export class ListMemoOfDeliveryComponent implements OnInit, OnDestroy {
             this.customerFilter = memoOfDeliveryViewSettings.customerFilter ? memoOfDeliveryViewSettings.customerFilter : '';
             this.cargoOperationFilter = memoOfDeliveryViewSettings.cargoOperationFilter ? memoOfDeliveryViewSettings.cargoOperationFilter : '';
             this.afterDate = memoOfDeliveryViewSettings.afterDate ? memoOfDeliveryViewSettings.afterDate : this.afterDate;
-            this.beforeDate = memoOfDeliveryViewSettings.beforeDate ? memoOfDeliveryViewSettings.beforeDate : this.beforeDate;
+            // this.beforeDate = memoOfDeliveryViewSettings.beforeDate ? memoOfDeliveryViewSettings.beforeDate : this.beforeDate;
         }
 
         this.customers = this.customerService.getAll();
@@ -56,7 +56,7 @@ export class ListMemoOfDeliveryComponent implements OnInit, OnDestroy {
         this.afterDate = this.utils.prepareDate(this.afterDate, new Date(new Date().getFullYear() - 1, new Date().getMonth() - 1));
         this.beforeDate = this.utils.prepareDate(this.beforeDate, new Date());
 
-        this.memosSub = this.memoService.getAllMemos(this.afterDate, this.beforeDate).subscribe(memos => {
+        this.memosSub = this.memoService.getAll(this.afterDate, this.beforeDate).subscribe(memos => {
             this.memos = memos;
             for (const key of Object.keys(this.sortState)) {
                 if (this.sortState[key] != null) {
@@ -87,12 +87,12 @@ export class ListMemoOfDeliveryComponent implements OnInit, OnDestroy {
 
     clearViewSettings(): void {
         localStorage.removeItem('memoOfDeliveryViewSettings');
-        this.sortState = {memoOfDeliveryId: null, startDate: true, wagonQuantity: null};
+        this.sortState = {memoOfDeliveryId: null, startDate: false, wagonQuantity: null};
         this.searchStr = '';
         this.customerFilter = '';
         this.cargoOperationFilter = '';
         this.afterDate = new Date();
-        this.afterDate.setFullYear(this.afterDate.getFullYear() - 1);
+        this.afterDate.setFullYear(this.afterDate.getFullYear(), new Date().getMonth() - 1);
         this.beforeDate = new Date();
 
         this.loadMemos();

@@ -1,10 +1,12 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MemoOfDeliveryService} from '../memo-of-delivery.service';
-import {DeliveryOfWagon, MemoOfDelivery} from '../../shared/interfaces';
+import {DeliveryOfWagon, MemoOfDelivery, Setting} from '../../shared/interfaces';
 import {ActivatedRoute, Params} from '@angular/router';
-import {Subscription, throwError} from 'rxjs';
+import {Observable, Subscription, throwError} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 import {UtilsService} from '../../shared/service/utils.service';
+import {SettingService} from '../../reference/service/setting.service';
+import {AuthService} from '../../admin/shared/services/auth.service';
 
 @Component({
     selector: 'app-print-form-memo-of-delivery',
@@ -14,7 +16,9 @@ import {UtilsService} from '../../shared/service/utils.service';
 export class PrintFormMemoOfDeliveryComponent implements OnInit, OnDestroy {
 
     memoOfDeliveryId: number;
+    companyFullName: string;
     memoOfDelivery: MemoOfDelivery;
+    private settingSub: Subscription;
     private memoSub: Subscription;
     deliveryList: DeliveryOfWagon[] = [];
     pages: number[];
@@ -22,17 +26,23 @@ export class PrintFormMemoOfDeliveryComponent implements OnInit, OnDestroy {
 
     constructor(
         private route: ActivatedRoute,
+        private settingService: SettingService,
+        private authService: AuthService,
         private utils: UtilsService,
         private memoOfDeliveryService: MemoOfDeliveryService
     ) {
     }
 
     ngOnInit(): void {
+        this.settingSub = this.settingService.getByType(['companyFullName']).subscribe(data => {
+            this.companyFullName = data[0];
+        });
+
         this.memoSub = this.route.params.pipe(
             switchMap((params: Params) => {
-                if (params['memoOfDeliveryId']) {
-                    this.memoOfDeliveryId = params['memoOfDeliveryId'];
-                    return this.memoOfDeliveryService.getById(params['memoOfDeliveryId']);
+                if (params.memoOfDeliveryId) {
+                    this.memoOfDeliveryId = params.memoOfDeliveryId;
+                    return this.memoOfDeliveryService.getById(params.memoOfDeliveryId);
                 }
             }))
             .subscribe(memo => {
@@ -51,7 +61,8 @@ export class PrintFormMemoOfDeliveryComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.utils.unsubscribe([
-            this.memoSub
+            this.memoSub,
+            this.settingSub
         ]);
     }
 }

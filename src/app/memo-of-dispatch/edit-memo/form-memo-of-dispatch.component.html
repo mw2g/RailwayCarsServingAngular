@@ -17,16 +17,16 @@
                 </div>
             </li>
             <li>
-                <a class="fas fa-align-justify btn btn-outline-info mr-2" title="В список"
+                <a class="fas fa-align-justify btn btn-outline-primary mr-2" title="В список"
                    [routerLink]="['/memo', 'dispatch']"></a>
             </li>
             <li *ngIf="memoOfDispatchId">
-                <a class="fas fa-print btn btn-outline-info mr-2" title="Печать"
+                <a class="fas fa-print btn btn-outline-primary mr-2" title="Печать"
                    [routerLink]="['/memo', 'dispatch', 'print-form', memoOfDispatchId]">
                 </a>
             </li>
             <li *ngIf="!enableComment && memoOfDispatchId">
-                <button type="button" class="far fa-comment-alt btn btn-outline-info" title="Коментарий"
+                <button type="button" class="far fa-comment-alt btn btn-outline-primary" title="Коментарий"
                         (click)="enableComment=true">
                 </button>
             </li>
@@ -44,14 +44,14 @@
 </nav>
 
 <div *ngIf="form; else loading" class="p-0">
-    <form [formGroup]="form" (ngSubmit)="update()">
+    <form [formGroup]="form">
 
         <div class="row">
             <div class="form-group col-2.5 pl-0 mb-0"
                  [ngClass]="{invalid: form.get('endDate').touched && form.get('endDate').invalid}">
                 <label class="small" for="endDate">Окончание</label>
                 <input type="datetime-local" class="form-control form-control-sm" id="endDate" formControlName="endDate"
-                       [required]="form.get('endDate').hasError('required')">
+                       [required]="form.get('endDate').hasError('required')" [appMyAutofocus]="!memoOfDispatch">
             </div>
 
             <div class="form-group col col-md-3 mb-0">
@@ -111,7 +111,8 @@
         <div *ngIf="enableComment || (memoOfDispatch && memoOfDispatch.comment)" class="row">
             <!--      <label for="comment" class="col-sm-3.5 col-form-label col-form-label-sm">Коментарий</label>-->
             <div class="input-group input-group-sm col pb-3 px-0 pt-0">
-                <input id="comment" type="text" formControlName="comment" class="form-control form-control-sm">
+                <input id="comment" type="text" formControlName="comment" class="form-control form-control-sm"
+                       (keydown.enter)="create(!!memoOfDispatchId)">
                 <div class="input-group-append">
                     <button class="fas fa-times btn btn-outline-secondary" type="button" title="Очистить"
                             (click)="clearComment()">
@@ -124,7 +125,7 @@
 
 <app-delivery-in-memo-of-dispatch class="container p-0" *ngIf="memoOfDispatchId"
                                   [memoOfDispatch]="memoOfDispatch" [memoOfDispatchId]="memoOfDispatchId"
-                                  [enableForm]="form && form.pristine" [deliveryList]="deliveryList">
+                                  [enableForm]="form && form.pristine">
 </app-delivery-in-memo-of-dispatch>
 
 <ng-template #loading>

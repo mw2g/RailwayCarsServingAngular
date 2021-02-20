@@ -105,6 +105,12 @@ export interface TariffType {
     typeCode?: string;
 }
 
+export interface Setting {
+    settingId?: number;
+    settingType?: string;
+    settingValue?: string;
+}
+
 export interface Tariff {
     tariffId?: number;
     relevanceDate: Date;

@@ -3,7 +3,6 @@ import {CommonModule} from '@angular/common';
 import {RouterModule} from '@angular/router';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SharedModule} from '../shared/shared.module';
-import {StatementLayoutComponent} from './shared/components/statement-layout/statement-layout.component';
 import {ListStatementComponent} from './list-statement/list-statement.component';
 import {FormStatementComponent} from './edit-statement/form-statement.component';
 import {AuthGuard} from '../admin/shared/services/auth.guard';
@@ -17,7 +16,6 @@ import {PrintFormWorkOrderComponent} from './print-form-work-order/print-form-wo
 
 @NgModule({
     declarations: [
-        StatementLayoutComponent,
         ListStatementComponent,
         FormStatementComponent,
         ListMemoInStatementComponent,

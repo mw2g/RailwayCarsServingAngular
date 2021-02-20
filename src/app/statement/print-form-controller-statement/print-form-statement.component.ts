@@ -5,6 +5,8 @@ import {ActivatedRoute, Params} from '@angular/router';
 import {Subscription, throwError} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 import {UtilsService} from '../../shared/service/utils.service';
+import {SettingService} from '../../reference/service/setting.service';
+import {AuthService} from '../../admin/shared/services/auth.service';
 
 @Component({
     selector: 'app-print-form-statement',
@@ -15,6 +17,8 @@ export class PrintFormStatementComponent implements OnInit, OnDestroy {
 
     statementId: number;
     statement: Statement;
+    companyFullName: string;
+    private settingSub: Subscription;
     sumWeight = 0;
     sumShuntingWork = 0;
     deliveryList: DeliveryOfWagon[] = [];
@@ -22,17 +26,23 @@ export class PrintFormStatementComponent implements OnInit, OnDestroy {
 
     constructor(
         private route: ActivatedRoute,
+        private settingService: SettingService,
+        private authService: AuthService,
         private utils: UtilsService,
         private memoOfDeliveryService: StatementService
     ) {
     }
 
     ngOnInit(): void {
+        this.settingSub = this.settingService.getByType(['companyFullName']).subscribe(data => {
+            this.companyFullName = data[0];
+        });
+
         this.statementSub = this.route.params.pipe(
             switchMap((params: Params) => {
-                if (params['statementId']) {
-                    this.statementId = params['statementId'];
-                    return this.memoOfDeliveryService.getById(params['statementId']);
+                if (params.statementId) {
+                    this.statementId = params.statementId;
+                    return this.memoOfDeliveryService.getById(params.statementId);
                 }
             }))
             .subscribe(statement => {
@@ -55,7 +65,8 @@ export class PrintFormStatementComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.utils.unsubscribe([
-            this.statementSub
+            this.statementSub,
+            this.settingSub
         ]);
     }
 }

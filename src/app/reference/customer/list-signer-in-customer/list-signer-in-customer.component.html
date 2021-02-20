@@ -3,7 +3,7 @@
 <!--    <ul class="navbar-nav mr-auto">-->
 <!--      <li>-->
 <!--        <button type="button" value="Создать"-->
-<!--                class="fas fa-plus btn btn-outline-info btn-sm mr-2" (click)="addNew()"></button>-->
+<!--                class="fas fa-plus btn btn-outline-primary btn-sm mr-2" (click)="addNew()"></button>-->
 <!--      </li>-->
 <!--    </ul>-->
 <!--  </div>-->
@@ -13,13 +13,13 @@
     <thead class="thead-light">
     <tr class="row">
         <th class="col-sm-1">
-            <button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"
+            <button class="fas fa-plus btn btn-sm btn-outline-primary" title="Добавить"
                     (click)="addNew()" [disabled]="!enableForm"></button>
         </th>
         <th class="col">Фамилия</th>
         <th class="col">Имя</th>
         <th class="col">Отчество</th>
-        <th width="200">Действия</th>
+        <th width="200" class="fas fa-cog" style="padding-top: 10px; padding-bottom: 0px"></th>
     </tr>
     </thead>
     <tbody>
@@ -42,7 +42,7 @@
     <td class="col">{{ signer.firstName }}</td>
     <td class="col">{{ signer.middleName }}</td>
     <td width="200">
-        <button type="button" class="far fa-edit btn btn-outline-info btn-sm mr-1 mt-1" title="Редактировать"
+        <button type="button" class="far fa-edit btn btn-outline-primary btn-sm mr-1 mt-1" title="Редактировать"
                 (click)="editSigner(signer)">
         </button>
         <!-- Button trigger modal -->

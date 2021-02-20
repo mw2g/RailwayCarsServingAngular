@@ -2,23 +2,15 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
-import {CargoType, DeliveryOfWagon, Owner} from '../shared/interfaces';
+import {DeliveryOfWagon, Owner} from '../shared/interfaces';
 
 @Injectable({providedIn: 'root'})
 export class DeliveryOfWagonService {
     constructor(private httpClient: HttpClient) {
     }
 
-    // getDeliveryByMemoId(memoId: number): Observable<Array<DeliveryOfWagon>> {
-    //   return this.httpClient.get<Array<DeliveryOfWagon>>(`${environment.dbUrl}/api/delivery/memo/${memoId}`);
-    // }
-
-    getAllDeliveries(afterDate: Date, beforeDate: Date): Observable<Array<DeliveryOfWagon>> {
+    getAll(afterDate: Date, beforeDate: Date): Observable<Array<DeliveryOfWagon>> {
         return this.httpClient.get<Array<DeliveryOfWagon>>(`${environment.dbUrl}/api/delivery/${afterDate}/${beforeDate}`);
-    }
-
-    getAllCargoTypes(): Observable<Array<CargoType>> {
-        return this.httpClient.get<Array<CargoType>>(`${environment.dbUrl}/api/cargo-type`);
     }
 
     getById(deliveryId: string): Observable<DeliveryOfWagon> {
@@ -39,10 +31,6 @@ export class DeliveryOfWagonService {
 
     getDeliveryForAutocomplete(wagonNumber: string): Observable<DeliveryOfWagon> {
         return this.httpClient.get<DeliveryOfWagon>(`${environment.dbUrl}/api/delivery/autocomplete/delivery/${wagonNumber}`);
-    }
-
-    getSuitableDeliveriesForMemoOfDelivery(memoId: number): Observable<Array<DeliveryOfWagon>> {
-        return this.httpClient.get<Array<DeliveryOfWagon>>(`${environment.dbUrl}/api/delivery/suitable/delivery/${memoId}`);
     }
 
     addMemoOfDelivery(deliveryIdToAdd: string, memoId: string): Observable<any> {
@@ -87,6 +75,10 @@ export class DeliveryOfWagonService {
             deliveryIds,
             memoId
         });
+    }
+
+    getSuitableDeliveriesForMemoOfDelivery(memoId: number): Observable<Array<DeliveryOfWagon>> {
+        return this.httpClient.get<Array<DeliveryOfWagon>>(`${environment.dbUrl}/api/delivery/suitable/delivery/${memoId}`);
     }
 
     getSuitableDeliveriesForMemoOfDispatch(memoId: number): Observable<Array<DeliveryOfWagon>> {

@@ -1,6 +1,6 @@
 <button class="btn btn-outline-success doNotPrint" (click)="print()">Печать</button>
 <div class="smallBody" *ngIf="statement && pages" id="toPrint">
-    <p style="text-align: center; margin-bottom: 8px; margin-top: 10px"><strong>АО "ППЖТ Юбилейное"</strong></p>
+    <p style="text-align: center; margin-bottom: 8px; margin-top: 10px"><strong>{{ companyFullName }}</strong></p>
     <p style="text-align: center; margin-bottom: 5px">Расчет ведомости на подачу и уборку вагонов № {{ statementId }} от
         {{ statement.statement.created  | date : 'dd.MM.yyyy' }}г.
     </p>
@@ -15,14 +15,14 @@
     <div class="page-number" style="text-align: right" [class.page-breaker]="numberOfPage > 0"
          *ngFor="let numberOfPage of pages">
         <i style="text-align: right;" class="align-content-end">{{ numberOfPage + 1 }} / {{ pages.length }}</i>
-        <table style="text-align: center; font-size: 12px" cellpadding="0" border="1" align="center">
+        <table style="text-align: center" class="print-font-size" cellpadding="0" border="1" align="center">
             <thead class="tableHead" style="background-color: beige; font-weight: bold">
             <tr>
                 <td style="width: 50px" rowspan="2">ПН</td>
                 <td style="width: 150px">Номер вагона</td>
-                <td style="width: 200px">Грузовая операция</td>
-                <td style="width: 200px">Наименование груза</td>
-                <td style="width: 150px">Дата и время подачи</td>
+                <td style="width: 170px">Грузовая операция</td>
+                <td style="width: 180px">Наименование груза</td>
+                <td style="width: 170px">Дата и время подачи</td>
                 <td style="width: 150px">Общее время нахождения под грузовой операцией</td>
                 <td style="width: 100px">Время для расчета платы (час.)</td>
                 <td style="width: 100px">Время для расчета штрафа (час.)</td>
@@ -45,9 +45,9 @@
             <tr *ngIf="delivery.calculation">
                 <td style="width: 50px" rowspan="2">{{ idx + 1 + numberOfPage * rowsOnPage }}</td>
                 <td style="width: 150px">{{ delivery.wagon }}</td>
-                <td style="width: 200px">{{ delivery.cargoOperation }}</td>
-                <td style="width: 200px">{{ delivery.cargoType }}</td>
-                <td style="width: 150px">{{ delivery.startDate | date : 'dd.MM.yyyy HH:mm' }}</td>
+                <td style="width: 170px">{{ delivery.cargoOperation }}</td>
+                <td style="width: 180px">{{ delivery.cargoType }}</td>
+                <td style="width: 170px">{{ delivery.startDate | date : 'dd.MM.yyyy HH:mm' }}</td>
                 <td style="width: 150px">{{ delivery.calculation.totalTime | number:'0.2-2' }}</td>
                 <td style="width: 100px">{{ delivery.calculation.payTime | number:'0.2-2' }}</td>
                 <td style="width: 100px">{{ delivery.calculation.penaltyTime | number:'0.2-2' }}</td>
@@ -81,15 +81,17 @@
             <td colspan="1">
                 {{ totalPaySum | number:'0.2-2'}}
             </td>
-            <td colspan="2">
+            <td colspan="1">
+            </td>
+            <td colspan="1">
+                {{ totalShuntingWorkTime | number:'0.2-2'}}/{{ totalShuntingWorkSum | number:'0.2-2'}}
             </td>
             <td colspan="1">
                 {{ totalCost | number:'0.2-2'}}
             </td>
             </tfoot>
         </table>
-        <p style="text-align: center; margin-top: 20px">Подпись представителя АО "ППЖТ
-            Юбилейное"________________/ {{ statement.statement.author }}</p>
+        <p style="text-align: center; margin-top: 20px">Подпись представителя {{ companyFullName }}________________/ {{ authService.getUserInitials() }}</p>
     </div>
 
     <!--  <p style="text-align: center; margin-bottom: 0">Представитель ОАО "ИСКИТИМИЗВЕСТЬ"-->

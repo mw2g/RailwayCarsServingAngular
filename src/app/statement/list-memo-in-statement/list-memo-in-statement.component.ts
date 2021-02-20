@@ -20,7 +20,6 @@ export class ListMemoInStatementComponent implements OnInit, OnDestroy {
     @ViewChild('editTemplate', {static: false}) editTemplate: TemplateRef<any>;
 
     @Input() statementId: number;
-    @Input() memoList: MemoOfDispatch[] = [];
     @Input() statement: Statement;
     @Input() statementRate: StatementRate;
     @Input() enableForm;
@@ -29,6 +28,7 @@ export class ListMemoInStatementComponent implements OnInit, OnDestroy {
     deliveryList: DeliveryOfWagon[] = [];
     suitableMemos: MemoOfDispatch[] = [];
     memoIdToAdd: number;
+    memoIdToRemove: number;
     totalCost: number;
     searchStr = '';
     public editedMemo: MemoOfDispatch;
@@ -39,7 +39,6 @@ export class ListMemoInStatementComponent implements OnInit, OnDestroy {
     private suitableMemoSub: Subscription;
     private addListMemoSub: Subscription;
     private addMemoSub: Subscription;
-    private baseRateAndPenaltySub: Subscription;
     private removeAllMemoSub: Subscription;
 
     constructor(private deliveryService: DeliveryOfWagonService,
@@ -58,9 +57,6 @@ export class ListMemoInStatementComponent implements OnInit, OnDestroy {
 
     public loadDeliveryList(): void {
         this.deliveryList = [];
-        // for (const memo of this.memoList) {
-        //   this.deliveryList = this.deliveryList.concat(memo.deliveryOfWagonList);
-        // }
         this.deliveryList = this.utils.calculateDeliveries(this.statement, this.statementRate);
     }
 
@@ -69,85 +65,9 @@ export class ListMemoInStatementComponent implements OnInit, OnDestroy {
         this.deliveryList.map(delivery => {
             this.totalCost += delivery.calculation && delivery.calculation.totalSum ? delivery.calculation.totalSum : 0;
         });
-        this.totalCost = +this.totalCost.toFixed(0);
+        // this.totalCost = +this.totalCost.toFixed(0);
         return this.totalCost;
     }
-
-    // public calculateDeliveries(deliveryList: DeliveryOfWagon[]): DeliveryOfWagon[] {
-    //   deliveryList.map(delivery => {
-    //     const totalTime = (new Date(delivery.endDate).getTime() - new Date(delivery.startDate).getTime()) / 3600000;
-    //     const exactCalculationTime = totalTime - this.statementRate.deliveryDispatchTimeNorm.norm;
-    //     let calculationTime;
-    //     if (exactCalculationTime > 0) {
-    //       calculationTime = (exactCalculationTime % 1) >= 0.25 ? Math.ceil(exactCalculationTime) : Math.floor(exactCalculationTime);
-    //     } else {
-    //       calculationTime = 0;
-    //     }
-    //     const maxPayTime = this.statementRate.turnoverTimeNorm.norm - this.statementRate.deliveryDispatchTimeNorm.norm + 24;
-    //     let payTime = calculationTime > maxPayTime ? maxPayTime : calculationTime;
-    //     payTime = (payTime % 1) >= 0.25 ? Math.ceil(payTime) : Math.floor(payTime);
-    //
-    //     if (delivery.owner === 'ВСП') {
-    //       payTime = calculationTime;
-    //     }
-    //
-    //     let penaltyTime = calculationTime - payTime;
-    //     const shuntingWorkTime = delivery.shuntingWorks != null ? delivery.shuntingWorks : 0;
-    //
-    //     let paySum = 0;
-    //     let penaltySum = 0;
-    //     let shuntingWorkSum = 0;
-    //
-    //     if (delivery.owner === 'Собств.(аренда)' || delivery.cargoType === 'ВЕСОПОВЕРОЧНЫЙ') {
-    //       // calculationTime = 0;
-    //       payTime = 0;
-    //       paySum = 0;
-    //       penaltyTime = 0;
-    //       penaltySum = 0;
-    //     }
-    //
-    //     shuntingWorkSum = shuntingWorkTime * this.statementRate.shuntingTariff.tariff;
-    //
-    //     if (payTime > 0) {
-    //       this.baseRateAndPenaltySub = this.deliveryService
-    //         .getBaseRateAndPenalty(delivery.deliveryId, payTime, this.statement.created).subscribe(data => {
-    //           paySum = +(data.baseRate * this.statementRate.indexToBaseRate.indexToRate).toFixed(1);
-    //           penaltySum = data.penalty * penaltyTime;
-    //         }, () => {
-    //           this.alert.danger('Ошибка при загрузке базовой ставки и штрафа');
-    //         }, () => {
-    //
-    //           if (delivery.owner === 'СНГ') {
-    //             paySum = paySum * 1.3;
-    //           }
-    //
-    //           const totalSum = this.statementRate.deliveryDispatchTariff.tariff + paySum + penaltySum + shuntingWorkSum;
-    //
-    //           delivery.calculation = {
-    //             totalTime, calculationTime, payTime, paySum, penaltyTime, penaltySum, shuntingWorkTime, shuntingWorkSum, totalSum
-    //           };
-    //
-    //           // this.totalCost += totalSum;
-    //         });
-    //     } else {
-    //       delivery.calculation = {
-    //         totalTime,
-    //         calculationTime,
-    //         payTime: 0,
-    //         paySum: 0,
-    //         penaltyTime: 0,
-    //         penaltySum: 0,
-    //         shuntingWorkTime,
-    //         shuntingWorkSum,
-    //         totalSum: shuntingWorkSum + this.statementRate.deliveryDispatchTariff.tariff
-    //       };
-    //       // this.totalCost += shuntingWorkSum + this.statementRate.deliveryDispatchTariff.tariff;
-    //     }
-    //
-    //   });
-    //
-    //   return deliveryList;
-    // }
 
     public loadSuitableMemos(statementId: number): void {
         this.suitableMemoSub = this.memoOfDispatchService.getSuitableMemosForStatement(statementId).subscribe(memos => {
@@ -168,7 +88,7 @@ export class ListMemoInStatementComponent implements OnInit, OnDestroy {
 
     getById(memoId: number): number {
         if (memoId) {
-            return this.memoList.find(value => value.memoOfDispatchId === memoId).memoOfDispatchId;
+            return this.statement.memoOfDispatchList.find(value => value.memoOfDispatchId === memoId).memoOfDispatchId;
         }
         return 0;
     }
@@ -189,14 +109,14 @@ export class ListMemoInStatementComponent implements OnInit, OnDestroy {
             });
 
         const memoOfDispatch: MemoOfDispatch = this.suitableMemos.find(memo => memo.memoOfDispatchId === this.memoIdToAdd);
-        this.memoList.push(memoOfDispatch);
+        this.statement.memoOfDispatchList.push(memoOfDispatch);
         this.suitableMemos = this.suitableMemos.filter(memo => memo.memoOfDispatchId !== this.memoIdToAdd);
     }
 
     removeStatementFromMemo(memoId): void {
         this.removeMemoSub = this.memoOfDispatchService.removeStatement(memoId).subscribe((data) => {
-            this.suitableMemos.push(this.memoList.find(memo => memo.memoOfDispatchId === memoId));
-            this.memoList = this.memoList.filter(memo => memo.memoOfDispatchId !== memoId);
+            this.suitableMemos.push(this.statement.memoOfDispatchList.find(memo => memo.memoOfDispatchId === memoId));
+            this.statement.memoOfDispatchList = this.statement.memoOfDispatchList.filter(memo => memo.memoOfDispatchId !== memoId);
         }, () => {
             this.alert.danger('Ошибка при откреплении памятки от ведомости');
         }, () => {
@@ -215,19 +135,19 @@ export class ListMemoInStatementComponent implements OnInit, OnDestroy {
                 this.alert.success('Все подходящие памятки добавлены');
             });
 
-        this.memoList = this.memoList.concat(this.suitableMemos);
+        this.statement.memoOfDispatchList = this.statement.memoOfDispatchList.concat(this.suitableMemos);
         this.suitableMemos = [];
     }
 
     removeAllMemoFromStatement(): void {
-        const memoIds = this.memoList.map(memo => memo.memoOfDispatchId);
+        const memoIds = this.statement.memoOfDispatchList.map(memo => memo.memoOfDispatchId);
         this.removeAllMemoSub = this.memoOfDispatchService.removeStatementFromAllMemo(memoIds).subscribe(() => {
             this.loadSuitableMemos(this.statementId);
-            this.memoList = [];
         }, () => {
             this.alert.danger('Ошибка при откреплении памяток');
         }, () => {
             this.alert.success('Все памятки убраны из ведомости');
+            this.statement.memoOfDispatchList = [];
         });
     }
 
@@ -243,11 +163,10 @@ export class ListMemoInStatementComponent implements OnInit, OnDestroy {
         ]);
     }
 
-    calcSummary(): number {
-        let summary;
-        for (const delivery of this.deliveryList) {
-            summary += delivery.calculation ? delivery.calculation.totalSum : 0;
-        }
-        return summary;
+    setRemove(deliveryId: number): void {
+        this.memoIdToRemove = deliveryId;
+    }
+    unsetRemove(): void {
+        this.memoIdToRemove = null;
     }
 }

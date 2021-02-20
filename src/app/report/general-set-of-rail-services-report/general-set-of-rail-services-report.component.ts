@@ -6,6 +6,7 @@ import {UtilsService} from '../../shared/service/utils.service';
 import {CustomerService} from '../../reference/service/customer.service';
 import {ReportService} from '../report.service';
 import {CargoOperationService} from '../../reference/service/cargo-operation.service';
+import {SettingService} from '../../reference/service/setting.service';
 
 @Component({
     selector: 'app-general-set-of-rail-services-report',
@@ -15,29 +16,39 @@ import {CargoOperationService} from '../../reference/service/cargo-operation.ser
 export class GeneralSetOfRailServicesReportComponent implements OnInit, OnDestroy {
 
     reportRows: GeneralSetReportRow[] = [];
+    private settingSub: Subscription;
     private reportSub: Subscription;
+    companyFullName: string;
+    director: string;
     afterDate: Date;
     beforeDate: Date;
     customers: Observable<Array<Customer>>;
     cargoOperations: Observable<Array<CargoOperation>>;
     customer = '';
-    operation = '';
+    withoutOperation = false;
 
     constructor(
         private route: ActivatedRoute,
         private utils: UtilsService,
         private customerService: CustomerService,
         private cargoOperationService: CargoOperationService,
+        private settingService: SettingService,
         private reportService: ReportService
     ) {
     }
 
     ngOnInit(): void {
+        this.settingSub = this.settingService.getByType(['companyFullName', 'director']).subscribe(data => {
+            this.companyFullName = data[0];
+            this.director = data[1];
+        });
+
         const generalSetReportViewSettings = JSON.parse(localStorage.getItem('generalSetReportViewSettings'));
         if (generalSetReportViewSettings) {
             this.afterDate = generalSetReportViewSettings.afterDate ? generalSetReportViewSettings.afterDate : this.afterDate;
             this.beforeDate = generalSetReportViewSettings.beforeDate ? generalSetReportViewSettings.beforeDate : this.beforeDate;
-            this.operation = generalSetReportViewSettings.operation ? generalSetReportViewSettings.operation : this.operation;
+            this.withoutOperation = generalSetReportViewSettings
+                .withoutOperation ? generalSetReportViewSettings.withoutOperation : this.withoutOperation;
             this.customer = generalSetReportViewSettings.customer ? generalSetReportViewSettings.customer : this.customer;
         }
         this.customers = this.customerService.getAll();
@@ -50,16 +61,17 @@ export class GeneralSetOfRailServicesReportComponent implements OnInit, OnDestro
     }
 
     loadReport(): void {
-        this.afterDate = this.utils.prepareDate(this.afterDate, new Date(new Date().getFullYear() - 1, new Date().getMonth() - 1));
+        this.afterDate = this.utils.prepareDate(this.afterDate, new Date(new Date().getFullYear(), new Date().getMonth() - 1));
         this.beforeDate = this.utils.prepareDate(this.beforeDate, new Date());
 
-        this.reportSub = this.reportService.getGeneralSetReport(this.afterDate, this.beforeDate, this.operation, this.customer).
-        subscribe(reportRows => {
-            this.reportRows = reportRows;
+        const excludeOperation = !this.withoutOperation ? 'БЕЗ ОПЕРАЦИИ' : '';
+        this.reportSub = this.reportService.getGeneralSetReport(this.afterDate, this.beforeDate, excludeOperation, this.customer)
+            .subscribe(reportRows => {
+                this.reportRows = reportRows;
 
-        }, error => {
-            throwError(error);
-        });
+            }, error => {
+                throwError(error);
+            });
         this.saveViewSettings();
     }
 
@@ -67,7 +79,7 @@ export class GeneralSetOfRailServicesReportComponent implements OnInit, OnDestro
         const generalSetReportViewSettings = {
             afterDate: this.afterDate,
             beforeDate: this.beforeDate,
-            operation: this.operation,
+            withoutOperation: this.withoutOperation,
             customer: this.customer
         };
         localStorage.setItem('generalSetReportViewSettings', JSON.stringify(generalSetReportViewSettings));
@@ -76,7 +88,8 @@ export class GeneralSetOfRailServicesReportComponent implements OnInit, OnDestro
     ngOnDestroy(): void {
         this.saveViewSettings();
         this.utils.unsubscribe([
-            this.reportSub
+            this.reportSub,
+            this.settingSub
         ]);
     }
 }

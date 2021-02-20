@@ -1,23 +1,33 @@
 @import "~@fortawesome/fontawesome-free/css/all.css";
 
 .ms-no_arrows {
-  -moz-appearance: textfield;
+    -moz-appearance: textfield;
 }
+
 .ms-no_arrows::-webkit-inner-spin-button {
-  display: none;
+    display: none;
 }
+
 .ms-no_select_arrows {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 
 .form-control:invalid {
-  border: 1px solid red;
+    border: 1px solid red;
 }
 
 .custom-select:required {
-  border: 1px solid red;
+    border: 1px solid red;
+}
+
+.print-font-size {
+    font-size: 14px
+}
+
+i.fa-check {
+    color: green;
 }
 
 //.form-control:valid {
@@ -25,11 +35,16 @@
 //}
 
 #mainContainer {
-  margin-top: 70px;
+    margin-top: 70px;
 }
 
 @media print {
-  #mainContainer {
-    margin-top: 0px;
-  }
+    #mainContainer {
+        margin-top: 0px;
+    }
+}
+
+a, a:hover {
+    //color: #20A2B6; /* Цвет ссылок */
+    color: #0f7bf9; /* Цвет ссылок */
 }

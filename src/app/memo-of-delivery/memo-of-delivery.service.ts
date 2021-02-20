@@ -9,7 +9,7 @@ export class MemoOfDeliveryService {
     constructor(private httpClient: HttpClient) {
     }
 
-    getAllMemos(afterDate: Date, beforeDate: Date): Observable<Array<MemoOfDelivery>> {
+    getAll(afterDate: Date, beforeDate: Date): Observable<Array<MemoOfDelivery>> {
         return this.httpClient.get<Array<MemoOfDelivery>>(`${environment.dbUrl}/api/memo/delivery/${afterDate}/${beforeDate}`);
     }
 

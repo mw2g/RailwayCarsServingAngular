@@ -21,12 +21,12 @@
     </tr>
     <tr class="row">
         <th [width]="100" #tableColumn1>
-            <button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"
+            <button class="fas fa-plus btn btn-sm btn-outline-primary" title="Добавить"
                     [routerLink]="['/reference', 'customer', 'create']"></button>
         </th>
         <!--      <th scope="col">Номер</th>-->
         <th [width]="400" #tableColumn2>Наименование</th>
-        <th [width]="100" #tableColumn3>Действия</th>
+        <th [width]="100" #tableColumn3  class="fas fa-cog" style="padding-top: 10px; padding-bottom: 0px"></th>
     </tr>
     </thead>
     <tbody *ngIf="customers.length; else loading">

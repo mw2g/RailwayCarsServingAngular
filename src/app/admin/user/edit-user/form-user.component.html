@@ -14,7 +14,7 @@
                 </div>
             </li>
             <li>
-                <a class="fas fa-align-justify btn btn-outline-info" title="В список"
+                <a class="fas fa-align-justify btn btn-outline-primary" title="В список"
                    [routerLink]="['/admin', 'user']"></a>
             </li>
         </ul>
@@ -25,7 +25,7 @@
 </nav>
 
 <div *ngIf="form; else loading">
-    <form [formGroup]="form" (ngSubmit)="update()">
+    <form [formGroup]="form">
 
         <div class="form-row">
             <div class="form-group col-md-4"

@@ -4,7 +4,7 @@ import {Observable, Subscription, throwError} from 'rxjs';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {switchMap} from 'rxjs/operators';
 import {StatementService} from '../statement.service';
-import {CargoOperation, Customer, MemoOfDispatch, Statement, StatementRate, StatementWithRate} from '../../shared/interfaces';
+import {CargoOperation, Customer, Statement, StatementRate, StatementWithRate} from '../../shared/interfaces';
 import {AlertService} from '../../shared/service/alert.service';
 import {CustomerService} from '../../reference/service/customer.service';
 import {DatePipe} from '@angular/common';
@@ -26,7 +26,6 @@ export class FormStatementComponent implements OnInit, OnDestroy {
 
     @ViewChild(ListMemoInStatementComponent) listMemoInStatementComponent: ListMemoInStatementComponent;
     statementId: number;
-    memoList: MemoOfDispatch[] = [];
     statement: Statement;
     statementRate: StatementRate;
 
@@ -76,7 +75,6 @@ export class FormStatementComponent implements OnInit, OnDestroy {
         ).subscribe((statementWithRate: StatementWithRate) => {
             this.statement = statementWithRate.statement;
             this.statementRate = statementWithRate.rate;
-            this.memoList = this.statement.memoOfDispatchList;
             this.enableComment = !!this.statement.comment;
             this.loadForm();
         }, error => {
@@ -95,37 +93,21 @@ export class FormStatementComponent implements OnInit, OnDestroy {
             author: new FormControl(this.statement.author),
             signer: new FormControl(this.statement.signer ? this.statement.signer : ''),
             comment: new FormControl(this.statement.comment),
-            deliveryDispatchTimeNorm: new FormControl(this.statementRate.deliveryDispatchTimeNorm.norm),
-            turnoverTimeNorm: new FormControl(this.statementRate.turnoverTimeNorm.norm),
-            deliveryDispatchTariff: new FormControl(this.statementRate.deliveryDispatchTariff.tariff),
-            shuntingTariff: new FormControl(this.statementRate.shuntingTariff.tariff),
-            indexToBaseRate: new FormControl(this.statementRate.indexToBaseRate.indexToRate)
         });
-
-        // if (this.statement.statementId) {
-        //   this.loadRate();
-        // }
     }
 
     loadRate(): void {
-
         this.rateSub = this.statementService.getStatementRate(this.statement.statementId).subscribe(data => {
             this.statementRate = data;
         }, error => {
             throwError(error);
         }, () => {
-
-            // this.form.addControl('deliveryDispatchTimeNorm', new FormControl(this.statementRate.deliveryDispatchTimeNorm));
-            // this.form.addControl('turnoverTimeNorm', new FormControl(this.statementRate.turnoverTimeNorm));
-            // this.form.addControl('deliveryDispatchTariff', new FormControl(this.statementRate.deliveryDispatchTariff));
-            // this.form.addControl('shuntingTariff', new FormControl(this.statementRate.shuntingTariff));
-            // this.form.addControl('indexToBaseRate', new FormControl(this.statementRate.indexToBaseRate));
         });
     }
 
     initEmptyForm(): void {
         this.form = new FormGroup({
-            created: new FormControl('', Validators.required),
+            created: new FormControl(this.datePipe.transform(new Date(), 'yyyy-MM-ddTHH:mm'), Validators.required),
             cargoOperation: new FormControl('', Validators.required),
             customer: new FormControl('', Validators.required),
             signer: new FormControl(''),
@@ -147,11 +129,12 @@ export class FormStatementComponent implements OnInit, OnDestroy {
             comment: this.form.value.comment
         }).subscribe((data) => {
             this.statement = data;
-            this.memoList = data.memoOfDispatchList;
+            this.statement.memoOfDispatchList = data.memoOfDispatchList;
         }, () => {
             this.alert.danger('Ошибка');
         }, () => {
             this.alert.success('Ведомость сохранена');
+            this.loadRate();
             this.form.markAsPristine();
             this.listMemoInStatementComponent.loadSuitableMemos(this.statementId);
         });
@@ -168,18 +151,20 @@ export class FormStatementComponent implements OnInit, OnDestroy {
             cargoOperation: this.form.value.cargoOperation,
             customer: {customerName: this.form.value.customer},
             comment: this.form.value.comment,
-            // author: this.form.value.author,
         }).subscribe((data) => {
             this.statementId = data.statementId;
-            this.statement = data;
-            this.memoList.concat(data.memoOfDispatchList);
-            this.form.addControl('statementId', new FormControl(data.statementId));
-            this.form.addControl('created', new FormControl(new Date(data.created)));
-            this.form.addControl('author', new FormControl(data.author));
+            // this.statement = data;
+            // this.statement.memoOfDispatchList = [];
+            // this.form.addControl('statementId', new FormControl(data.statementId));
+            // this.form.addControl('created', new FormControl(new Date(data.created)));
+            // this.form.addControl('author', new FormControl(data.author));
         }, () => {
             this.alert.danger('Ошибка');
         }, () => {
             this.alert.success('Ведомость создана');
+            // this.loadRate();
+            // this.form.markAsPristine();
+            this.router.navigateByUrl('/statement/edit/' + this.statementId);
         });
     }
 
@@ -191,10 +176,6 @@ export class FormStatementComponent implements OnInit, OnDestroy {
             this.form.markAsDirty();
         }
     }
-
-    // getCustomerSigners(customerName: string): Signer[] {
-    //   return this.customers.find(customer => customer.customerName === customerName).signerList;
-    // }
 
     delete(): void {
         this.delSub = this.statementService.delete(this.statementIdToDelete).subscribe((data) => {
@@ -223,5 +204,11 @@ export class FormStatementComponent implements OnInit, OnDestroy {
             this.delSub,
             this.rateSub
         ]);
+    }
+
+    addProcessedComment(): void {
+        this.enableComment = true;
+        this.form.get('comment').setValue('Проведен');
+        this.update();
     }
 }

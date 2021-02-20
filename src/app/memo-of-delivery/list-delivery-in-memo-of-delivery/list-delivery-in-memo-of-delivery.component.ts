@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {Component, HostListener, Input, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {CargoType, DeliveryOfWagon, MemoOfDelivery, Owner, WagonType} from '../../shared/interfaces';
 import {Observable, Subscription, throwError} from 'rxjs';
 import {Router} from '@angular/router';
@@ -9,6 +9,7 @@ import {DeliveryOfWagonService} from '../../delivery-of-wagon/delivery-of-wagon.
 import {WagonTypeService} from '../../reference/service/wagon-type.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {UtilsService} from '../../shared/service/utils.service';
+import {CargoTypeService} from '../../reference/service/cargo-type.service';
 
 @Component({
     selector: 'app-list-delivery-in-memo-of-delivery',
@@ -21,13 +22,13 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
     @ViewChild('editTemplate', {static: false}) editTemplate: TemplateRef<any>;
 
     @Input() memoOfDeliveryId: number;
-    @Input() deliveryList: Array<DeliveryOfWagon> = [];
     @Input() memoOfDelivery: MemoOfDelivery;
     @Input() enableForm;
 
     suitableDeliveries: Array<DeliveryOfWagon> = [];
     deliveryIdToDelete: number;
     deliveryIdToAdd: number;
+    weightFocus = false;
     public editedDelivery: DeliveryOfWagon;
     private isNewRecord: boolean;
 
@@ -50,15 +51,26 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
                 private wagonTypeService: WagonTypeService,
                 private memoOfDeliveryService: MemoOfDeliveryService,
                 private deliveryOfWagonService: DeliveryOfWagonService,
+                private cargoTypeService: CargoTypeService,
                 private router: Router,
                 private alert: AlertService,
                 private utils: UtilsService
     ) {
     }
 
+    @HostListener('window:keydown.insert', ['$event'])
+    showPinned(event: KeyboardEvent): void {
+        event.preventDefault();
+        // console.log(event);
+        if (this.enableForm) {
+            this.weightFocus = false;
+            this.addDelivery();
+        }
+    }
+
     ngOnInit(): void {
         this.wagonTypeList = this.wagonTypeService.getAll();
-        this.cargoTypeList = this.deliveryOfWagonService.getAllCargoTypes();
+        this.cargoTypeList = this.cargoTypeService.getAll();
         this.ownersList = this.deliveryOfWagonService.getAllOwners();
 
         this.loadSuitableDeliveries(this.memoOfDeliveryId);
@@ -83,36 +95,51 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
 
     // добавление
     addDelivery(): void {
+        let deliveryToClone: DeliveryOfWagon;
+        if (this.memoOfDelivery.deliveryOfWagonList.length > 0) {
+            deliveryToClone = this.memoOfDelivery.deliveryOfWagonList[this.memoOfDelivery.deliveryOfWagonList.length - 1];
+        }
         this.editedDelivery = {
             deliveryId: 0,
             wagon: '',
-            wagonType: '',
-            cargoType: '',
-            owner: '',
+            wagonType: deliveryToClone ? deliveryToClone.wagonType : '',
+            cargoType: deliveryToClone ? deliveryToClone.cargoType : '',
+            owner: deliveryToClone ? deliveryToClone.owner : '',
             memoOfDelivery: this.memoOfDelivery.memoOfDeliveryId,
             startDate: this.memoOfDelivery.startDate,
             customer: this.memoOfDelivery.customer.customerName,
             cargoOperation: this.memoOfDelivery.cargoOperation,
-            loadUnloadWork: this.memoOfDelivery.cargoOperation === 'ВЫГРУЗКА' ? true : false
+            loadUnloadWork: this.memoOfDelivery.cargoOperation === 'ВЫГРУЗКА' && this.memoOfDelivery.customer.customerName.includes('ИСКИТИМЦЕМЕНТ')
         };
-        this.deliveryList.push(this.editedDelivery);
+        this.memoOfDelivery.deliveryOfWagonList.push(this.editedDelivery);
         this.isNewRecord = true;
         this.enableForm = false;
     }
 
     // редактирование
-    editDelivery(delivery: DeliveryOfWagon): void {
+    editDelivery(delivery: DeliveryOfWagon, focus?: string): void {
+        this.weightFocus = focus === 'weight' ? true : false;
         this.isNewRecord = false;
         this.editedDelivery = {
             ...delivery
         };
     }
 
+    // editDeliveryWagonFocus(delivery: DeliveryOfWagon): void {
+    //     this.weightFocus = false;
+    //     this.editDelivery(delivery);
+    // }
+    //
+    // editWeight(delivery: DeliveryOfWagon): void {
+    //     this.weightFocus = true;
+    //     this.editDelivery(delivery);
+    // }
+
     // отмена редактирования
     cancel(): void {
         // если отмена при добавлении, удаляем последнюю запись
         if (this.isNewRecord) {
-            this.deliveryList.pop();
+            this.memoOfDelivery.deliveryOfWagonList.pop();
             this.isNewRecord = false;
         }
         this.editedDelivery = null;
@@ -120,7 +147,8 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
     }
 
     // сохраняем
-    saveDelivery(): void {
+    saveDelivery(editNext?): void {
+        const deliveryId = this.editedDelivery.deliveryId;
         this.editedDelivery.endDate = this.prepareDate(this.editedDelivery.endDate);
         if (this.isNewRecord) {
             // добавляем
@@ -133,7 +161,7 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
                 } else {
                     this.alert.danger('Ошибка');
                 }
-                this.deliveryList.pop();
+                this.memoOfDelivery.deliveryOfWagonList.pop();
             }, () => {
                 this.alert.success('Общая подача создана');
                 this.editedDelivery = null;
@@ -143,7 +171,7 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
         } else {
             // изменяем
             this.updateSub = this.deliveryService.update(this.editedDelivery).subscribe((data) => {
-                this.deliveryList.map(delivery => {
+                this.memoOfDelivery.deliveryOfWagonList.map(delivery => {
                     if (delivery.deliveryId === this.editedDelivery.deliveryId) {
                         delivery.wagon = data.wagon;
                         delivery.wagonType = data.wagonType;
@@ -165,15 +193,26 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
                 this.alert.success('Общая подача сохранена');
                 this.editedDelivery = null;
                 this.enableForm = true;
+                if (editNext) {
+                    let next = false;
+                    for (const delivery of this.memoOfDelivery.deliveryOfWagonList.values()) {
+                        if (next) {
+                            this.editDelivery(delivery, editNext);
+                            break;
+                        }
+                        next = delivery.deliveryId === deliveryId ? true : false;
+                    }
+                }
             });
         }
     }
 
     autocomplete(): void {
-        if (this.editedDelivery.wagon.length > 5) {
+        if (this.memoOfDelivery.deliveryOfWagonList.length < 2
+            && this.editedDelivery.wagon.length === 8) {
             this.autocompleteSub = this.deliveryOfWagonService.getDeliveryForAutocomplete(this.editedDelivery.wagon).subscribe(data => {
                 if (data.wagon) {
-                    this.editedDelivery.customer = data.customer;
+                    // this.editedDelivery.customer = data.customer;
                     this.editedDelivery.owner = data.owner;
                     this.editedDelivery.wagonType = data.wagonType;
                     this.editedDelivery.cargoType = data.cargoType;
@@ -188,7 +227,8 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
 
     delete(): void {
         this.delSub = this.deliveryService.delete(this.deliveryIdToDelete).subscribe(() => {
-            this.deliveryList = this.deliveryList.filter(delivery => delivery.deliveryId !== this.deliveryIdToDelete);
+            this.memoOfDelivery.deliveryOfWagonList = this.memoOfDelivery.deliveryOfWagonList
+                .filter(delivery => delivery.deliveryId !== this.deliveryIdToDelete);
             this.unsetDelete();
         }, () => {
             this.alert.danger('Ошибка при удалении общей подачи');
@@ -207,7 +247,7 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
 
     getById(deliveryId: number): number {
         if (deliveryId) {
-            return this.deliveryList.find(value => value.deliveryId === deliveryId).deliveryId;
+            return this.memoOfDelivery.deliveryOfWagonList.find(value => value.deliveryId === deliveryId).deliveryId;
         }
         return 0;
     }
@@ -223,13 +263,14 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
             }, () => {
                 this.alert.danger('Ошибка при добавлении общей подачи по номеру');
             }, () => {
-                this.deliveryList.find(delivery => delivery.deliveryId === this.deliveryIdToAdd).memoOfDelivery = this.memoOfDeliveryId;
+                this.memoOfDelivery.deliveryOfWagonList
+                    .find(delivery => delivery.deliveryId === this.deliveryIdToAdd).memoOfDelivery = this.memoOfDeliveryId;
                 this.deliveryIdToAdd = null;
                 this.alert.success('В общую подачу добавлена памятка подачи');
             });
 
         const deliveryOfWagon: DeliveryOfWagon = this.suitableDeliveries.find(delivery => delivery.deliveryId === this.deliveryIdToAdd);
-        this.deliveryList.push(deliveryOfWagon);
+        this.memoOfDelivery.deliveryOfWagonList.push(deliveryOfWagon);
         this.suitableDeliveries = this.suitableDeliveries.filter(delivery => delivery.deliveryId !== this.deliveryIdToAdd);
     }
 
@@ -238,10 +279,12 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
         }, () => {
             this.alert.danger('Ошибка при откреплении общей подачи от памятки');
         }, () => {
-            this.suitableDeliveries.push(this.deliveryList.find(delivery => delivery.deliveryId === deliveryId));
-            this.deliveryList = this.deliveryList.filter(delivery => delivery.deliveryId !== deliveryId);
+            this.suitableDeliveries.push(this.memoOfDelivery.deliveryOfWagonList.find(delivery => delivery.deliveryId === deliveryId));
+            this.memoOfDelivery.deliveryOfWagonList = this.memoOfDelivery.deliveryOfWagonList
+                .filter(delivery => delivery.deliveryId !== deliveryId);
             this.alert.success('Общая подача убрана из памятки');
         });
+        this.unsetDelete();
     }
 
     addAllSuitableDeliveries(): void {
@@ -252,20 +295,20 @@ export class ListDeliveryInMemoOfDeliveryComponent implements OnInit, OnDestroy 
             }, () => {
                 this.alert.danger('Ошибка при добавлении всех подходящих памяток');
             }, () => {
-                this.deliveryList.map(delivery => delivery.memoOfDelivery = delivery.memoOfDelivery);
+                this.memoOfDelivery.deliveryOfWagonList = this.memoOfDelivery.deliveryOfWagonList.concat(this.suitableDeliveries);
+                this.memoOfDelivery.deliveryOfWagonList.map(delivery => delivery.memoOfDelivery = this.memoOfDeliveryId);
                 this.alert.success('Все подходящие подачи добавлены');
+                this.suitableDeliveries = [];
             });
 
-        this.deliveryList = this.deliveryList.concat(this.suitableDeliveries);
-        this.suitableDeliveries = [];
     }
 
     removeAllDeliveryOfWagonFromMemo(): void {
-        const deliveryIds = this.deliveryList.map(delivery => delivery.deliveryId);
+        const deliveryIds = this.memoOfDelivery.deliveryOfWagonList.map(delivery => delivery.deliveryId);
         this.delSub = this.deliveryService.removeMemoOfDeliveryFromAllDelivery(deliveryIds).subscribe((data) => {
             // this.alert.success(data.message);
             this.loadSuitableDeliveries(this.memoOfDeliveryId);
-            this.deliveryList = [];
+            this.memoOfDelivery.deliveryOfWagonList = [];
         }, () => {
             this.alert.danger('Ошибка при откреплении вагонов от памятки');
         }, () => {

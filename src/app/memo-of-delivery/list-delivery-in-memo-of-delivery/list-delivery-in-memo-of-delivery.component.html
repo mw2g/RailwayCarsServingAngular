@@ -4,14 +4,14 @@
             <li>
                 <div class="input-group input-group-sm">
                     <div class="input-group-prepend">
-                        <button class="btn btn-outline-info btn-sm" type="button" (click)="addDeliveryById()"
+                        <button class="btn btn-outline-primary btn-sm" type="button" (click)="addDeliveryById()"
                                 [disabled]="!deliveryIdToAdd || !enableForm">Добавить по номеру
                         </button>
                     </div>
                     <input type="number" list=deliveryList class="input-text text" [(ngModel)]="deliveryIdToAdd"
-                           style="width: 100px" (keydown.escape)="deliveryIdToAdd = null">
+                           style="width: 100px" (keydown.escape)="deliveryIdToAdd = null" (keydown.enter)="addDeliveryById()">
                     <div class="input-group-append">
-                        <button class="btn btn-outline-info btn-sm mr-2" type="button" (click)="deliveryIdToAdd = null">
+                        <button class="btn btn-outline-primary btn-sm mr-2" type="button" (click)="deliveryIdToAdd = null">
                             &times;
                         </button>
                     </div>
@@ -25,11 +25,11 @@
                 </div>
             </li>
             <li>
-                <input type="button" value="Добавить все подходящие" class="btn btn-outline-info btn-sm mr-2"
+                <input type="button" value="Добавить все подходящие" class="btn btn-outline-primary btn-sm mr-2"
                        [disabled]="!enableForm" (click)="addAllSuitableDeliveries()">
             </li>
             <li>
-                <input type="button" value="Убрать все вагоны" class="btn btn-outline-info btn-sm mr-2"
+                <input type="button" value="Убрать все вагоны" class="btn btn-outline-primary btn-sm mr-2"
                        [disabled]="!enableForm" data-toggle="modal" data-target="#removeAllDeliveriesModal">
             </li>
         </ul>
@@ -40,7 +40,7 @@
     <thead class="thead-light">
     <tr class="row">
         <th width="50">
-            <button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"
+            <button class="fas fa-plus btn btn-sm btn-outline-primary" title="Добавить"
                     (click)="addDelivery()" [disabled]="!enableForm"></button>
         </th>
         <!--      <th width="100">И</th>-->
@@ -51,12 +51,12 @@
         <th width="80">Вес</th>
         <th width="50" *ngIf="memoOfDelivery && memoOfDelivery.cargoOperation==='ВЫГРУЗКА'">ПРР</th>
         <!--      <th width="150">Дата окончания</th>-->
-        <th class="col-md col-sm col">Действия</th>
+        <th class="col-md col-sm col fas fa-cog" style="padding-top: 10px; padding-bottom: 0px"></th>
     </tr>
     </thead>
-    <tbody *ngIf="deliveryList.length; else loading"
+    <tbody *ngIf="memoOfDelivery && memoOfDelivery.deliveryOfWagonList.length; else loading"
            (keydown.escape)="cancel()" (keydown.enter)="saveDelivery()">
-    <tr class="row my-0 p-0" *ngFor="let delivery of deliveryList; let idx = index">
+    <tr class="row my-0 p-0" *ngFor="let delivery of memoOfDelivery.deliveryOfWagonList; let idx = index">
         <ng-template [ngTemplateOutlet]="loadTemplate(delivery)"
                      [ngTemplateOutletContext]="{ $implicit: delivery, idx: idx}">
         </ng-template>
@@ -73,9 +73,11 @@
     <td width="170">{{ delivery.wagonType }}</td>
     <td width="170">{{ delivery.cargoType }}</td>
     <td width="170">{{ delivery.owner }}</td>
-    <td width="80">{{ delivery.cargoWeight | number:'0.2'}}</td>
+    <td width="80" type="button" (click)="enableForm ? editDelivery(delivery, 'weight') : null">
+        {{ delivery.cargoWeight | number:'0.2'}}
+    </td>
     <td width="50" *ngIf="memoOfDelivery && memoOfDelivery.cargoOperation==='ВЫГРУЗКА'">
-        <i class="fas fa-check" [hidden]="!delivery.loadUnloadWork" style="color: grey"></i>
+        <i class="fas fa-check" [hidden]="!delivery.loadUnloadWork"></i>
     </td>
     <!--  <td width="50" style="padding-left: 18px; padding-top: 12px; padding-bottom: 0px"-->
     <!--      *ngIf="memoOfDelivery && memoOfDelivery.cargoOperation==='ВЫГРУЗКА'">-->
@@ -91,10 +93,14 @@
     <!--    </ng-template>-->
     <!--  </td>-->
     <td class="col-md col-sm col">
-        <button type="button" class="far fa-edit btn btn-outline-info btn-sm mr-1 mt-1"
+        <button type="button" class="far fa-edit btn btn-outline-primary btn-sm mr-1 mt-1"
                 [disabled]="!enableForm" title="Редактировать" (click)="editDelivery(delivery)"></button>
-        <button type="button" class="fas fa-unlink btn btn-outline-warning btn-sm mr-1 mt-1" title="Открепить"
-                [disabled]="!enableForm" (click)="removeMemoFromDelivery(delivery.deliveryId)"></button>
+<!--        <button type="button" class="fas fa-unlink btn btn-outline-warning btn-sm mr-1 mt-1" title="Открепить"-->
+<!--                [disabled]="!enableForm" (click)="removeMemoFromDelivery(delivery.deliveryId)"></button>-->
+        <!-- Button trigger modal -->
+        <button type="button" class="fas fa-unlink btn btn-outline-warning btn-sm mt-1" data-toggle="modal"
+                data-target="#removeModal" title="Открепить"
+                [disabled]="!enableForm" (click)="setDelete(delivery.deliveryId)"></button>
         <!-- Button trigger modal -->
         <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm mt-1" data-toggle="modal"
                 data-target="#deleteModal" title="Удалить"
@@ -108,11 +114,8 @@
     <!--  <td width="100">{{ delivery.deliveryId }}</td>-->
     <td width="120">
         <input type="text" [(ngModel)]="editedDelivery.wagon"
-               class="form-control form-control-sm ms-valid_input" appMyAutofocus
-               #wagonNumber="ngModel" required (keyup)="autocomplete()">
-        <!--    <div class="invalid-feedback">-->
-        <!--      Номер-->
-        <!--    </div>-->
+               class="form-control form-control-sm ms-valid_input" [appMyAutofocus]
+               #wagonNumber="ngModel" required (keyup)="autocomplete()" pattern="\d{8}" maxlength="8">
     </td>
     <td width="170">
         <select class="custom-select-sm form-control ms-valid_input" [(ngModel)]="editedDelivery.wagonType"
@@ -141,8 +144,10 @@
         </select>
     </td>
     <td width="80">
+<!--        <input *ngIf="!weightFocus" type="number" step="any" [(ngModel)]="editedDelivery.cargoWeight" class="form-control form-control-sm"-->
+<!--               #cargoWeight="ngModel" (keyup)="checkWeight()">-->
         <input type="number" step="any" [(ngModel)]="editedDelivery.cargoWeight" class="form-control form-control-sm"
-               #cargoWeight="ngModel" (keyup)="checkWeight()">
+               #cargoWeight="ngModel" (keyup)="checkWeight()" (keydown.+)="saveDelivery('weight')" [appMyAutofocus]="weightFocus">
         <!--           [ngClass]="{'is-invalid': cargoWeight.touched && cargoWeight.invalid}"-->
     </td>
     <td width="50" style="padding-left: 8px; padding-top: 8px; padding-bottom: 0px"
@@ -171,6 +176,30 @@
 <ng-template #loading>
     <p class="text-center">Загрузка...</p>
 </ng-template>
+
+<!-- Remove Modal -->
+<div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="removeModalLabel">Открепление</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Открепить общую подачу номер {{ deliveryIdToDelete }} ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="unsetDelete()">Отменить
+                </button>
+                <button type="button" class="btn btn-primary btn-ok" data-dismiss="modal" (click)="removeMemoFromDelivery(deliveryIdToDelete)">Да
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"

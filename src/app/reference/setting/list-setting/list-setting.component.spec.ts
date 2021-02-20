@@ -1,20 +1,20 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {DeliveryOfWagonLayoutComponent} from './delivery-of-wagon-layout.component';
+import {ListSettingComponent} from './list-setting.component';
 
-describe('AdminLayoutComponent', () => {
-    let component: DeliveryOfWagonLayoutComponent;
-    let fixture: ComponentFixture<DeliveryOfWagonLayoutComponent>;
+describe('DeliveryOfWagonComponent', () => {
+    let component: ListSettingComponent;
+    let fixture: ComponentFixture<ListSettingComponent>;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [DeliveryOfWagonLayoutComponent]
+            declarations: [ListSettingComponent]
         })
             .compileComponents();
     }));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(DeliveryOfWagonLayoutComponent);
+        fixture = TestBed.createComponent(ListSettingComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

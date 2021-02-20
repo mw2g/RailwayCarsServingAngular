@@ -4,7 +4,7 @@ import {Observable, Subscription} from 'rxjs';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {switchMap} from 'rxjs/operators';
 import {MemoOfDeliveryService} from '../memo-of-delivery.service';
-import {CargoOperation, Customer, DeliveryOfWagon, MemoOfDelivery} from '../../shared/interfaces';
+import {CargoOperation, Customer, MemoOfDelivery} from '../../shared/interfaces';
 import {AlertService} from '../../shared/service/alert.service';
 import {CustomerService} from '../../reference/service/customer.service';
 import {DatePipe} from '@angular/common';
@@ -22,7 +22,7 @@ export class FormMemoOfDeliveryComponent implements OnInit, OnDestroy {
 
     @ViewChild(ListDeliveryInMemoOfDeliveryComponent) listDeliveryInMemoOfDeliveryComponent: ListDeliveryInMemoOfDeliveryComponent;
     memoOfDeliveryId: number;
-    deliveryList: Array<DeliveryOfWagon> = [];
+    // deliveryList: Array<DeliveryOfWagon> = [];
     memoOfDelivery: MemoOfDelivery;
     enableComment = true;
 
@@ -63,7 +63,6 @@ export class FormMemoOfDeliveryComponent implements OnInit, OnDestroy {
             })
         ).subscribe((memoOfDelivery: MemoOfDelivery) => {
             this.memoOfDelivery = memoOfDelivery;
-            this.deliveryList = memoOfDelivery.deliveryOfWagonList;
             this.enableComment = !!memoOfDelivery.comment;
             this.loadForm();
         });
@@ -84,7 +83,7 @@ export class FormMemoOfDeliveryComponent implements OnInit, OnDestroy {
 
     initEmptyForm(): void {
         this.form = new FormGroup({
-            startDate: new FormControl('', Validators.required),
+            startDate: new FormControl(this.datePipe.transform(new Date(), 'yyyy-MM-ddTHH:mm'), Validators.required),
             cargoOperation: new FormControl('', Validators.required),
             customer: new FormControl('', Validators.required),
             signer: new FormControl(''),
@@ -106,7 +105,6 @@ export class FormMemoOfDeliveryComponent implements OnInit, OnDestroy {
             comment: this.form.value.comment
         }).subscribe((data) => {
             this.memoOfDelivery = data;
-            this.deliveryList = data.deliveryOfWagonList;
         }, () => {
             this.alert.danger('Ошибка');
         }, () => {
@@ -116,7 +114,10 @@ export class FormMemoOfDeliveryComponent implements OnInit, OnDestroy {
         });
     }
 
-    create(): void {
+    create(disabled?): void {
+        if (disabled) {
+            return;
+        }
         if (this.form.invalid) {
             this.alert.warning('Форма невалидна');
             return;
@@ -128,12 +129,14 @@ export class FormMemoOfDeliveryComponent implements OnInit, OnDestroy {
             customer: {customerName: this.form.value.customer}
         }).subscribe((data) => {
             this.memoOfDeliveryId = data.memoOfDeliveryId;
-            this.memoOfDelivery = data;
+            // this.memoOfDelivery = data;
+            // this.memoOfDelivery.deliveryOfWagonList = [];
         }, () => {
             this.alert.danger('Ошибка');
         }, () => {
-            this.alert.success('Памятка создана');
-            this.form.markAsPristine();
+            // this.alert.success('Памятка создана');
+            // this.form.markAsPristine();
+            this.router.navigateByUrl('/memo/delivery/edit/' + this.memoOfDeliveryId);
         });
     }
 

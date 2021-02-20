@@ -20,10 +20,6 @@ export class AuthService {
                 private localStorage: LocalStorageService) {
     }
 
-    // signup(signupRequestPayload: SignupRequestPayload): Observable<any> {
-    //   return this.httpClient.post(`${environment.dbUrl}/api/auth/signup`, signupRequestPayload, { responseType: 'text' });
-    // }
-
     login(loginRequestPayload: LoginRequestPayload): Observable<boolean> {
         return this.httpClient.post<LoginResponsePayload>(`${environment.dbUrl}/api/auth/login`,
             loginRequestPayload).pipe(map(data => {
@@ -91,7 +87,7 @@ export class AuthService {
     }
 
     getJwtTokenExpiresAt(): any {
-        return this.localStorage.retrieve('expiresat');
+        return this.localStorage.retrieve('expiresAt');
     }
 
     isLoggedIn(): boolean {
@@ -115,9 +111,7 @@ export class AuthService {
             case 'INVALID_PASSWORD':
                 this.error$.next('Неверный пароль');
                 break;
-
         }
-
         return throwError(error);
     }
 }

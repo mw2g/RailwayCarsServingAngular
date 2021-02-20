@@ -1,0 +1,51 @@
+<table class="table table-sm table-bordered border-0 mx-auto" style="text-align: center; max-width: 700px"
+       (keydown.escape)="cancel()">
+    <thead class="thead-light">
+    <tr class="row">
+        <strong>Настройки</strong>
+    </tr>
+    <tr class="row">
+        <th class="col" #tableColumn2>Тип</th>
+        <th [width]="300" #tableColumn3>Значение</th>
+        <th [width]="100" #tableColumn4 class="fas fa-cog" style="padding-top: 10px; padding-bottom: 0px"></th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <tr class="row" *ngFor="let setting of settings; let idx = index">
+        <ng-template [ngTemplateOutlet]="loadTemplate(setting)"
+                     [ngTemplateOutletContext]="{ $implicit: setting, idx: idx}">
+        </ng-template>
+    </tr>
+    </tbody>
+</table>
+
+<!--шаблон для чтения-->
+<ng-template #readOnlyTemplate let-setting let-idx="idx">
+    <td [width]="tableColumn2.offsetWidth">{{ setting.settingType }}</td>
+    <td [width]="tableColumn3.offsetWidth">{{ setting.settingValue}}</td>
+    <td [width]="tableColumn4.offsetWidth">
+        <button type="button" class="far fa-edit btn btn-outline-primary btn-sm mr-1 mt-1" title="Редактировать"
+                (click)="edit(setting)"></button>
+    </td>
+</ng-template>
+
+<!--шаблон для редактирования-->
+<ng-template #editTemplate let-setting let-idx="idx">
+    <td [width]="tableColumn2.offsetWidth">{{ setting.settingType }}</td>
+    <td [width]="tableColumn3.offsetWidth">
+        <input type="text" [(ngModel)]="editedSetting.settingValue" class="form-control form-control-sm ms-valid_input"
+               #typeValue="ngModel" required (keydown.enter)="save()" [appMyAutofocus]>
+    </td>
+    <td [width]="tableColumn4.offsetWidth">
+        <button (click)="save()" class="fas fa-check btn btn-outline-success btn-sm mr-1 mt-1" title="Сохранить"
+                [disabled]="typeValue.invalid"></button>
+        <button (click)="cancel()" class="fas fa-undo-alt btn btn-outline-warning btn-sm mt-1"
+                title="Отменить"></button>
+    </td>
+</ng-template>
+
+<!--Template loading-->
+<ng-template #loading>
+    <p class="text-center">Загрузка...</p>
+</ng-template>

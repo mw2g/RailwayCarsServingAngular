@@ -4,7 +4,7 @@ import {Observable, Subscription} from 'rxjs';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {switchMap} from 'rxjs/operators';
 import {MemoOfDispatchService} from '../memo-of-dispatch.service';
-import {CargoOperation, Customer, DeliveryOfWagon, MemoOfDispatch} from '../../shared/interfaces';
+import {CargoOperation, Customer, MemoOfDispatch} from '../../shared/interfaces';
 import {AlertService} from '../../shared/service/alert.service';
 import {CustomerService} from '../../reference/service/customer.service';
 import {DatePipe} from '@angular/common';
@@ -22,7 +22,6 @@ export class FormMemoOfDispatchComponent implements OnInit, OnDestroy {
 
     @ViewChild(ListDeliveryInMemoOfDispatchComponent) listDeliveryInMemoOfDispatchComponent: ListDeliveryInMemoOfDispatchComponent;
     memoOfDispatchId: number;
-    deliveryList: DeliveryOfWagon[] = [];
     memoOfDispatch: MemoOfDispatch;
     enableComment = true;
 
@@ -63,7 +62,6 @@ export class FormMemoOfDispatchComponent implements OnInit, OnDestroy {
             })
         ).subscribe((memoOfDispatch: MemoOfDispatch) => {
             this.memoOfDispatch = memoOfDispatch;
-            this.deliveryList = memoOfDispatch.deliveryOfWagonList;
             this.enableComment = !!memoOfDispatch.comment;
             this.loadForm();
         });
@@ -85,7 +83,7 @@ export class FormMemoOfDispatchComponent implements OnInit, OnDestroy {
 
     initEmptyForm(): void {
         this.form = new FormGroup({
-            endDate: new FormControl('', Validators.required),
+            endDate: new FormControl(this.datePipe.transform(new Date(), 'yyyy-MM-ddTHH:mm'), Validators.required),
             cargoOperation: new FormControl('', Validators.required),
             customer: new FormControl('', Validators.required),
             signer: new FormControl(''),
@@ -118,7 +116,10 @@ export class FormMemoOfDispatchComponent implements OnInit, OnDestroy {
         });
     }
 
-    create(): void {
+    create(disabled?): void {
+        if (disabled) {
+            return;
+        }
         this.createSub = this.memoOfDispatchService.create({
             ...this.memoOfDispatch,
             endDate: new Date(this.form.value.endDate),
@@ -128,16 +129,19 @@ export class FormMemoOfDispatchComponent implements OnInit, OnDestroy {
             // author: this.form.value.author,
         }).subscribe((data) => {
             this.memoOfDispatchId = data.memoOfDispatchId;
-            this.memoOfDispatch = data;
-            this.deliveryList.concat(data.deliveryOfWagonList);
-            this.form.addControl('memoId', new FormControl(data.memoOfDispatchId));
-            this.form.addControl('created', new FormControl(new Date(data.created)));
-            this.form.addControl('author', new FormControl(data.author));
-            this.form.addControl('statement', new FormControl(data.statement));
+            // this.memoOfDispatch = data;
+            // this.memoOfDispatch.deliveryOfWagonList = [];
+            // this.form.addControl('memoId', new FormControl(data.memoOfDispatchId));
+            // this.form.addControl('created', new FormControl(new Date(data.created)));
+            // this.form.addControl('author', new FormControl(data.author));
+            // this.form.addControl('statement', new FormControl(data.statement));
         }, () => {
             this.alert.danger('Ошибка');
         }, () => {
-            this.alert.success('Памятка создана');
+            // this.alert.success('Памятка создана');
+            // this.form.markAsPristine();
+            this.router.navigateByUrl('/memo/dispatch/edit/' + this.memoOfDispatchId);
+
         });
     }
 
@@ -155,7 +159,7 @@ export class FormMemoOfDispatchComponent implements OnInit, OnDestroy {
             this.alert.danger('Ошибка');
         }, () => {
             this.alert.success('Памятка подачи удалена');
-            this.router.navigate(['/memo', 'delivery']);
+            this.router.navigate(['/memo', 'dispatch']);
         });
     }
 

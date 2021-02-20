@@ -2,7 +2,7 @@
 <!--  <div class="navbar-collapse" id="navbarSupportedContent">-->
 <!--    <ul class="navbar-nav mr-auto">-->
 <!--      <li>-->
-<!--        <input type="button" value="Создать" class="btn btn-outline-info btn-sm mr-2" (click)="addNew()"-->
+<!--        <input type="button" value="Создать" class="btn btn-outline-primary btn-sm mr-2" (click)="addNew()"-->
 <!--        [disabled]="!enableForm">-->
 <!--      </li>-->
 <!--    </ul>-->
@@ -21,7 +21,7 @@
     </tr>
     <tr class="row">
         <th [width]="100" #tableColumn1>
-            <button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"
+            <button class="fas fa-plus btn btn-sm btn-outline-primary" title="Добавить"
                     (click)="addNew()" [disabled]="!enableForm"></button>
         </th>
         <!--      <th width="100">Номер</th>-->
@@ -35,7 +35,7 @@
             </select>
         </th>
         <th [width]="100" #tableColumn5>Ставка</th>
-        <th [width]="100" #tableColumn6>Действия</th>
+        <th [width]="100" #tableColumn6 class="fas fa-cog" style="padding-top: 10px; padding-bottom: 0px"></th>
         <th [width]="18" #tableColumn7></th>
     </tr>
     </thead>
@@ -53,7 +53,7 @@
 <!--<table class="table table-sm table-bordered border-0" style="text-align: center" [class.d-none]="!showFixedTableHeader">-->
 <!--  <thead class="thead-light">-->
 <!--  <tr [class.sticky]="showFixedTableHeader" class="row">-->
-<!--    <th [width]="tableColumn1.offsetWidth"><button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"-->
+<!--    <th [width]="tableColumn1.offsetWidth"><button class="fas fa-plus btn btn-sm btn-outline-primary" title="Добавить"-->
 <!--                                                   (click)="addNew()" [disabled]="!enableForm"></button></th>-->
 <!--    <th [width]="tableColumn2.offsetWidth">Дата актуальности</th>-->
 <!--    <th [width]="tableColumn3.offsetWidth">Часы</th>-->
@@ -74,7 +74,7 @@
     <td [width]="tableColumn4.offsetWidth">{{ baseRate.wagonGroup.groupName }}</td>
     <td [width]="tableColumn5.offsetWidth">{{ baseRate.rate }}</td>
     <td [width]="tableColumn6.offsetWidth">
-        <button type="button" class="far fa-edit btn btn-outline-info btn-sm mr-1 mt-1" title="Редактировать"
+        <button type="button" class="far fa-edit btn btn-outline-primary btn-sm mr-1 mt-1" title="Редактировать"
                 [disabled]="!enableForm" (click)="editWagonGroup(baseRate)"></button>
         <!-- Button trigger modal -->
         <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm mt-1" title="Удалить"
@@ -91,7 +91,7 @@
         <input type="datetime-local" [ngModel]="editedBaseRate.relevanceDate | date: 'yyyy-MM-ddTHH:mm'"
                (ngModelChange)="editedBaseRate.relevanceDate = $event"
                class="form-control form-control-sm ms-valid_input"
-               appMyAutofocus #relevanceDate="ngModel" required>
+               [appMyAutofocus] #relevanceDate="ngModel" required>
     </td>
     <td [width]="tableColumn3.offsetWidth">
         <input type="text" [(ngModel)]="editedBaseRate.hours" class="form-control form-control-sm ms-valid_input"

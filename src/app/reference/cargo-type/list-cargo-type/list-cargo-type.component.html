@@ -2,7 +2,7 @@
 <!--  <div class="navbar-collapse" id="navbarSupportedContent">-->
 <!--    <ul class="navbar-nav mr-auto">-->
 <!--      <li>-->
-<!--&lt;!&ndash;        <input type="button" value="Создать" class="btn btn-outline-info btn-sm mr-2" (click)="addNew()"&ndash;&gt;-->
+<!--&lt;!&ndash;        <input type="button" value="Создать" class="btn btn-outline-primary btn-sm mr-2" (click)="addNew()"&ndash;&gt;-->
 <!--&lt;!&ndash;        [disabled]="!enableForm">&ndash;&gt;-->
 <!--        <input type="text" placeholder="Найти пост" [(ngModel)]="searchStr">-->
 <!--      </li>-->
@@ -19,7 +19,7 @@
 <!--  <div class="headers">-->
 <!--    <div class="scroller">-->
 <!--      <div class="track">-->
-<!--        <div class="heading"><button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"-->
+<!--        <div class="heading"><button class="fas fa-plus btn btn-sm btn-outline-primary" title="Добавить"-->
 <!--                                     (click)="addNew()" [disabled]="!enableForm"></button>-->
 <!--        </div>-->
 <!--      </div>-->
@@ -71,7 +71,7 @@
     </tr>
     <tr class="">
         <th [width]="100" #tableColumn1>
-            <button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"
+            <button class="fas fa-plus btn btn-sm btn-outline-primary" title="Добавить"
                     (click)="addNew()" [disabled]="!enableForm"></button>
         </th>
         <!--      <th width="100">Номер</th>-->
@@ -98,7 +98,7 @@
             <!--            <button class="fas fa-times btn btn-sm" title="Очистить" (click)="searchStr = ''"-->
             <!--            style="color: grey"></button>-->
         </th>
-        <th [width]="150" #tableColumn3>Действия</th>
+        <th [width]="150" #tableColumn3><span  class="fas fa-cog"></span></th>
     </tr>
     </thead>
     <tbody *ngIf="cargoTypeList && cargoTypeList.length; else loading">
@@ -115,7 +115,7 @@
     <thead class="thead-light">
     <tr [class.sticky]="showFixedTableHeader" class="">
         <th [width]="tableColumn1.offsetWidth">
-            <button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"
+            <button class="fas fa-plus btn btn-sm btn-outline-primary" title="Добавить"
                     (click)="addNew()" [disabled]="!enableForm"></button>
         </th>
         <th [width]="tableColumn2.offsetWidth" class="font-weight-bold" style="text-align: right">
@@ -137,7 +137,7 @@
                 </div>
             </div>
         </th>
-        <th [width]="tableColumn3.offsetWidth">Действия</th>
+        <th [width]="tableColumn3.offsetWidth"><span class="fas fa-cog"></span></th>
     </tr>
     </thead>
 </table>
@@ -150,7 +150,7 @@
     <!--  <td width="100">{{ cargoType.typeId }}</td>-->
     <td [width]="tableColumn2.offsetWidth">{{ cargoType.typeName }}</td>
     <td [width]="tableColumn3.offsetWidth">
-        <button type="button" class="far fa-edit btn btn-outline-info btn-sm mr-1 mt-1" title="Редактировать"
+        <button type="button" class="far fa-edit btn btn-outline-primary btn-sm mr-1 mt-1" title="Редактировать"
                 [disabled]="!enableForm" (click)="editWagonGroup(cargoType)"></button>
         <!-- Button trigger modal -->
         <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm mt-1" title="Удалить"
@@ -165,7 +165,7 @@
     <!--  <td width="100">{{ cargoType.typeId }}</td>-->
     <td [width]="tableColumn2.offsetWidth">
         <input type="text" [(ngModel)]="editedCargoType.typeName" class="form-control form-control-sm ms-valid_input"
-               appMyAutofocus
+               [appMyAutofocus]
                #typeName="ngModel" required>
     </td>
     <td [width]="tableColumn3.offsetWidth">

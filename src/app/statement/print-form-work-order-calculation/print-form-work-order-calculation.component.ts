@@ -5,6 +5,8 @@ import {Subscription, throwError} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 import {UtilsService} from '../../shared/service/utils.service';
 import {StatementService} from '../statement.service';
+import {AuthService} from '../../admin/shared/services/auth.service';
+import {SettingService} from '../../reference/service/setting.service';
 
 @Component({
     selector: 'app-print-form-work-order-calculation',
@@ -15,6 +17,8 @@ export class PrintFormWorkOrderCalculationComponent implements OnInit, OnDestroy
 
     statementId: number;
     statement: StatementWithRate;
+    companyFullName: string;
+    private settingSub: Subscription;
     private memoSub: Subscription;
     deliveryList: DeliveryOfWagon[] = [];
     pages: number[];
@@ -25,17 +29,23 @@ export class PrintFormWorkOrderCalculationComponent implements OnInit, OnDestroy
 
     constructor(
         private route: ActivatedRoute,
+        private authService: AuthService,
+        private settingService: SettingService,
         private utils: UtilsService,
         private statementService: StatementService
     ) {
     }
 
     ngOnInit(): void {
+        this.settingSub = this.settingService.getByType(['companyFullName']).subscribe(data => {
+            this.companyFullName = data[0];
+        });
+
         this.statementSub = this.route.params.pipe(
             switchMap((params: Params) => {
-                if (params['statementId']) {
-                    this.statementId = params['statementId'];
-                    return this.statementService.getById(params['statementId']);
+                if (params.statementId) {
+                    this.statementId = params.statementId;
+                    return this.statementService.getById(params.statementId);
                 }
             }))
             .subscribe(statement => {
@@ -70,7 +80,8 @@ export class PrintFormWorkOrderCalculationComponent implements OnInit, OnDestroy
 
     ngOnDestroy(): void {
         this.utils.unsubscribe([
-            this.memoSub
+            this.memoSub,
+            this.settingSub
         ]);
     }
 }

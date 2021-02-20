@@ -1,13 +1,6 @@
 <nav class="navbar navbar-expand navbar-light bg-white pr-0">
     <div class="navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            <!--      <li class="nav-item active" *ngIf="form && !form.pristine">-->
-            <!--        <div>-->
-            <!--          <button (click)="update()" title="Сохранить" class="fas fa-check btn btn-outline-success mr-2"></button>-->
-            <!--          <button *ngIf="delivery && delivery.deliveryId"-->
-            <!--                  (click)="loadForm()" title="Отменить" class="fas fa-undo-alt btn btn-outline-warning mr-2"></button>-->
-            <!--        </div>-->
-            <!--      </li>-->
             <li class="nav-item active" *ngIf="form && !form.pristine">
                 <div *ngIf="delivery && delivery.deliveryId">
                     <button (click)="update()" title="Сохранить"
@@ -21,7 +14,7 @@
                 </div>
             </li>
             <li>
-                <button class="fas fa-align-justify btn btn-outline-info" title="В список"
+                <button class="fas fa-align-justify btn btn-outline-primary" title="В список"
                         [routerLink]="['/delivery']"></button>
             </li>
         </ul>
@@ -37,15 +30,15 @@
 </nav>
 
 <div *ngIf="form; else loading">
-    <form [formGroup]="form" (ngSubmit)="update()" (keydown.escape)="loadForm()">
+    <form [formGroup]="form" (keydown.escape)="loadForm()">
         <div class="form-row">
             <div class="form-group col-md-3"
                  [ngClass]="{invalid: form.get('wagonNumber').touched && form.get('wagonNumber').invalid}">
                 <label class="small" for="wagonNumber">Номер вагона</label>
                 <input type="text" class="form-control form-control-sm ms-no_arrows" id="wagonNumber"
-                       formControlName="wagonNumber"
+                       formControlName="wagonNumber" pattern="\d{8}" maxlength="8"
                        autocomplete="off" [required]="form.get('wagonNumber').hasError('required')"
-                       (keyup)="autocomplete()">
+                       (keyup)="autocomplete()" [appMyAutofocus]="!delivery">
             </div>
             <div class="form-group col-md-3">
                 <label class="small" for="wagonType">Тип вагона</label>
@@ -66,17 +59,7 @@
                         <option *ngFor="let cargoType of cargoTypeList | async"
                                 value="{{ cargoType.typeName }}">{{ cargoType.typeName }}</option>
                     </select>
-                    <!--          <input type="text" class="form-control form-control-sm" id="cargoType" formControlName="cargoType"-->
-                    <!--                 list=cargoTypeList autocomplete="off" [required]="form.get('cargoType').hasError('required')">-->
-                    <!--          <div class="input-group-append">-->
-                    <!--            <button class="fas fa-times btn btn-outline-secondary btn-sm" title="Очистить" type="button"-->
-                    <!--                    (click)="form.get('cargoType').reset(); form.markAsDirty()">-->
-                    <!--            </button>-->
-                    <!--          </div>-->
                 </div>
-                <!--        <datalist id=cargoTypeList>-->
-                <!--          <option *ngFor="let cargoType of cargoTypeList | async">{{ cargoType.typeName }}</option>-->
-                <!--        </datalist>-->
             </div>
             <div class="form-group col-md-3">
                 <label class="small" for="cargoOperation">Операция</label>
@@ -111,24 +94,14 @@
                         <option *ngFor="let customer of customers | async"
                                 value="{{ customer.customerName }}">{{ customer.customerName }}</option>
                     </select>
-                    <!--          <input type="text" class="form-control form-control-sm" id="customer" formControlName="customer"-->
-                    <!--                 list=customerList autocomplete="off" [required]="form.get('customer').hasError('required')">-->
-                    <!--          <div class="input-group-append">-->
-                    <!--            <button class="fas fa-times btn btn-outline-secondary btn-sm" title="Очистить" type="button"-->
-                    <!--                    (click)="form.get('customer').reset(); form.markAsDirty()">-->
-                    <!--            </button>-->
-                    <!--          </div>-->
                 </div>
-                <!--        <datalist id=customerList>-->
-                <!--          <option *ngFor="let customer of customers | async">{{ customer.customerName }}</option>-->
-                <!--        </datalist>-->
             </div>
 
             <div class="form-group col-md-3">
                 <label class="small" for="owner">Собственник</label>
                 <div class="input-group mb-3">
                     <select class="custom-select custom-select-sm" id="owner" formControlName="owner"
-                            [required]="form.get('wagonType').hasError('required')">
+                            [required]="form.get('owner').hasError('required')">
                         <option value="{{ owner.ownerName }}"
                                 *ngFor="let owner of ownersList | async">{{ owner.ownerName }}</option>
                     </select>
@@ -174,7 +147,7 @@
             <div class="form-group col-3">
                 <label class="small" for="cargoWeight">Вес груза</label>
                 <div class="input-group mb-3" id="cargoWeight">
-                    <input type="number" step="any" class="form-control form-control-sm ms-no_arrows"
+                    <input type="number" min="0" max="999.99" step="any" class="form-control form-control-sm ms-no_arrows"
                            formControlName="cargoWeight"
                            autocomplete="off">
                     <div class="input-group-append">

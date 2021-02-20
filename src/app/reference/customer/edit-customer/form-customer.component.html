@@ -14,7 +14,7 @@
                 </div>
             </li>
             <li>
-                <a class="fas fa-align-justify btn btn-outline-info" title="В список"
+                <a class="fas fa-align-justify btn btn-outline-primary" title="В список"
                    [routerLink]="['/reference/customer']"></a>
             </li>
         </ul>
@@ -27,7 +27,7 @@
 </nav>
 
 <div *ngIf="form; else loading">
-    <form [formGroup]="form" (ngSubmit)="update()">
+    <form [formGroup]="form">
         <div class="row p-0">
             <div class="form-group col pl-0"
                  [ngClass]="{invalid: form.get('customerName').touched && form.get('customerName').invalid}">

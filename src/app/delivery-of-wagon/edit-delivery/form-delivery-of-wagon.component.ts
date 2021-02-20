@@ -12,6 +12,7 @@ import {WagonTypeService} from '../../reference/service/wagon-type.service';
 import {CargoOperationService} from '../../reference/service/cargo-operation.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {UtilsService} from '../../shared/service/utils.service';
+import {CargoTypeService} from '../../reference/service/cargo-type.service';
 
 @Component({
     selector: 'app-form-delivery-of-wagon',
@@ -28,11 +29,11 @@ export class FormDeliveryOfWagonComponent implements OnInit, OnDestroy {
     wagonTypeList: Observable<Array<WagonType>>;
     cargoTypeList: Observable<Array<CargoType>>;
     ownersList: Observable<Array<Owner>>;
-    createSub: Subscription;
-    updateSub: Subscription;
-    loadSub: Subscription;
-    autocompleteSub: Subscription;
-    delSub: Subscription;
+    private createSub: Subscription;
+    private updateSub: Subscription;
+    private loadSub: Subscription;
+    private autocompleteSub: Subscription;
+    private delSub: Subscription;
 
     constructor(
         private route: ActivatedRoute,
@@ -40,6 +41,7 @@ export class FormDeliveryOfWagonComponent implements OnInit, OnDestroy {
         private wagonTypeService: WagonTypeService,
         private customerService: CustomerService,
         private cargoOperationService: CargoOperationService,
+        private cargoTypeService: CargoTypeService,
         public router: Router,
         private alert: AlertService,
         private datePipe: DatePipe,
@@ -52,7 +54,7 @@ export class FormDeliveryOfWagonComponent implements OnInit, OnDestroy {
         this.cargoOperations = this.cargoOperationService.getAll();
         this.customers = this.customerService.getAll();
         this.wagonTypeList = this.wagonTypeService.getAll();
-        this.cargoTypeList = this.deliveryService.getAllCargoTypes();
+        this.cargoTypeList = this.cargoTypeService.getAll();
         this.ownersList = this.deliveryService.getAllOwners();
 
         this.loadSub = this.route.params.pipe(
@@ -104,7 +106,7 @@ export class FormDeliveryOfWagonComponent implements OnInit, OnDestroy {
             cargoWeight: new FormControl(this.decimalPipe.transform(this.delivery.cargoWeight, '0.2')),
             loadUnloadWork: new FormControl(this.delivery.loadUnloadWork, Validators.required),
             shuntingWorks: new FormControl(this.delivery.shuntingWorks === 0 ? '' :
-                this.decimalPipe.transform(this.delivery.shuntingWorks, '0.2')),
+                this.decimalPipe.transform(this.delivery.shuntingWorks, '0.2').replace(',', '')),
             memoOfDelivery: new FormControl(this.delivery.memoOfDelivery ? this.delivery.memoOfDelivery : ''),
             memoOfDispatch: new FormControl(this.delivery.memoOfDispatch ? this.delivery.memoOfDispatch : ''),
             statement: new FormControl(
@@ -143,8 +145,9 @@ export class FormDeliveryOfWagonComponent implements OnInit, OnDestroy {
                 this.alert.danger('Ошибка');
             }
         }, () => {
-            this.alert.success('Общая подача создана');
-            this.form.markAsPristine();
+            // this.alert.success('Общая подача создана');
+            // this.form.markAsPristine();
+            this.router.navigateByUrl('/delivery/edit/' + this.delivery.deliveryId);
         });
     }
 
@@ -190,7 +193,7 @@ export class FormDeliveryOfWagonComponent implements OnInit, OnDestroy {
 
     autocomplete(): void {
         const wagonNumber = this.form.value.wagonNumber;
-        if (wagonNumber.length > 5) {
+        if (wagonNumber.length === 8) {
             this.autocompleteSub = this.deliveryService.getDeliveryForAutocomplete(this.form.value.wagonNumber).subscribe(data => {
                 if (data.wagon) {
                     this.form.get('customer').setValue(data.customer);

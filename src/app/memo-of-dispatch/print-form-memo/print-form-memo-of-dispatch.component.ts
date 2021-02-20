@@ -5,6 +5,8 @@ import {ActivatedRoute, Params} from '@angular/router';
 import {Subscription, throwError} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 import {UtilsService} from '../../shared/service/utils.service';
+import {SettingService} from '../../reference/service/setting.service';
+import {AuthService} from '../../admin/shared/services/auth.service';
 
 @Component({
     selector: 'app-print-form-memo-of-dispatch',
@@ -14,6 +16,8 @@ import {UtilsService} from '../../shared/service/utils.service';
 export class PrintFormMemoOfDispatchComponent implements OnInit, OnDestroy {
 
     memoOfDispatchId: number;
+    companyFullName: string;
+    private settingSub: Subscription;
     memoOfDispatch: MemoOfDispatch;
     private memoSub: Subscription;
     deliveryList: DeliveryOfWagon[] = [];
@@ -24,16 +28,22 @@ export class PrintFormMemoOfDispatchComponent implements OnInit, OnDestroy {
     constructor(
         private route: ActivatedRoute,
         private utils: UtilsService,
+        private settingService: SettingService,
+        private authService: AuthService,
         private memoOfDispatchService: MemoOfDispatchService
     ) {
     }
 
     ngOnInit(): void {
+        this.settingSub = this.settingService.getByType(['companyFullName']).subscribe(data => {
+            this.companyFullName = data[0];
+        });
+
         this.memoSub = this.route.params.pipe(
             switchMap((params: Params) => {
-                if (params['memoOfDispatchId']) {
-                    this.memoOfDispatchId = params['memoOfDispatchId'];
-                    return this.memoOfDispatchService.getById(params['memoOfDispatchId']);
+                if (params.memoOfDispatchId) {
+                    this.memoOfDispatchId = params.memoOfDispatchId;
+                    return this.memoOfDispatchService.getById(params.memoOfDispatchId);
                 }
             }))
             .subscribe(memo => {
@@ -55,7 +65,8 @@ export class PrintFormMemoOfDispatchComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.utils.unsubscribe([
-            this.memoSub
+            this.memoSub,
+            this.settingSub
         ]);
     }
 }

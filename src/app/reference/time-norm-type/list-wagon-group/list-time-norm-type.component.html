@@ -5,13 +5,13 @@
     </tr>
     <tr class="row">
         <th [width]="80" #tableColumn1>
-            <button class="fas fa-plus btn btn-sm btn-outline-info" title="Добавить"
+            <button class="fas fa-plus btn btn-sm btn-outline-primary" title="Добавить"
                     (click)="addNew()" [disabled]="!enableForm"></button>
         </th>
         <!--      <th width="100">Номер</th>-->
         <th [width]="200" #tableColumn2>Код нормы</th>
         <th class="col" #tableColumn3>Наименование нормы</th>
-        <th [width]="100" #tableColumn4>Действия</th>
+        <th [width]="100" #tableColumn4 class="fas fa-cog" style="padding-top: 10px; padding-bottom: 0px"></th>
     </tr>
     </thead>
     <tbody>
@@ -33,7 +33,7 @@
     <td [width]="tableColumn2.offsetWidth">{{ timeNormType.typeCode }}</td>
     <td [width]="tableColumn3.offsetWidth">{{ timeNormType.typeName }}</td>
     <td [width]="tableColumn4.offsetWidth">
-        <button type="button" class="far fa-edit btn btn-outline-info btn-sm mr-1 mt-1" title="Редактировать"
+        <button type="button" class="far fa-edit btn btn-outline-primary btn-sm mr-1 mt-1" title="Редактировать"
                 [disabled]="!enableForm" (click)="edit(timeNormType)"></button>
         <!-- Button trigger modal -->
         <button type="button" class="far fa-trash-alt btn btn-outline-danger btn-sm mt-1" title="Удалить"
@@ -48,12 +48,12 @@
     <!--  <td width="100">{{ wagonGroup.groupId }}</td>-->
     <td [width]="tableColumn2.offsetWidth">
         <input type="text" [(ngModel)]="editedTimeNormType.typeCode" class="form-control form-control-sm ms-valid_input"
-               appMyAutofocus
+               [appMyAutofocus]
                #typeCode="ngModel" required>
     </td>
     <td [width]="tableColumn3.offsetWidth">
         <input type="text" [(ngModel)]="editedTimeNormType.typeName" class="form-control form-control-sm ms-valid_input"
-               appMyAutofocus
+               [appMyAutofocus]
                #typeName="ngModel" required>
     </td>
     <td [width]="tableColumn4.offsetWidth">
